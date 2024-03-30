@@ -1,6 +1,9 @@
 schema = 3
 
 [mod]
+  [mod."github.com/a-h/templ"]
+    version = "v0.2.648"
+    hash = "sha256-s5z0VUXQd7JUGhNMrNA7Txfn4qS6eTIakLgmn0xOy88="
   [mod."github.com/golang-jwt/jwt"]
     version = "v3.2.2+incompatible"
     hash = "sha256-LOkpuXhWrFayvVf1GOaOmZI5YKEsgqVSb22aF8LnCEM="

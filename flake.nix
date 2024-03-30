@@ -6,7 +6,7 @@
   inputs.gomod2nix.url = "github:nix-community/gomod2nix";
   inputs.gomod2nix.inputs.nixpkgs.follows = "nixpkgs";
   inputs.gomod2nix.inputs.flake-utils.follows = "flake-utils";
-  templ.url = "github:a-h/templ";
+  inputs.templ.url = "github:a-h/templ";
 
   outputs = { self, nixpkgs, flake-utils, gomod2nix, ... }@inputs:
     (flake-utils.lib.eachDefaultSystem
