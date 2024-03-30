@@ -6,12 +6,15 @@
   inputs.gomod2nix.url = "github:nix-community/gomod2nix";
   inputs.gomod2nix.inputs.nixpkgs.follows = "nixpkgs";
   inputs.gomod2nix.inputs.flake-utils.follows = "flake-utils";
+  templ.url = "github:a-h/templ";
 
-  outputs = { self, nixpkgs, flake-utils, gomod2nix }:
+  outputs = { self, nixpkgs, flake-utils, gomod2nix, ... }@inputs:
     (flake-utils.lib.eachDefaultSystem
       (system:
         let
-          pkgs = nixpkgs.legacyPackages.${system};
+          pkgs = import nixpkgs {
+            inherit system;
+          };
 
           # The current default sdk for macOS fails to compile go projects, so we use a newer one for now.
           # This has no effect on other platforms.
@@ -20,9 +23,11 @@
         {
           packages.default = callPackage ./. {
             inherit (gomod2nix.legacyPackages.${system}) buildGoApplication;
+            inherit inputs;
           };
           devShells.default = callPackage ./shell.nix {
             inherit (gomod2nix.legacyPackages.${system}) mkGoEnv gomod2nix;
+            inherit inputs;
           };
         })
     );

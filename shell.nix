@@ -11,6 +11,7 @@
   )
 , mkGoEnv ? pkgs.mkGoEnv
 , gomod2nix ? pkgs.gomod2nix
+, inputs ? {}
 }:
 
 let
@@ -22,6 +23,7 @@ pkgs.mkShell {
     goEnv
     gomod2nix
     pkgs.air
+    inputs.templ.packages.${pkgs.system}.templ
   ];
   shellHook = ''
     exec ${pkgs.zsh}/bin/zsh

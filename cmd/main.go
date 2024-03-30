@@ -108,8 +108,6 @@ func main() {
 
 	e.Static("/images", "images")
 	e.Static("/css", "css")
-	e.Static("/pages", "pages")
-	e.Static("/layout", "layout")
 
 	e.GET("/contactList", func(c echo.Context) error {
 		return c.Render(http.StatusOK, "index", thePage)

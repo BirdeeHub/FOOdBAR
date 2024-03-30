@@ -10,12 +10,17 @@
     }
   )
 , buildGoApplication ? pkgs.buildGoApplication
-}:
-
+, inputs ? {}
+}: let
+  templ = inputs.templ.packages.${pkgs.system}.templ;
+in
 buildGoApplication {
   pname = "myapp";
   version = "0.1";
   pwd = ./.;
   src = ./.;
   modules = ./gomod2nix.toml;
+  preBuild = ''
+    ${templ}/bin/templ generate
+  '';
 }
