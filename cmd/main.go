@@ -116,6 +116,10 @@ func main() {
 	e.Static("/images", "images")
 	e.Static("/css", "css")
 
+	e.GET("/", func(c echo.Context) error {
+		return HTML(c, http.StatusOK, hello("birdee"))
+	})
+
 	e.GET("/templtest", func(c echo.Context) error {
 		return c.Render(http.StatusOK, "index", thePage)
 	})
