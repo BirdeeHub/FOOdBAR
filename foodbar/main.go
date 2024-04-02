@@ -120,10 +120,6 @@ func main() {
 		return HTML(c, http.StatusOK, hello("birdee"))
 	})
 
-	e.GET("/templtest", func(c echo.Context) error {
-		return c.Render(http.StatusOK, "index", thePage)
-	})
-
 	e.GET("/contactList", func(c echo.Context) error {
 		return c.Render(http.StatusOK, "index", thePage)
 	})
