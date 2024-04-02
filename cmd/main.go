@@ -8,6 +8,7 @@ import (
 	"time"
 	"errors"
 
+	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -18,6 +19,12 @@ type Templates struct {
 
 func (t *Templates) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
 	return t.templates.ExecuteTemplate(w, name, data)
+}
+
+func HTML(c echo.Context, code int, cmp templ.Component) error {
+	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
+	c.Response().Status = code
+	return cmp.Render(c.Request().Context(), c.Response().Writer)
 }
 
 func newTemplate() *Templates {
@@ -108,6 +115,10 @@ func main() {
 
 	e.Static("/images", "images")
 	e.Static("/css", "css")
+
+	e.GET("/templtest", func(c echo.Context) error {
+		return c.Render(http.StatusOK, "index", thePage)
+	})
 
 	e.GET("/contactList", func(c echo.Context) error {
 		return c.Render(http.StatusOK, "index", thePage)
