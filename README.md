@@ -1,47 +1,33 @@
-[![Frontend Masters](https://static.frontendmasters.com/assets/brand/logos/full.png)](https://frontendmasters.com)
+features
 
-This was a companion repo for the [HTMX & Go with ThePrimeagen](https://frontendmasters.com/courses/htmx) course on [Frontend Masters](https://frontendmasters.com).
+recipe list and entry
+suggestion based on stock
+sort recipe by category, dietary, ingredients, % ingredients in stock, (total ingredient price?)
+finalize menu.
+
+generate prep list, and shopping list (accounts for current stock), the menu, and projected and actual portions ordered.
+
+track what was bought and then used after the day to keep track of the total stock, as actual amounts may differ based on prices for different quantities at stores.
+
+total workflow, 3 interaction stages. Generate menu, input orders and generate the lists, input actual stock bought and used to correct suggested values.
+
+6 tab interface? recipe database, menu tab where you have the menu and track orders, prep list, shopping list, stock list, profit review
+
+Would be nice to have these able to be dynamically resized and put side by side or above and below.
+
+persistent data consists of recipes, and stock, and configuration.
+
+Will need to store recipe objects, and ingredient objects.
+
+recipes will need category dietary, ingredients, last price sold for, fields
+
+ingredients will need amounts in stock, time since purchased, storage method, (last queried price?)
+
+when all data for stock and menu and orders have been finalized for the week, generate profit report, with option for adding extra incidental costs.
 
 
-> in this repo, I have a go and htmx simple app, and a template html site separately. How do I serve the template html site with go and htmx?
+Interface will be written as a web page, because I want to learn how to make an interactive web page, and I will be using go + htmx to do it.
 
-Here is one way to serve the template HTML site with Go and htmx:
+Run the program, and then visit localhost:42069 (or other configured value)
 
-1. Create a handler in Go that will serve the static HTML files. For example:
-
-```go
-func serveStatic(c echo.Context) error {
-  path := c.Param("filepath")
-  return c.File(path)
-}
-```
-
-This will serve files from the filesystem.
-
-2. Register the route and path to match your HTML files:
-
-```go 
-e.GET("/static/*", serveStatic)
-```
-
-3. Put your HTML templates in a folder like `static/templates/`. 
-
-4. Load the index page to start:
-
-```
-http://localhost:8080/static/templates/index.html
-```
-
-5. Any links to other pages should be prefixed with `/static` to get routed correctly.
-
-6. Use htmx attributes on elements to call backend APIs as needed.
-
-So in summary:
-
-- Serve static files from Go
-- Organize HTML templates in a folder
-- Load index page to start 
-- Prefix links with /static
-- Use htmx for AJAX calls to API
-
-This will allow you to serve a static HTML site while still using htmx for dynamic functionality.
+recipe entry should have completion for existing items in ingredients dietary, category, etc but not for name or instructions or amounts or prices.
