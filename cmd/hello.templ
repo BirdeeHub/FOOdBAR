@@ -3,3 +3,30 @@ package main
 templ hello(name string) {
 	<div>Hello, { name }</div>
 }
+
+templ homepage(data interface{}) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<title>TEST</title>
+			<meta charset="utf-8" />
+			<meta name="viewport" content="width=device-width, initial-scale=1" />
+			<script src="https://unpkg.com/htmx.org/dist/htmx.min.js"></script>
+			<link rel="stylesheet" href="/css/index.css" />
+		</head>
+		<body>
+			@hello("World!")
+			<!-- <button onclick="window.location.href='/pages/gallery.html'">Go to Example</button> -->
+			<script>
+				document.addEventListener("DOMContentLoaded", (event) => {
+					document.body.addEventListener("htmx:beforeSwap", function(evt) {
+						if (evt.detail.xhr.status === 422) {
+							evt.detail.shouldSwap = true;
+							evt.detail.isError = false;
+						}
+					});
+				})
+			</script>
+		</body>
+	</html>
+}

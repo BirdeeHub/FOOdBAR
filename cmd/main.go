@@ -117,7 +117,7 @@ func main() {
 	e.Static("/css", "css")
 
 	e.GET("/", func(c echo.Context) error {
-		return HTML(c, http.StatusOK, hello("birdee"))
+		return HTML(c, http.StatusOK, homepage(thePage))
 	})
 
 	e.GET("/contactList", func(c echo.Context) error {
