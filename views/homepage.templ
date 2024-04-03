@@ -1,10 +1,17 @@
-package main
+package views
 
-templ hello(name string) {
-	<div>Hello, { name }</div>
+templ BodyContents(name string) {
+	<div class={ container() }>
+	<div>
+	Hello, { name }!
+	</div>
+	<div>
+	soup
+	</div>
+	</div>
 }
 
-templ homepage(data interface{}) {
+templ Homepage() {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
@@ -12,11 +19,10 @@ templ homepage(data interface{}) {
 			<meta charset="utf-8" />
 			<meta name="viewport" content="width=device-width, initial-scale=1" />
 			<script src="https://unpkg.com/htmx.org/dist/htmx.min.js"></script>
-			<link rel="stylesheet" href="/css/index.css" />
+			<link rel="stylesheet" href="/styles/templ.css" />
 		</head>
 		<body>
-			@hello("World!")
-			<!-- <button onclick="window.location.href='/pages/gallery.html'">Go to Example</button> -->
+			@BodyContents("World")
 			<script>
 				document.addEventListener("DOMContentLoaded", (event) => {
 					document.body.addEventListener("htmx:beforeSwap", function(evt) {
@@ -30,3 +36,11 @@ templ homepage(data interface{}) {
 		</body>
 	</html>
 }
+
+var StaticStyles []templ.CSSClass = []templ.CSSClass{container()}
+
+css container() {
+	display: flex;
+	flex-direction: row;
+}
+

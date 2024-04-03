@@ -1,4 +1,4 @@
-module mywebsite.tv/name
+module foodbar
 
 go 1.22.1
 
