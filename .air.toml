@@ -4,10 +4,12 @@ tmp_dir = "tmp"
 
 [build]
   args_bin = []
-  bin = "./result/bin/cmd"
-  pre_cmd = [ "git add ." ]
-  cmd ="nix build --show-trace" 
-  delay = 5
+  # bin = "./result/bin/cmd"
+  # pre_cmd = [ "git add ." ]
+  # cmd ="nix build --show-trace"
+  bin = "./tmp/main"
+  cmd = "templ generate && go build -o ./tmp/main cmd/main.go"
+  delay = 0
   exclude_dir = ["node_modules", "assets", "tmp", "vendor", "testdata"]
   exclude_file = []
   exclude_regex = ["_test.go", ".*_templ.go"]
