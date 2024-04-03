@@ -22,6 +22,8 @@ func main() {
 		return templ.NewCSSMiddleware(hndl, views.StaticStyles...)
 	}))
 
+	e.Static("/images", "images")
+
 	e.GET("/", func(c echo.Context) error {
 		e.Logger.Print(c)
 		return HTML(c, http.StatusOK, views.Homepage())

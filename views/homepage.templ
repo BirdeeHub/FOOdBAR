@@ -1,14 +1,27 @@
 package views
 
 templ BodyContents(name string) {
-	<div class={ container() }>
-	<div>
-	Hello, { name }!
+	<div class={ flexRow() }>
+		<div class={ flexColumn() }>
+			Hello, { name }!
+		</div>
+		<div class={ flexColumn() }>
+			@trashcan()
+			div soup
+			@barsSAVAGE()
+		</div>
 	</div>
-	<div>
-	div soup
-	</div>
-	</div>
+}
+
+templ trashcan() {
+	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+		<path fill="none" d="M0 0h24v24H0z"/>
+		<path d="M4 2h16a1 1 0 011 1v1a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1zM3 6h18v16a1 1 0 01-1 1H4a1 1 0 01-1-1V6zm3 3v9a1 1 0 002 0v-9a1 1 0 00-2 0zm5 0v9a1 1 0 002 0v-9a1 1 0 00-2 0zm5 0v9a1 1 0 002 0v-9a1 1 0 00-2 0z"/>
+	</svg>
+}
+
+templ barsSAVAGE() {
+    <img src="/images/bars.svg" alt="loading" style="width: 1rem;" />
 }
 
 templ Homepage() {
@@ -37,10 +50,14 @@ templ Homepage() {
 	</html>
 }
 
-var StaticStyles []templ.CSSClass = []templ.CSSClass{container()}
+var StaticStyles []templ.CSSClass = []templ.CSSClass{flexColumn(),flexRow()}
 
-css container() {
+css flexRow() {
 	display: flex;
 	flex-direction: row;
 }
 
+css flexColumn() {
+	display: flex;
+	flex-direction: column;
+}
