@@ -12,9 +12,7 @@
     (flake-utils.lib.eachDefaultSystem
       (system:
         let
-          pkgs = import nixpkgs {
-            inherit system;
-          };
+          pkgs = nixpkgs.legacyPackages.${system};
 
           # The current default sdk for macOS fails to compile go projects, so we use a newer one for now.
           # This has no effect on other platforms.
