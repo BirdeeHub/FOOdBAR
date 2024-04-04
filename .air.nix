@@ -1,3 +1,5 @@
+{ pkgs, templ, go, gomod2nix, ... }:
+pkgs.writeText "aircfg" (/*toml*/''
 root = "."
 testdata_dir = "testdata"
 tmp_dir = "tmp"
@@ -8,7 +10,8 @@ tmp_dir = "tmp"
   # pre_cmd = [ "git add ." ]
   # cmd ="nix build --show-trace"
   bin = "./tmp/main"
-  cmd = "templ generate && go build -o ./tmp/main cmd/main.go"
+  pre_cmd = [ "${go}/bin/go mod tidy", "${gomod2nix}/bin/gomod2nix" ]
+  cmd = "${templ}/bin/templ generate && ${go}/bin/go build -o ./tmp/main cmd/main.go"
   delay = 0
   exclude_dir = ["node_modules", "assets", "tmp", "vendor", "testdata"]
   exclude_file = []
@@ -45,3 +48,4 @@ tmp_dir = "tmp"
 [screen]
   clear_on_rebuild = false
   keep_scroll = true
+'')

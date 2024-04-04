@@ -15,6 +15,10 @@
 }:
 
 let
+  templ = inputs.templ.packages.${pkgs.system}.templ;
+  air = pkgs.writeShellScriptBin "air" ''
+    ${pkgs.air}/bin/air -c ${import ./.air.nix { inherit pkgs air templ gomod2nix goEnv; inherit (pkgs) go; }}
+  '';
   goEnv = mkGoEnv { pwd = ./.; };
 in
 pkgs.mkShell {
@@ -22,8 +26,8 @@ pkgs.mkShell {
   packages = [
     goEnv
     gomod2nix
-    pkgs.air
-    inputs.templ.packages.${pkgs.system}.templ
+    air
+    templ
   ];
   shellHook = ''
     exec ${pkgs.zsh}/bin/zsh
