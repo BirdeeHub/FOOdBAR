@@ -41,6 +41,10 @@ templ BodyContents(name string) {
 		<div class={ tabButtonContainer() }>
 			@tabButton(recipe)
 			@tabButton(pantry)
+			@tabButton(menu)
+			@tabButton(shopping)
+			@tabButton(preplist)
+			@tabButton(earnings)
 		</div>
 		<div class={ tabContainer() }>
 			@tabListDiv(recipe)
@@ -75,6 +79,7 @@ templ tabListDiv(tt tabtype) {
 
 templ recipeList() {
 	<div class={ tabList() }>
+		<div style="text-align: center;">Recipes</div>
 		@recipeContainer()
 		@recipeContainer()
 		@recipeContainer()
