@@ -22,12 +22,14 @@ templ colorsCSS() {
 }
 
 var StaticStyles []templ.CSSClass = []templ.CSSClass{
+	listItemElement(),
+	tabListItem(),
+	tabList(),
+	tabContainer(),
+	tabButtonItem(),
+	tabButtonContainer(),
 	pageHeaderContainer(),
 	pageContainer(),
-	tabButtonContainer(),
-	tabContainer(),
-	tabList(),
-	tabListItem(),
 }
 
 css pageContainer() {
