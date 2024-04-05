@@ -148,8 +148,10 @@ const (
 	earnings
 )
 
-css tabButton(tabtype int) {
-	if(tabtype == recipe) {
+templ tabButton(tt tabtype) {
+	if (tt == recipe) {
+		@tabListDiv()
+	} else if (tt == pantry) {
 		@tabListDiv()
 	}
 }
