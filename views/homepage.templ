@@ -29,6 +29,22 @@ templ Homepage() {
 	</html>
 }
 
+templ BodyContents(name string) {
+	<div class={ pageContainer() }>
+		<div class={ pageHeaderContainer() }>
+			Hello, { name }!
+		</div>
+		<div class={ tabButtonContainer() }>
+			button
+			button
+			button
+		</div>
+		<div class={ tabContainer() }>
+			@tabListDiv(recipe)
+		</div>
+	</div>
+}
+
 type tabtype int
 
 const (
@@ -42,53 +58,38 @@ const (
 
 templ tabButton(tt tabtype) {
 	if (tt == recipe) {
-		@tabListDiv()
+		@tabListDiv(tt)
 	} else if (tt == pantry) {
-		@tabListDiv()
+		@tabListDiv(tt)
 	}
 }
 
-templ tabListDiv() {
+templ tabListDiv(tt tabtype) {
+	if (tt == recipe) {
+		@recipeList()
+	}
+}
+
+templ recipeList() {
 	<div class={ tabList() }>
-		<div class={ tabListItem() }>
-			<div class={ listItemElement() }>
-				@trashcan()
-			</div>
-			<div class={ listItemElement() }>
-				div soup! 🍜
-			</div>
-			<div class={ listItemElement() }>
-				@barsSAVAGE()
-			</div>
-		</div>
-		<div class={ tabListItem() }>
-			<div class={ listItemElement() }>
-				@trashcan()
-			</div>
-			<div class={ listItemElement() }>
-				div soup! 🍜
-			</div>
-			<div class={ listItemElement() }>
-				@barsSAVAGE()
-			</div>
-		</div>
+		@recipeContainer()
+		@recipeContainer()
+		@recipeContainer()
 	</div>
 }
 
-templ BodyContents(name string) {
-	<div class={ pageContainer() }>
-		<div class={ pageHeaderContainer() }>
-			Hello, { name }!
+templ recipeContainer() {
+	<div class={ tabListItem() }>
+			<div class={ listItemElement() }>
+				@trashcan()
+			</div>
+			<div class={ listItemElement() }>
+				div soup! 🍜
+			</div>
+			<div class={ listItemElement() }>
+				@barsSAVAGE()
+			</div>
 		</div>
-		<div class={ tabButtonContainer() }>
-			button
-			button
-			button
-		</div>
-		<div class={ tabContainer() }>
-			@tabListDiv()
-		</div>
-	</div>
 }
 
 templ trashcan() {
