@@ -11,27 +11,6 @@ script htmxAllowedCodes() {
 	})
 }
 
-templ colorsCSS() {
-	<style type="text/css">
-		@media (prefers-color-scheme: dark) {
-			.bodycolors {
-				background-color: #1e1e1f;
-				foreground-color: white;
-				color: white;
-				fill: white;
-			}
-		}
-		@media (not (prefers-color-scheme: dark)) {
-			.bodycolors {
-				background-color: lightgray;
-				foreground-color: black;
-				color: black;
-				fill: black;
-			}
-		}
-	</style>
-}
-
 templ Homepage() {
 	<!DOCTYPE html>
 	@colorsCSS()
@@ -48,6 +27,25 @@ templ Homepage() {
 			@htmxAllowedCodes()
 		</body>
 	</html>
+}
+
+type tabtype int
+
+const (
+	recipe tabtype = iota
+	pantry
+	menu
+	shopping
+	preplist
+	earnings
+)
+
+templ tabButton(tt tabtype) {
+	if (tt == recipe) {
+		@tabListDiv()
+	} else if (tt == pantry) {
+		@tabListDiv()
+	}
 }
 
 templ tabListDiv() {
@@ -108,80 +106,4 @@ templ barsSAVAGE() {
 
 func hxURL(urlpath string) string {
 	return string(templ.URL(urlpath))
-}
-
-var StaticStyles []templ.CSSClass = []templ.CSSClass{
-	pageHeaderContainer(),
-	pageContainer(),
-	tabButtonContainer(),
-	tabContainer(),
-	tabList(),
-	tabListItem(),
-}
-
-css pageContainer() {
-	display: flex;
-	flex-direction: column;
-}
-
-css pageHeaderContainer() {
-	display: flex;
-	flex-direction: row;
-	padding: 10px;
-	justify-content: center;
-	align-items: center;
-}
-
-css tabButtonContainer() {
-	display: flex;
-	flex-direction: row;
-}
-
-type tabtype int
-
-const (
-	recipe tabtype = iota
-	pantry
-	menu
-	shopping
-	preplist
-	earnings
-)
-
-templ tabButton(tt tabtype) {
-	if (tt == recipe) {
-		@tabListDiv()
-	} else if (tt == pantry) {
-		@tabListDiv()
-	}
-}
-
-css tabContainer() {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-}
-
-css tabList() {
-	display: flex;
-	flex-direction: column;
-	flex: 1;
-}
-
-css tabListItem() {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	border: 3px outset;
-	border-radius: 10px;
-	padding: 5px;
-}
-
-css listItemElement() {
-	display: flex;
-	flex-direction: row;
-	border: none;
-	align-items: center;
-	flex: 1;
-	justify-content: center;
 }
