@@ -21,7 +21,7 @@ func newExampleRecipeTabData() views.TabData {
 		Ttype:    views.Recipe,
 	}
 	recipeItem1 := views.TabItem{
-		ItemName: "turdSandwich",
+		ItemName: "turd sandwich",
 		Ttype:    views.Recipe,
 	}
 	recipeItem2 := views.TabItem{
