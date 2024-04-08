@@ -2,6 +2,7 @@ package views
 
 import (
 	"fmt"
+	"github.com/google/uuid"
 )
 
 type PageData struct {
@@ -20,6 +21,7 @@ const (
 )
 
 type TabItem struct {
+	ItemID       uuid.UUID
 	ItemName string
 	Ttype    TabType
 }
@@ -101,6 +103,11 @@ templ tabButton(tt TabType) {
 templ tabListDiv(td TabData) {
 	if (td.Ttype == Recipe) {
 		@recipeList(td)
+	} else if (td.Ttype == Pantry) {
+	} else if (td.Ttype == Menu) {
+	} else if (td.Ttype == Shopping) {
+	} else if (td.Ttype == Preplist) {
+	} else if (td.Ttype == Earnings) {
 	}
 }
 
@@ -120,6 +127,9 @@ templ recipeContainer(item TabItem) {
 		</div>
 		<div class={ listItemElement() }>
 			{ string(item.Ttype) }
+		</div>
+		<div class={ listItemElement() }>
+			{ string(item.ItemID) }
 		</div>
 		<div class={ listItemElement() }>
 			@barsSAVAGE()

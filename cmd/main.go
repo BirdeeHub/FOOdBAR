@@ -4,7 +4,9 @@ import (
 	"net/http"
 
 	views "foodbar/views"
+
 	"github.com/a-h/templ"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -19,18 +21,22 @@ func newExampleRecipeTabData() views.TabData {
 	recipeItem := views.TabItem{
 		ItemName: "Chicken",
 		Ttype:    views.Recipe,
+		ItemID:   uuid.New(),
 	}
 	recipeItem1 := views.TabItem{
 		ItemName: "turd sandwich",
 		Ttype:    views.Recipe,
+		ItemID:   uuid.New(),
 	}
 	recipeItem2 := views.TabItem{
 		ItemName: "chicken masala",
 		Ttype:    views.Recipe,
+		ItemID:   uuid.New(),
 	}
 	recipeItem3 := views.TabItem{
 		ItemName: "tacos caliente",
 		Ttype:    views.Recipe,
+		ItemID:   uuid.New(),
 	}
 
 	recipeTabdata := views.TabData{
