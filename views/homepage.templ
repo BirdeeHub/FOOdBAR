@@ -21,7 +21,7 @@ const (
 )
 
 type TabItem struct {
-	ItemID       uuid.UUID
+	ItemID   uuid.UUID
 	ItemName string
 	Ttype    TabType
 }
@@ -129,7 +129,7 @@ templ recipeContainer(item TabItem) {
 			{ string(item.Ttype) }
 		</div>
 		<div class={ listItemElement() }>
-			{ string(item.ItemID) }
+			{ item.ItemID.String() }
 		</div>
 		<div class={ listItemElement() }>
 			@barsSAVAGE()
