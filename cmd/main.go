@@ -17,34 +17,19 @@ func HTML(c echo.Context, code int, cmp templ.Component) error {
 	return cmp.Render(c.Request().Context(), c.Response().Writer)
 }
 
-func newExampleRecipeTabData() views.TabData {
-	recipeItem := views.TabItem{
-		ItemName: "Chicken",
+func mkRecipeItem(name string) views.TabItem {
+	return views.TabItem{
+		ItemName: name,
 		Ttype:    views.Recipe,
 		ItemID:   uuid.New(),
 	}
-	recipeItem1 := views.TabItem{
-		ItemName: "turd sandwich",
-		Ttype:    views.Recipe,
-		ItemID:   uuid.New(),
-	}
-	recipeItem2 := views.TabItem{
-		ItemName: "chicken masala",
-		Ttype:    views.Recipe,
-		ItemID:   uuid.New(),
-	}
-	recipeItem3 := views.TabItem{
-		ItemName: "tacos caliente",
-		Ttype:    views.Recipe,
-		ItemID:   uuid.New(),
-	}
+}
 
-	recipeTabdata := views.TabData{
-		Items: []views.TabItem{recipeItem, recipeItem1, recipeItem2, recipeItem3},
+func newExampleRecipeTabData() views.TabData {
+	return views.TabData{
+		Items: []views.TabItem{mkRecipeItem("Chicken"), mkRecipeItem("turd sandwich"), mkRecipeItem("chicken masala"), mkRecipeItem("tacos caliente")},
 		Ttype: views.Recipe,
 	}
-
-	return recipeTabdata
 }
 
 func main() {

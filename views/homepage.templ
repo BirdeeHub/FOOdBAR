@@ -2,34 +2,7 @@ package views
 
 import (
 	"fmt"
-	"github.com/google/uuid"
 )
-
-type PageData struct {
-	TabDatas []TabData
-}
-
-type TabType string
-
-const (
-	Recipe   TabType = "Recipe"
-	Pantry           = "Pantry"
-	Menu             = "Menu"
-	Shopping         = "Shopping"
-	Preplist         = "Preplist"
-	Earnings         = "Earnings"
-)
-
-type TabItem struct {
-	ItemID   uuid.UUID
-	ItemName string
-	Ttype    TabType
-}
-
-type TabData struct {
-	Ttype TabType
-	Items []TabItem
-}
 
 script htmxAllowedCodes() {
 	document.addEventListener("DOMContentLoaded", (event) => {
@@ -74,22 +47,9 @@ templ BodyContents(pd PageData) {
 			@tabButton(Earnings)
 		</div>
 		<div class={ tabContainerCSS() }>
-			@renderListWithComponent(pd.TabDatas, tabList)
+			@renderListWithComponent(pd.TabDatas, tabViewContainer)
 		</div>
 	</div>
-}
-
-// render all items in a list with a component
-func renderListWithComponent[T any](list []T, component func(T) templ.Component) templ.Component {
-	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) error {
-		for _, item := range list {
-			err := component(item).Render(ctx, w)
-			if err != nil {
-				return err
-			}
-		}
-		return nil
-	})
 }
 
 // this has to return a tab button that does the hx-post to pull up the tab
@@ -100,48 +60,39 @@ templ tabButton(tt TabType) {
 	</div>
 }
 
-templ tabList(td TabData) {
-	<div id={ fmt.Sprintf("tabList_%s", td.Ttype) } class={ tabListCSS() }>
-		<div style="text-align: center;">
-			{ string(td.Ttype) }
-		</div>
-		@renderListWithComponent(td.Items, listItemContainer)
+templ tabViewContainer(td TabData) {
+	<div id={ fmt.Sprintf("tabContainer_%s", td.Ttype) } class={ tabViewContainerCSS() }>
+		@renderTabContents(td)
 	</div>
 }
 
-templ listItemContainer(item TabItem) {
-	<div id={ fmt.Sprintf("listItem_%s", item.ItemID.String()) } class={ tabListItemCSS() }>
+templ renderTabContents(td TabData) {
+	if td.Ttype == Recipe {
+		<div style="text-align: center;">
+			Recipes!
+		</div>
+		<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) } class={ tabListContainerCSS() }>
+			@recipeTabContents(td)
+		</div>
+	} else if td.Ttype == Pantry {
+	} else if td.Ttype == Menu {
+	} else if td.Ttype == Shopping {
+	} else if td.Ttype == Preplist {
+	} else if td.Ttype == Earnings {
+	}
+}
+
+templ recipeTabContents(td TabData) {
+	@renderListWithComponent(td.Items, recipeItemContainer)
+}
+
+templ recipeItemContainer(item TabItem) {
+	<div id={ fmt.Sprintf("%s", item.ItemID.String()) } class={ tabListItemCSS() }>
 		<div class={ listItemElementCSS() }>
 			{ item.ItemName }
-		</div>
-		<div class={ listItemElementCSS() }>
-			{ string(item.Ttype) }
-		</div>
-		<div class={ listItemElementCSS() }>
-			{ item.ItemID.String() }
-		</div>
-		<div class={ listItemElementCSS() }>
-			@barsSAVAGE()
 		</div>
 		<div class={ listItemElementCSS() }>
 			@trashcan()
 		</div>
 	</div>
-}
-
-templ trashcan() {
-	<div style="width: 2rem;">
-		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-			<path fill="none" d="M0 0h24v24H0z"></path>
-			<path d="M4 2h16a1 1 0 011 1v1a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1zM3 6h18v16a1 1 0 01-1 1H4a1 1 0 01-1-1V6zm3 3v9a1 1 0 002 0v-9a1 1 0 00-2 0zm5 0v9a1 1 0 002 0v-9a1 1 0 00-2 0zm5 0v9a1 1 0 002 0v-9a1 1 0 00-2 0z"></path>
-		</svg>
-	</div>
-}
-
-templ barsSAVAGE() {
-	<img src="/images/bars.svg" alt="loading" style="width: 2rem;"/>
-}
-
-func hxURL(urlpath string) string {
-	return string(templ.URL(urlpath))
 }

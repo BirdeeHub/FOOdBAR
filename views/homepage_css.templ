@@ -22,9 +22,10 @@ templ colorsCSS() {
 }
 
 var StaticStyles []templ.CSSClass = []templ.CSSClass{
-	listItemElementCSS(),
+	tabListContainerCSS(),
 	tabListItemCSS(),
-	tabListCSS(),
+	listItemElementCSS(),
+	tabViewContainerCSS(),
 	tabContainerCSS(),
 	tabButtonItemCSS(),
 	tabButtonContainerCSS(),
@@ -62,7 +63,13 @@ css tabContainerCSS() {
 	align-items: center;
 }
 
-css tabListCSS() {
+css tabViewContainerCSS() {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+}
+
+css tabListContainerCSS() {
 	display: flex;
 	flex-direction: column;
 	flex: 1;
