@@ -1,6 +1,6 @@
 /tmp/
 /dist/
 /node_modules/
-/views/**/*.go
+/views/**/*_templ.go
 /result
 
