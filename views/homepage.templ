@@ -61,11 +61,11 @@ templ Homepage(pd PageData) {
 }
 
 templ BodyContents(pd PageData) {
-	<div class={ pageContainer() }>
-		<div class={ pageHeaderContainer() }>
+	<div class={ pageContainerCSS() }>
+		<div class={ pageHeaderContainerCSS() }>
 			Hello, chef!
 		</div>
-		<div id="tabButtons" class={ tabButtonContainer() }>
+		<div id="tabButtons" class={ tabButtonContainerCSS() }>
 			@tabButton(Recipe)
 			@tabButton(Pantry)
 			@tabButton(Menu)
@@ -73,8 +73,8 @@ templ BodyContents(pd PageData) {
 			@tabButton(Preplist)
 			@tabButton(Earnings)
 		</div>
-		<div class={ tabContainer() }>
-			@renderListWithComponent(pd.TabDatas, tabListDiv)
+		<div class={ tabContainerCSS() }>
+			@renderListWithComponent(pd.TabDatas, tabList)
 		</div>
 	</div>
 }
@@ -95,46 +95,35 @@ func renderListWithComponent[T any](list []T, component func(T) templ.Component)
 // this has to return a tab button that does the hx-post to pull up the tab
 // and also is able to detect if it is dragged and to where
 templ tabButton(tt TabType) {
-	<div id={ fmt.Sprintf("tabButton_%s", tt) } class={ tabButtonItem() }>
+	<div id={ fmt.Sprintf("tabButton_%s", tt) } class={ tabButtonItemCSS() }>
 		🍜	{ fmt.Sprintf("%s",tt) }
 	</div>
 }
 
-templ tabListDiv(td TabData) {
-	if (td.Ttype == Recipe) {
-		@recipeList(td)
-	} else if (td.Ttype == Pantry) {
-	} else if (td.Ttype == Menu) {
-	} else if (td.Ttype == Shopping) {
-	} else if (td.Ttype == Preplist) {
-	} else if (td.Ttype == Earnings) {
-	}
-}
-
-templ recipeList(td TabData) {
-	<div id={ fmt.Sprintf("tabList_%s", td.Ttype) } class={ tabList() }>
+templ tabList(td TabData) {
+	<div id={ fmt.Sprintf("tabList_%s", td.Ttype) } class={ tabListCSS() }>
 		<div style="text-align: center;">
-			Recipes
+			{ string(td.Ttype) }
 		</div>
-		@renderListWithComponent(td.Items, recipeContainer)
+		@renderListWithComponent(td.Items, listItemContainer)
 	</div>
 }
 
-templ recipeContainer(item TabItem) {
-	<div class={ tabListItem() }>
-		<div class={ listItemElement() }>
+templ listItemContainer(item TabItem) {
+	<div id={ fmt.Sprintf("listItem_%s", item.ItemID.String()) } class={ tabListItemCSS() }>
+		<div class={ listItemElementCSS() }>
 			{ item.ItemName }
 		</div>
-		<div class={ listItemElement() }>
+		<div class={ listItemElementCSS() }>
 			{ string(item.Ttype) }
 		</div>
-		<div class={ listItemElement() }>
+		<div class={ listItemElementCSS() }>
 			{ item.ItemID.String() }
 		</div>
-		<div class={ listItemElement() }>
+		<div class={ listItemElementCSS() }>
 			@barsSAVAGE()
 		</div>
-		<div class={ listItemElement() }>
+		<div class={ listItemElementCSS() }>
 			@trashcan()
 		</div>
 	</div>

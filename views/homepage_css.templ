@@ -22,22 +22,22 @@ templ colorsCSS() {
 }
 
 var StaticStyles []templ.CSSClass = []templ.CSSClass{
-	listItemElement(),
-	tabListItem(),
-	tabList(),
-	tabContainer(),
-	tabButtonItem(),
-	tabButtonContainer(),
-	pageHeaderContainer(),
-	pageContainer(),
+	listItemElementCSS(),
+	tabListItemCSS(),
+	tabListCSS(),
+	tabContainerCSS(),
+	tabButtonItemCSS(),
+	tabButtonContainerCSS(),
+	pageHeaderContainerCSS(),
+	pageContainerCSS(),
 }
 
-css pageContainer() {
+css pageContainerCSS() {
 	display: flex;
 	flex-direction: column;
 }
 
-css pageHeaderContainer() {
+css pageHeaderContainerCSS() {
 	display: flex;
 	flex-direction: row;
 	padding: 10px;
@@ -45,30 +45,30 @@ css pageHeaderContainer() {
 	align-items: center;
 }
 
-css tabButtonContainer() {
+css tabButtonContainerCSS() {
 	display: flex;
 	flex-direction: row;
 }
 
-css tabButtonItem() {
+css tabButtonItemCSS() {
 	display: flex;
 	flex-direction: row;
 	padding: 10px;
 }
 
-css tabContainer() {
+css tabContainerCSS() {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
 }
 
-css tabList() {
+css tabListCSS() {
 	display: flex;
 	flex-direction: column;
 	flex: 1;
 }
 
-css tabListItem() {
+css tabListItemCSS() {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
@@ -77,7 +77,7 @@ css tabListItem() {
 	padding: 5px;
 }
 
-css listItemElement() {
+css listItemElementCSS() {
 	display: flex;
 	flex-direction: row;
 	border: none;
