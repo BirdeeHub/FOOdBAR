@@ -76,9 +76,7 @@ templ TabButton(tt viewutils.TabType) {
 			id={ fmt.Sprintf("tabButton_%s", tt) }
 			class={ TabButtonItemCSS() }
 		>
-			<button type="submit">
-				🍜	{ fmt.Sprintf("%s",tt) }
-			</button>
+			🍜	{ fmt.Sprintf("%s",tt) }
 		</div>
 	} else {
 		<div
@@ -88,9 +86,7 @@ templ TabButton(tt viewutils.TabType) {
 			id={ fmt.Sprintf("tabButton_%s", tt) }
 			class={ TabButtonItemCSS() }
 		>
-			<button type="submit">
-				{ fmt.Sprintf("%s",tt) } 🍜
-			</button>
+			{ fmt.Sprintf("%s",tt) } 🍜
 		</div>
 	}
 }
