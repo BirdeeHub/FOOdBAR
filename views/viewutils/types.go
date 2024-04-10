@@ -10,6 +10,17 @@ type PageData struct {
 	TabDatas []TabData
 }
 
+type TabItem struct {
+	ItemID   uuid.UUID
+	ItemName string
+	Ttype    TabType
+}
+
+type TabData struct {
+	Ttype TabType
+	Items []TabItem
+}
+
 type TabType string
 
 const (
@@ -38,7 +49,7 @@ func String2TabType(str string) (*TabType, error) {
 	return nil, errors.New("invalid TabType")
 }
 
-var tabToggleButtons = map[TabType]bool{
+var tabActiveState = map[TabType]bool{
 	Recipe: false,
 	Pantry: false,
 	Menu: false,
@@ -48,20 +59,9 @@ var tabToggleButtons = map[TabType]bool{
 }
 
 func (t *TabType) IsActive() bool {
-	return tabToggleButtons[*t]
+	return tabActiveState[*t]
 }
 
 func (t *TabType) ToggleActive() {
-	tabToggleButtons[*t] = !tabToggleButtons[*t]
-}
-
-type TabItem struct {
-	ItemID   uuid.UUID
-	ItemName string
-	Ttype    TabType
-}
-
-type TabData struct {
-	Ttype TabType
-	Items []TabItem
+	tabActiveState[*t] = !tabActiveState[*t]
 }
