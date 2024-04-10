@@ -51,7 +51,7 @@ func main() {
 		return templ.NewCSSMiddleware(hndl, views.StaticStyles...)
 	}))
 
-	pageData := viewutils.PageData{ TabDatas: []viewutils.TabData{} }
+	pageData := viewutils.PageData{TabDatas: []viewutils.TabData{}}
 
 	e.Static("/images", "images")
 
@@ -59,7 +59,7 @@ func main() {
 		e.Logger.Print(c)
 		return HTML(c, http.StatusOK, views.Homepage(pageData))
 	})
-	
+
 	e.DELETE("/api/tabButton/deactivate/:type", func(c echo.Context) error {
 		e.Logger.Print(c)
 		tt, err := viewutils.String2TabType(c.Param("type"))
@@ -69,18 +69,19 @@ func main() {
 				errors.New("not a valid tab button type"),
 			)
 		}
-		if *tt == viewutils.Recipe {
-			return TabToggleRenderer(false, tt, c, &pageData, nil)
-		} else if *tt == viewutils.Pantry {
-			return TabToggleRenderer(false, tt, c, &pageData, nil)
-		} else if *tt == viewutils.Menu {
-			return TabToggleRenderer(false, tt, c, &pageData, nil)
-		} else if *tt == viewutils.Shopping {
-			return TabToggleRenderer(false, tt, c, &pageData, nil)
-		} else if *tt == viewutils.Preplist {
-			return TabToggleRenderer(false, tt, c, &pageData, nil)
-		} else if *tt == viewutils.Earnings {
-			return TabToggleRenderer(false, tt, c, &pageData, nil)
+		switch *tt {
+		case viewutils.Recipe:
+			return TabToggleRenderer(true, tt, c, &pageData, nil)
+		case viewutils.Pantry:
+			return TabToggleRenderer(true, tt, c, &pageData, nil)
+		case viewutils.Menu:
+			return TabToggleRenderer(true, tt, c, &pageData, nil)
+		case viewutils.Shopping:
+			return TabToggleRenderer(true, tt, c, &pageData, nil)
+		case viewutils.Preplist:
+			return TabToggleRenderer(true, tt, c, &pageData, nil)
+		case viewutils.Earnings:
+			return TabToggleRenderer(true, tt, c, &pageData, nil)
 		}
 		return echo.NewHTTPError(
 			http.StatusInternalServerError,
@@ -94,25 +95,26 @@ func main() {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
-		
+
 		// TODO: fetch these tabDatas from database
 		// TODO: implement buffered scrolling for infinite scrolling capabilities
-		if *tt == viewutils.Recipe {
+		switch *tt {
+		case viewutils.Recipe:
 			tabdata := db.NewExampleRecipeTabData(true)
 			return TabToggleRenderer(true, tt, c, &pageData, &tabdata)
-		} else if *tt == viewutils.Pantry {
+		case viewutils.Pantry:
 			tabdata := db.NewExamplePantryTabData(true)
 			return TabToggleRenderer(true, tt, c, &pageData, &tabdata)
-		} else if *tt == viewutils.Menu {
+		case viewutils.Menu:
 			tabdata := db.NewExampleMenuTabData(true)
 			return TabToggleRenderer(true, tt, c, &pageData, &tabdata)
-		} else if *tt == viewutils.Shopping {
+		case viewutils.Shopping:
 			tabdata := db.NewExampleShoppingTabData(true)
 			return TabToggleRenderer(true, tt, c, &pageData, &tabdata)
-		} else if *tt == viewutils.Preplist {
+		case viewutils.Preplist:
 			tabdata := db.NewExamplePreplistTabData(true)
 			return TabToggleRenderer(true, tt, c, &pageData, &tabdata)
-		} else if *tt == viewutils.Earnings {
+		case viewutils.Earnings:
 			tabdata := db.NewExampleEarningsTabData(true)
 			return TabToggleRenderer(true, tt, c, &pageData, &tabdata)
 		}
