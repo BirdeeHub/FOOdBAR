@@ -62,7 +62,6 @@ type TabItem struct {
 }
 
 type TabData struct {
-	Active bool
 	Ttype TabType
 	Items []TabItem
 }

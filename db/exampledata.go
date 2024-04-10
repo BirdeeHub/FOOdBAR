@@ -56,9 +56,8 @@ func MkEarningsItem(name string) viewutils.TabItem {
 	}
 }
 
-func NewExampleRecipeTabData(isActive bool) viewutils.TabData {
+func NewExampleRecipeTabData() viewutils.TabData {
 	return viewutils.TabData{
-		Active:   isActive,
 		Items: []viewutils.TabItem{
 			MkRecipeItem("Chicken"),
 			MkRecipeItem("turd sandwich"),
@@ -69,9 +68,8 @@ func NewExampleRecipeTabData(isActive bool) viewutils.TabData {
 	}
 }
 
-func NewExamplePantryTabData(isActive bool) viewutils.TabData {
+func NewExamplePantryTabData() viewutils.TabData {
 	return viewutils.TabData{
-		Active:   isActive,
 		Items: []viewutils.TabItem{
 			MkPantryItem("Chicken"),
 			MkPantryItem("turd sandwich"),
@@ -82,9 +80,8 @@ func NewExamplePantryTabData(isActive bool) viewutils.TabData {
 	}
 }
 
-func NewExampleMenuTabData(isActive bool) viewutils.TabData {
+func NewExampleMenuTabData() viewutils.TabData {
 	return viewutils.TabData{
-		Active:   isActive,
 		Items: []viewutils.TabItem{
 			MkMenuItem("Chicken"),
 			MkMenuItem("turd sandwich"),
@@ -95,9 +92,8 @@ func NewExampleMenuTabData(isActive bool) viewutils.TabData {
 	}
 }
 
-func NewExampleShoppingTabData(isActive bool) viewutils.TabData {
+func NewExampleShoppingTabData() viewutils.TabData {
 	return viewutils.TabData{
-		Active:   isActive,
 		Items: []viewutils.TabItem{
 			MkShoppingItem("Chicken"),
 			MkShoppingItem("turd sandwich"),
@@ -108,9 +104,8 @@ func NewExampleShoppingTabData(isActive bool) viewutils.TabData {
 	}
 }
 
-func NewExamplePreplistTabData(isActive bool) viewutils.TabData {
+func NewExamplePreplistTabData() viewutils.TabData {
 	return viewutils.TabData{
-		Active:   isActive,
 		Items: []viewutils.TabItem{
 			MkPreplistItem("Chicken"),
 			MkPreplistItem("turd sandwich"),
@@ -121,9 +116,8 @@ func NewExamplePreplistTabData(isActive bool) viewutils.TabData {
 	}
 }
 
-func NewExampleEarningsTabData(isActive bool) viewutils.TabData {
+func NewExampleEarningsTabData() viewutils.TabData {
 	return viewutils.TabData{
-		Active:   isActive,
 		Items: []viewutils.TabItem{
 			MkEarningsItem("Chicken"),
 			MkEarningsItem("turd sandwich"),

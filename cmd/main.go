@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"foodbar/db"
@@ -52,15 +53,16 @@ func main() {
 	}))
 
 	pageData := viewutils.PageData{TabDatas: []viewutils.TabData{}}
+	pagePrefix := "/"
 
 	e.Static("/images", "images")
 
-	e.GET("/", func(c echo.Context) error {
+	e.GET(fmt.Sprintf("%s", pagePrefix), func(c echo.Context) error {
 		e.Logger.Print(c)
 		return HTML(c, http.StatusOK, views.Homepage(pageData))
 	})
 
-	e.DELETE("/api/tabButton/deactivate/:type", func(c echo.Context) error {
+	e.DELETE(fmt.Sprintf("%sapi/tabButton/deactivate/:type", pagePrefix), func(c echo.Context) error {
 		e.Logger.Print(c)
 		tt, err := viewutils.String2TabType(c.Param("type"))
 		if err != nil {
@@ -71,17 +73,17 @@ func main() {
 		}
 		switch *tt {
 		case viewutils.Recipe:
-			return TabToggleRenderer(true, tt, c, &pageData, nil)
+			return TabToggleRenderer(false, tt, c, &pageData, nil)
 		case viewutils.Pantry:
-			return TabToggleRenderer(true, tt, c, &pageData, nil)
+			return TabToggleRenderer(false, tt, c, &pageData, nil)
 		case viewutils.Menu:
-			return TabToggleRenderer(true, tt, c, &pageData, nil)
+			return TabToggleRenderer(false, tt, c, &pageData, nil)
 		case viewutils.Shopping:
-			return TabToggleRenderer(true, tt, c, &pageData, nil)
+			return TabToggleRenderer(false, tt, c, &pageData, nil)
 		case viewutils.Preplist:
-			return TabToggleRenderer(true, tt, c, &pageData, nil)
+			return TabToggleRenderer(false, tt, c, &pageData, nil)
 		case viewutils.Earnings:
-			return TabToggleRenderer(true, tt, c, &pageData, nil)
+			return TabToggleRenderer(false, tt, c, &pageData, nil)
 		}
 		return echo.NewHTTPError(
 			http.StatusInternalServerError,
@@ -89,7 +91,7 @@ func main() {
 		)
 	})
 
-	e.POST("/api/tabButton/activate/:type", func(c echo.Context) error {
+	e.POST(fmt.Sprintf("%sapi/tabButton/activate/:type", pagePrefix), func(c echo.Context) error {
 		e.Logger.Print(c)
 		tt, err := viewutils.String2TabType(c.Param("type"))
 		if err != nil {
@@ -97,25 +99,24 @@ func main() {
 		}
 
 		// TODO: fetch these tabDatas from database
-		// TODO: implement buffered scrolling for infinite scrolling capabilities
 		switch *tt {
 		case viewutils.Recipe:
-			tabdata := db.NewExampleRecipeTabData(true)
+			tabdata := db.NewExampleRecipeTabData()
 			return TabToggleRenderer(true, tt, c, &pageData, &tabdata)
 		case viewutils.Pantry:
-			tabdata := db.NewExamplePantryTabData(true)
+			tabdata := db.NewExamplePantryTabData()
 			return TabToggleRenderer(true, tt, c, &pageData, &tabdata)
 		case viewutils.Menu:
-			tabdata := db.NewExampleMenuTabData(true)
+			tabdata := db.NewExampleMenuTabData()
 			return TabToggleRenderer(true, tt, c, &pageData, &tabdata)
 		case viewutils.Shopping:
-			tabdata := db.NewExampleShoppingTabData(true)
+			tabdata := db.NewExampleShoppingTabData()
 			return TabToggleRenderer(true, tt, c, &pageData, &tabdata)
 		case viewutils.Preplist:
-			tabdata := db.NewExamplePreplistTabData(true)
+			tabdata := db.NewExamplePreplistTabData()
 			return TabToggleRenderer(true, tt, c, &pageData, &tabdata)
 		case viewutils.Earnings:
-			tabdata := db.NewExampleEarningsTabData(true)
+			tabdata := db.NewExampleEarningsTabData()
 			return TabToggleRenderer(true, tt, c, &pageData, &tabdata)
 		}
 		return echo.NewHTTPError(http.StatusInternalServerError, errors.New("not a valid tab button type"))

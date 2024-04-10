@@ -96,13 +96,9 @@ templ TabButton(tt viewutils.TabType) {
 }
 
 templ TabContainer(td viewutils.TabData) {
-	if td.Active {
-		<div id={ fmt.Sprintf("tabContainer_%s", td.Ttype) } class={ TabContainerCSS("1") }>
-			@RenderTabContents(td)
-		</div>
-	} else {
-		<div id={ fmt.Sprintf("tabContainer_%s", td.Ttype) } class={ TabContainerCSS("0") }></div>
-	}
+	<div id={ fmt.Sprintf("tabContainer_%s", td.Ttype) } class={ TabContainerCSS() }>
+		@RenderTabContents(td)
+	</div>
 }
 
 templ RenderTabContents(td viewutils.TabData) {
