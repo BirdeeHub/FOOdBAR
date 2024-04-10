@@ -91,6 +91,19 @@ templ TabButton(tt viewutils.TabType) {
 	}
 }
 
+templ MaximizeTabButton(tt viewutils.TabType) {
+		<div
+			hx-post={ fmt.Sprintf("/api/tabButton/maximize/%s", tt) }
+			hx-target="#tabViewContainer"
+			hx-swap="outerHTML"
+			id={ fmt.Sprintf("tabButton_%s", tt) }
+			class={ TabHeaderItemCSS("0") }
+			style="cursor: pointer;"
+		>
+			<img src="/images/maximize-svgrepo-com.svg" style="width: 2rem;"/>
+		</div>
+}
+
 templ TabContainer(td viewutils.TabData) {
 	<div id={ fmt.Sprintf("tabContainer_%s", td.Ttype) } class={ TabContainerCSS() }>
 		@RenderTabContents(td)
@@ -100,43 +113,61 @@ templ TabContainer(td viewutils.TabData) {
 templ RenderTabContents(td viewutils.TabData) {
 	switch td.Ttype {
 		case viewutils.Recipe:
-			<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } style="text-align: center;">
-				Recipes!
+			<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>
+				@MaximizeTabButton(td.Ttype)
+				<div class={ TabHeaderTitleCSS() }>
+					Recipes!
+				</div>
 			</div>
 			<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
 				@tabviews.RecipeTabContents(td)
 			</div>
 		case viewutils.Pantry:
-			<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } style="text-align: center;">
-				Pantry!
+			<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>
+				@MaximizeTabButton(td.Ttype)
+				<div class={ TabHeaderTitleCSS() }>
+					Pantry!
+				</div>
 			</div>
 			<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
 				@tabviews.PantryTabContents(td)
 			</div>
 		case viewutils.Menu:
-			<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } style="text-align: center;">
-				Menu!
+			<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>
+				@MaximizeTabButton(td.Ttype)
+				<div class={ TabHeaderTitleCSS() }>
+					Menu!
+				</div>
 			</div>
 			<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
 				@tabviews.MenuTabContents(td)
 			</div>
 		case viewutils.Shopping:
-			<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } style="text-align: center;">
-				Shopping!
+			<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>
+				@MaximizeTabButton(td.Ttype)
+				<div class={ TabHeaderTitleCSS() }>
+					Shopping!
+				</div>
 			</div>
 			<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
 				@tabviews.ShoppingTabContents(td)
 			</div>
 		case viewutils.Preplist:
-			<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } style="text-align: center;">
-				Preplist!
+			<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>
+				@MaximizeTabButton(td.Ttype)
+				<div class={ TabHeaderTitleCSS() }>
+					Preplist!
+				</div>
 			</div>
 			<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
 				@tabviews.PreplistTabContents(td)
 			</div>
 		case viewutils.Earnings:
-			<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } style="text-align: center;">
-				Earnings!
+			<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>
+				@MaximizeTabButton(td.Ttype)
+				<div class={ TabHeaderTitleCSS() }>
+					Earnings!
+				</div>
 			</div>
 			<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
 				@tabviews.EarningsTabContents(td)

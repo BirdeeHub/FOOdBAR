@@ -61,6 +61,30 @@ css TabViewContainerCSS() {
 	align-items: center;
 }
 
+css TabHeaderContainerCSS() {
+	display: flex;
+	flex-direction: row;
+	text-align: center;
+	flex: 1;
+}
+
+css TabHeaderTitleCSS() {
+	display: flex;
+	flex-direction: row;
+	padding: 10px;
+	flex: 1;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+}
+
+css TabHeaderItemCSS(flex string) {
+	display: flex;
+	flex-direction: row;
+	padding: 10px;
+	flex: { flex };
+}
+
 css TabContainerCSS() {
 	display: flex;
 	flex-direction: column;
