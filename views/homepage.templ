@@ -41,15 +41,14 @@ templ BodyContents(pd viewutils.PageData) {
 			Hello, chef! welcome to 🍜 FOOd-BAR 🍜
 		</div>
 		<div id="tabButtonContainer" class={ TabButtonContainerCSS() }>
-			@TabButton(true, viewutils.Recipe)
-			@TabButton(true, viewutils.Pantry)
-			@TabButton(true, viewutils.Menu)
-			@TabButton(true, viewutils.Shopping)
-			@TabButton(true, viewutils.Preplist)
-			@TabButton(true, viewutils.Earnings)
+			@TabButton(viewutils.Recipe)
+			@TabButton(viewutils.Pantry)
+			@TabButton(viewutils.Menu)
+			@TabButton(viewutils.Shopping)
+			@TabButton(viewutils.Preplist)
+			@TabButton(viewutils.Earnings)
 		</div>
 		<div id="tabViewContainer" class={ TabViewContainerCSS() }>
-			<div style="flex: 0"></div>
 			@viewutils.RenderListWithComponent(pd.TabDatas, TabContainer)
 		</div>
 	</div>
@@ -61,19 +60,39 @@ templ OOBtabViewContainer(td viewutils.TabData) {
 	</div>
 }
 
+templ OOBtabButtonToggle(tt viewutils.TabType) {
+	<div id={ fmt.Sprintf("tabButton_%s", tt) } hx-swap-oob="outerHTML">
+		@TabButton(tt)
+	</div>
+}
+
 // this has to return a tab button that does the hx-post to pull up the tab
 // and also is able to detect if it is dragged and to where
-templ TabButton(activate bool, tt viewutils.TabType) {
-	<div
-		hx-post={ fmt.Sprintf("/api/tabButton/activate/%s", tt) }
-		hx-swap="outerHTML"
-		id={ fmt.Sprintf("tabButton_%s", tt) }
-		class={ TabButtonItemCSS() }
-	>
-		<button type="submit">
-			🍜	{ fmt.Sprintf("%s",tt) }
-		</button>
-	</div>
+templ TabButton(tt viewutils.TabType) {
+	if !tt.IsActive() {
+		<div
+			hx-post={ fmt.Sprintf("/api/tabButton/activate/%s", tt) }
+			hx-swap="outerHTML"
+			id={ fmt.Sprintf("tabButton_%s", tt) }
+			class={ TabButtonItemCSS() }
+		>
+			<button type="submit">
+				🍜	{ fmt.Sprintf("%s",tt) }
+			</button>
+		</div>
+	} else {
+		<div
+			hx-delete={ fmt.Sprintf("/api/tabButton/deactivate/%s", tt) }
+			hx-target={ fmt.Sprintf("#tabContainer_%s", tt) }
+			hx-swap="outerHTML"
+			id={ fmt.Sprintf("tabButton_%s", tt) }
+			class={ TabButtonItemCSS() }
+		>
+			<button type="submit">
+				🍜	{ fmt.Sprintf("%s",tt) }
+			</button>
+		</div>
+	}
 }
 
 templ TabContainer(td viewutils.TabData) {
@@ -87,47 +106,48 @@ templ TabContainer(td viewutils.TabData) {
 }
 
 templ RenderTabContents(td viewutils.TabData) {
-	if td.Ttype == viewutils.Recipe {
-		<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } style="text-align: center;">
-			Recipes!
-		</div>
-		<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
-			@tabviews.RecipeTabContents(td)
-		</div>
-	} else if td.Ttype == viewutils.Pantry {
-		<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } style="text-align: center;">
-			Pantry!
-		</div>
-		<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
-			@tabviews.PantryTabContents(td)
-		</div>
-	} else if td.Ttype == viewutils.Menu {
-		<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } style="text-align: center;">
-			Menu!
-		</div>
-		<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
-			@tabviews.MenuTabContents(td)
-		</div>
-	} else if td.Ttype == viewutils.Shopping {
-		<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } style="text-align: center;">
-			Shopping!
-		</div>
-		<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
-			@tabviews.ShoppingTabContents(td)
-		</div>
-	} else if td.Ttype == viewutils.Preplist {
-		<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } style="text-align: center;">
-			Preplist!
-		</div>
-		<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
-			@tabviews.PreplistTabContents(td)
-		</div>
-	} else if td.Ttype == viewutils.Earnings {
-		<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } style="text-align: center;">
-			Earnings!
-		</div>
-		<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
-			@tabviews.EarningsTabContents(td)
-		</div>
+	switch td.Ttype {
+		case viewutils.Recipe:
+			<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } style="text-align: center;">
+				Recipes!
+			</div>
+			<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
+				@tabviews.RecipeTabContents(td)
+			</div>
+		case viewutils.Pantry:
+			<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } style="text-align: center;">
+				Pantry!
+			</div>
+			<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
+				@tabviews.PantryTabContents(td)
+			</div>
+		case viewutils.Menu:
+			<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } style="text-align: center;">
+				Menu!
+			</div>
+			<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
+				@tabviews.MenuTabContents(td)
+			</div>
+		case viewutils.Shopping:
+			<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } style="text-align: center;">
+				Shopping!
+			</div>
+			<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
+				@tabviews.ShoppingTabContents(td)
+			</div>
+		case viewutils.Preplist:
+			<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } style="text-align: center;">
+				Preplist!
+			</div>
+			<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
+				@tabviews.PreplistTabContents(td)
+			</div>
+		case viewutils.Earnings:
+			<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } style="text-align: center;">
+				Earnings!
+			</div>
+			<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
+				@tabviews.EarningsTabContents(td)
+			</div>
 	}
 }

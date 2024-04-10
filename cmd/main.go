@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	"foodbar/db"
 	"foodbar/views"
 	"foodbar/views/viewutils"
 
@@ -18,23 +19,27 @@ func HTML(c echo.Context, code int, cmp templ.Component) error {
 	return cmp.Render(c.Request().Context(), c.Response().Writer)
 }
 
-func TabToggleRenderer(activate bool, tt *viewutils.TabType, c echo.Context, data *viewutils.PageData, td viewutils.TabData) error {
+func TabToggleRenderer(activate bool, tt *viewutils.TabType, c echo.Context, data *viewutils.PageData, td *viewutils.TabData) error {
 	if activate {
 		if !tt.IsActive() {
 			tt.ToggleActive()
-			data.TabDatas = append(data.TabDatas, td)
-			HTML(c, http.StatusOK, views.TabButton(!activate, *tt))
-			return HTML(c, http.StatusOK, views.OOBtabViewContainer(td))
+			data.TabDatas = append(data.TabDatas, *td)
+			HTML(c, http.StatusOK, views.TabButton(*tt))
+			return HTML(c, http.StatusOK, views.OOBtabViewContainer(*td))
 		} else {
-			return HTML(c, http.StatusOK, views.TabButton(!activate, *tt))
+			return HTML(c, http.StatusOK, views.TabButton(*tt))
 		}
 	} else {
 		if tt.IsActive() {
 			tt.ToggleActive()
-			// TODO:: actually remove the tab from the page and page data
-			return HTML(c, http.StatusOK, views.TabButton(!activate, *tt))
+			for i, td := range data.TabDatas {
+				if td.Ttype == *tt {
+					data.TabDatas = append(data.TabDatas[:i], data.TabDatas[i+1:]...)
+				}
+			}
+			return HTML(c, http.StatusOK, views.OOBtabButtonToggle(*tt))
 		} else {
-			return HTML(c, http.StatusOK, views.TabButton(!activate, *tt))
+			return nil
 		}
 	}
 }
@@ -46,13 +51,13 @@ func main() {
 		return templ.NewCSSMiddleware(hndl, views.StaticStyles...)
 	}))
 
-	data := viewutils.PageData{ TabDatas: []viewutils.TabData{} }
+	pageData := viewutils.PageData{ TabDatas: []viewutils.TabData{} }
 
 	e.Static("/images", "images")
 
 	e.GET("/", func(c echo.Context) error {
 		e.Logger.Print(c)
-		return HTML(c, http.StatusOK, views.Homepage(data))
+		return HTML(c, http.StatusOK, views.Homepage(pageData))
 	})
 	
 	e.DELETE("/api/tabButton/deactivate/:type", func(c echo.Context) error {
@@ -65,17 +70,17 @@ func main() {
 			)
 		}
 		if *tt == viewutils.Recipe {
-			return TabToggleRenderer(false, tt, c, &data, newExampleRecipeTabData(true))
+			return TabToggleRenderer(false, tt, c, &pageData, nil)
 		} else if *tt == viewutils.Pantry {
-			return TabToggleRenderer(false, tt, c, &data, newExamplePantryTabData(true))
+			return TabToggleRenderer(false, tt, c, &pageData, nil)
 		} else if *tt == viewutils.Menu {
-			return TabToggleRenderer(false, tt, c, &data, newExampleMenuTabData(true))
+			return TabToggleRenderer(false, tt, c, &pageData, nil)
 		} else if *tt == viewutils.Shopping {
-			return TabToggleRenderer(false, tt, c, &data, newExampleShoppingTabData(true))
+			return TabToggleRenderer(false, tt, c, &pageData, nil)
 		} else if *tt == viewutils.Preplist {
-			return TabToggleRenderer(false, tt, c, &data, newExamplePreplistTabData(true))
+			return TabToggleRenderer(false, tt, c, &pageData, nil)
 		} else if *tt == viewutils.Earnings {
-			return TabToggleRenderer(false, tt, c, &data, newExampleEarningsTabData(true))
+			return TabToggleRenderer(false, tt, c, &pageData, nil)
 		}
 		return echo.NewHTTPError(
 			http.StatusInternalServerError,
@@ -93,17 +98,23 @@ func main() {
 		// TODO: fetch these tabDatas from database
 		// TODO: implement buffered scrolling for infinite scrolling capabilities
 		if *tt == viewutils.Recipe {
-			return TabToggleRenderer(true, tt, c, &data, newExampleRecipeTabData(true))
+			tabdata := db.NewExampleRecipeTabData(true)
+			return TabToggleRenderer(true, tt, c, &pageData, &tabdata)
 		} else if *tt == viewutils.Pantry {
-			return TabToggleRenderer(true, tt, c, &data, newExamplePantryTabData(true))
+			tabdata := db.NewExamplePantryTabData(true)
+			return TabToggleRenderer(true, tt, c, &pageData, &tabdata)
 		} else if *tt == viewutils.Menu {
-			return TabToggleRenderer(true, tt, c, &data, newExampleMenuTabData(true))
+			tabdata := db.NewExampleMenuTabData(true)
+			return TabToggleRenderer(true, tt, c, &pageData, &tabdata)
 		} else if *tt == viewutils.Shopping {
-			return TabToggleRenderer(true, tt, c, &data, newExampleShoppingTabData(true))
+			tabdata := db.NewExampleShoppingTabData(true)
+			return TabToggleRenderer(true, tt, c, &pageData, &tabdata)
 		} else if *tt == viewutils.Preplist {
-			return TabToggleRenderer(true, tt, c, &data, newExamplePreplistTabData(true))
+			tabdata := db.NewExamplePreplistTabData(true)
+			return TabToggleRenderer(true, tt, c, &pageData, &tabdata)
 		} else if *tt == viewutils.Earnings {
-			return TabToggleRenderer(true, tt, c, &data, newExampleEarningsTabData(true))
+			tabdata := db.NewExampleEarningsTabData(true)
+			return TabToggleRenderer(true, tt, c, &pageData, &tabdata)
 		}
 		return echo.NewHTTPError(http.StatusInternalServerError, errors.New("not a valid tab button type"))
 	})
