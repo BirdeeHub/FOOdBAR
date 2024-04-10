@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 
-	views "foodbar/views"
+	"foodbar/views"
 	"foodbar/views/viewutils"
 
 	"github.com/a-h/templ"
