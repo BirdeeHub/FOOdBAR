@@ -45,6 +45,15 @@ func TabToggleRenderer(activate bool, tt *viewutils.TabType, c echo.Context, dat
 	}
 }
 
+func TabMaximizeRenderer(tt *viewutils.TabType, c echo.Context, data *viewutils.PageData, td *viewutils.TabData) error {
+	if !tt.IsActive() {
+		tt.ToggleActive()
+		data.TabDatas = append(data.TabDatas, *td)
+		HTML(c, http.StatusOK, views.OOBtabButtonToggle(*tt))
+	}
+	return HTML(c, http.StatusOK, views.TabContainer(*td))
+}
+
 func main() {
 	e := echo.New()
 	e.Use(middleware.Logger())
@@ -91,7 +100,7 @@ func main() {
 		)
 	})
 
-	e.POST(fmt.Sprintf("%sapi/tabButton/activate/:type", pagePrefix), func(c echo.Context) error {
+	e.GET(fmt.Sprintf("%sapi/tabButton/activate/:type", pagePrefix), func(c echo.Context) error {
 		e.Logger.Print(c)
 		tt, err := viewutils.String2TabType(c.Param("type"))
 		if err != nil {
@@ -118,6 +127,44 @@ func main() {
 		case viewutils.Earnings:
 			tabdata := db.NewExampleEarningsTabData()
 			return TabToggleRenderer(true, tt, c, &pageData, &tabdata)
+		}
+		return echo.NewHTTPError(http.StatusInternalServerError, errors.New("not a valid tab button type"))
+	})
+
+	e.POST(fmt.Sprintf("%sapi/tabButton/maximize/:type", pagePrefix), func(c echo.Context) error {
+		e.Logger.Print(c)
+		tt, err := viewutils.String2TabType(c.Param("type"))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		}
+		for _, s := range pageData.TabDatas {
+			if s.Ttype.IsActive() {
+				s.Ttype.ToggleActive()
+				HTML(c, http.StatusOK, views.OOBtabButtonToggle(s.Ttype))
+			}
+		}
+		pageData.TabDatas = []viewutils.TabData{}
+
+		// TODO: fetch these tabDatas from database
+		switch *tt {
+		case viewutils.Recipe:
+			tabdata := db.NewExampleRecipeTabData()
+			return TabMaximizeRenderer(tt, c, &pageData, &tabdata)
+		case viewutils.Pantry:
+			tabdata := db.NewExamplePantryTabData()
+			return TabMaximizeRenderer(tt, c, &pageData, &tabdata)
+		case viewutils.Menu:
+			tabdata := db.NewExampleMenuTabData()
+			return TabMaximizeRenderer(tt, c, &pageData, &tabdata)
+		case viewutils.Shopping:
+			tabdata := db.NewExampleShoppingTabData()
+			return TabMaximizeRenderer(tt, c, &pageData, &tabdata)
+		case viewutils.Preplist:
+			tabdata := db.NewExamplePreplistTabData()
+			return TabMaximizeRenderer(tt, c, &pageData, &tabdata)
+		case viewutils.Earnings:
+			tabdata := db.NewExampleEarningsTabData()
+			return TabMaximizeRenderer(tt, c, &pageData, &tabdata)
 		}
 		return echo.NewHTTPError(http.StatusInternalServerError, errors.New("not a valid tab button type"))
 	})

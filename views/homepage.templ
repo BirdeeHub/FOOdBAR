@@ -71,7 +71,7 @@ templ OOBtabButtonToggle(tt viewutils.TabType) {
 templ TabButton(tt viewutils.TabType) {
 	if !tt.IsActive() {
 		<div
-			hx-post={ fmt.Sprintf("/api/tabButton/activate/%s", tt) }
+			hx-get={ fmt.Sprintf("/api/tabButton/activate/%s", tt) }
 			hx-swap="outerHTML"
 			id={ fmt.Sprintf("tabButton_%s", tt) }
 			class={ TabButtonItemCSS() }
@@ -95,7 +95,6 @@ templ MaximizeTabButton(tt viewutils.TabType) {
 		<div
 			hx-post={ fmt.Sprintf("/api/tabButton/maximize/%s", tt) }
 			hx-target="#tabViewContainer"
-			hx-swap="outerHTML"
 			id={ fmt.Sprintf("tabButton_%s", tt) }
 			class={ TabHeaderItemCSS("0") }
 			style="cursor: pointer;"

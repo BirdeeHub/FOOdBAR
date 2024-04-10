@@ -1,10 +1,13 @@
 features
 
 TODO:
-maximize button for tabs
-efficient infinite scroll for all list style tabs
 database
-all the tabs
+efficient infinite scroll for all list style tabs
+all the list tabs
+
+earnings tab
+shopping price search feature?
+styling/animation?
 
 
 recipe list and entry
