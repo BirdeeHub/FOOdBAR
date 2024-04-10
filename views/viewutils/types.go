@@ -1,4 +1,4 @@
-package views
+package viewutils
 
 import (
 	"github.com/google/uuid"

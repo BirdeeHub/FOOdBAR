@@ -22,23 +22,20 @@ templ colorsCSS() {
 }
 
 var StaticStyles []templ.CSSClass = []templ.CSSClass{
-	tabListContainerCSS(),
-	tabListItemCSS(),
-	listItemElementCSS(),
-	tabViewContainerCSS(),
-	tabContainerCSS(),
-	tabButtonItemCSS(),
-	tabButtonContainerCSS(),
-	pageHeaderContainerCSS(),
-	pageContainerCSS(),
+	TabViewContainerCSS(),
+	TabContainerCSS(),
+	TabButtonItemCSS(),
+	TabButtonContainerCSS(),
+	PageHeaderContainerCSS(),
+	PageContainerCSS(),
 }
 
-css pageContainerCSS() {
+css PageContainerCSS() {
 	display: flex;
 	flex-direction: column;
 }
 
-css pageHeaderContainerCSS() {
+css PageHeaderContainerCSS() {
 	display: flex;
 	flex-direction: row;
 	padding: 10px;
@@ -46,49 +43,25 @@ css pageHeaderContainerCSS() {
 	align-items: center;
 }
 
-css tabButtonContainerCSS() {
+css TabButtonContainerCSS() {
 	display: flex;
 	flex-direction: row;
 }
 
-css tabButtonItemCSS() {
+css TabButtonItemCSS() {
 	display: flex;
 	flex-direction: row;
 	padding: 10px;
 }
 
-css tabContainerCSS() {
+css TabContainerCSS() {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
 }
 
-css tabViewContainerCSS() {
+css TabViewContainerCSS() {
 	display: flex;
 	flex-direction: column;
 	flex: 1;
-}
-
-css tabListContainerCSS() {
-	display: flex;
-	flex-direction: column;
-	flex: 1;
-}
-
-css tabListItemCSS() {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	border: 3px outset;
-	border-radius: 10px;
-	padding: 5px;
-}
-
-css listItemElementCSS() {
-	display: flex;
-	flex-direction: row;
-	border: none;
-	align-items: center;
-	flex: 1;
-	justify-content: center;
 }

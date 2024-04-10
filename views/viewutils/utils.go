@@ -1,4 +1,4 @@
-package views
+package viewutils
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 )
 
 // render all items in a list with a component
-func renderListWithComponent[T any](list []T, component func(T) templ.Component) templ.Component {
+func RenderListWithComponent[T any](list []T, component func(T) templ.Component) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) error {
 		for _, item := range list {
 			err := component(item).Render(ctx, w)
@@ -20,6 +20,6 @@ func renderListWithComponent[T any](list []T, component func(T) templ.Component)
 	})
 }
 
-func hxURL(urlpath string) string {
+func HXurl(urlpath string) string {
 	return string(templ.URL(urlpath))
 }

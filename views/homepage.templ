@@ -2,6 +2,8 @@ package views
 
 import (
 	"fmt"
+	"foodbar/views/viewutils"
+	"foodbar/views/tabviews"
 )
 
 script htmxAllowedCodes() {
@@ -15,7 +17,7 @@ script htmxAllowedCodes() {
 	})
 }
 
-templ Homepage(pd PageData) {
+templ Homepage(pd viewutils.PageData) {
 	<!DOCTYPE html>
 	@colorsCSS()
 	<html lang="en">
@@ -33,66 +35,81 @@ templ Homepage(pd PageData) {
 	</html>
 }
 
-templ BodyContents(pd PageData) {
-	<div class={ pageContainerCSS() }>
-		<div class={ pageHeaderContainerCSS() }>
+templ BodyContents(pd viewutils.PageData) {
+	<div class={ PageContainerCSS() }>
+		<div class={ PageHeaderContainerCSS() }>
 			Hello, chef!
 		</div>
-		<div id="tabButtons" class={ tabButtonContainerCSS() }>
-			@tabButton(Recipe)
-			@tabButton(Pantry)
-			@tabButton(Menu)
-			@tabButton(Shopping)
-			@tabButton(Preplist)
-			@tabButton(Earnings)
+		<div id="tabButtons" class={ TabButtonContainerCSS() }>
+			@TabButton(viewutils.Recipe)
+			@TabButton(viewutils.Pantry)
+			@TabButton(viewutils.Menu)
+			@TabButton(viewutils.Shopping)
+			@TabButton(viewutils.Preplist)
+			@TabButton(viewutils.Earnings)
 		</div>
-		<div class={ tabContainerCSS() }>
-			@renderListWithComponent(pd.TabDatas, tabViewContainer)
+		<div class={ TabContainerCSS() }>
+			@viewutils.RenderListWithComponent(pd.TabDatas, TabViewContainer)
 		</div>
 	</div>
 }
 
 // this has to return a tab button that does the hx-post to pull up the tab
 // and also is able to detect if it is dragged and to where
-templ tabButton(tt TabType) {
-	<div id={ fmt.Sprintf("tabButton_%s", tt) } class={ tabButtonItemCSS() }>
+templ TabButton(tt viewutils.TabType) {
+	<div id={ fmt.Sprintf("tabButton_%s", tt) } class={ TabButtonItemCSS() }>
 		🍜	{ fmt.Sprintf("%s",tt) }
 	</div>
 }
 
-templ tabViewContainer(td TabData) {
-	<div id={ fmt.Sprintf("tabContainer_%s", td.Ttype) } class={ tabViewContainerCSS() }>
-		@renderTabContents(td)
+templ TabViewContainer(td viewutils.TabData) {
+	<div id={ fmt.Sprintf("tabContainer_%s", td.Ttype) } class={ TabViewContainerCSS() }>
+		@RenderTabContents(td)
 	</div>
 }
 
-templ renderTabContents(td TabData) {
-	if td.Ttype == Recipe {
+templ RenderTabContents(td viewutils.TabData) {
+	if td.Ttype == viewutils.Recipe {
 		<div style="text-align: center;">
 			Recipes!
 		</div>
-		<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) } class={ tabListContainerCSS() }>
-			@recipeTabContents(td)
+		<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
+			@tabviews.RecipeTabContents(td)
 		</div>
-	} else if td.Ttype == Pantry {
-	} else if td.Ttype == Menu {
-	} else if td.Ttype == Shopping {
-	} else if td.Ttype == Preplist {
-	} else if td.Ttype == Earnings {
+	} else if td.Ttype == viewutils.Pantry {
+		<div style="text-align: center;">
+			Pantry!
+		</div>
+		<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
+			@tabviews.PantryTabContents(td)
+		</div>
+	} else if td.Ttype == viewutils.Menu {
+		<div style="text-align: center;">
+			Menu!
+		</div>
+		<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
+			@tabviews.MenuTabContents(td)
+		</div>
+	} else if td.Ttype == viewutils.Shopping {
+		<div style="text-align: center;">
+			Shopping!
+		</div>
+		<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
+			@tabviews.ShoppingTabContents(td)
+		</div>
+	} else if td.Ttype == viewutils.Preplist {
+		<div style="text-align: center;">
+			Preplist!
+		</div>
+		<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
+			@tabviews.PreplistTabContents(td)
+		</div>
+	} else if td.Ttype == viewutils.Earnings {
+		<div style="text-align: center;">
+			Earnings!
+		</div>
+		<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
+			@tabviews.EarningsTabContents(td)
+		</div>
 	}
-}
-
-templ recipeTabContents(td TabData) {
-	@renderListWithComponent(td.Items, recipeItemContainer)
-}
-
-templ recipeItemContainer(item TabItem) {
-	<div id={ fmt.Sprintf("%s", item.ItemID.String()) } class={ tabListItemCSS() }>
-		<div class={ listItemElementCSS() }>
-			{ item.ItemName }
-		</div>
-		<div class={ listItemElementCSS() }>
-			@trashcan()
-		</div>
-	</div>
 }
