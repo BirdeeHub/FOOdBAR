@@ -6,6 +6,9 @@ import (
 	"github.com/google/uuid"
 )
 
+const PagePrefixNoSlash = ""
+const PagePrefix = "/" + PagePrefixNoSlash
+
 type PageData struct {
 	TabDatas []TabData
 }

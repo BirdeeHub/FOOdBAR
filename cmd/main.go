@@ -58,20 +58,20 @@ func main() {
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Use(echo.WrapMiddleware(func(hndl http.Handler) http.Handler {
-		return templ.NewCSSMiddleware(hndl, views.StaticStyles...)
+		cssmiddleware := templ.NewCSSMiddleware(hndl, views.StaticStyles...)
+		cssmiddleware.Path = fmt.Sprintf("%sstyles/templ.css", viewutils.PagePrefix)
+		return cssmiddleware
 	}))
+	e.Static(fmt.Sprintf("%simages",  viewutils.PagePrefix), fmt.Sprintf("%simages", viewutils.PagePrefixNoSlash))
 
 	pageData := viewutils.PageData{TabDatas: []viewutils.TabData{}}
-	pagePrefix := "/"
 
-	e.Static("/images", "images")
-
-	e.GET(fmt.Sprintf("%s", pagePrefix), func(c echo.Context) error {
+	e.GET(fmt.Sprintf("%s", viewutils.PagePrefix), func(c echo.Context) error {
 		e.Logger.Print(c)
 		return HTML(c, http.StatusOK, views.Homepage(pageData))
 	})
 
-	e.DELETE(fmt.Sprintf("%sapi/tabButton/deactivate/:type", pagePrefix), func(c echo.Context) error {
+	e.DELETE(fmt.Sprintf("%sapi/tabButton/deactivate/:type", viewutils.PagePrefix), func(c echo.Context) error {
 		e.Logger.Print(c)
 		tt, err := viewutils.String2TabType(c.Param("type"))
 		if err != nil {
@@ -100,7 +100,7 @@ func main() {
 		)
 	})
 
-	e.GET(fmt.Sprintf("%sapi/tabButton/activate/:type", pagePrefix), func(c echo.Context) error {
+	e.GET(fmt.Sprintf("%sapi/tabButton/activate/:type", viewutils.PagePrefix), func(c echo.Context) error {
 		e.Logger.Print(c)
 		tt, err := viewutils.String2TabType(c.Param("type"))
 		if err != nil {
@@ -131,7 +131,7 @@ func main() {
 		return echo.NewHTTPError(http.StatusInternalServerError, errors.New("not a valid tab button type"))
 	})
 
-	e.POST(fmt.Sprintf("%sapi/tabButton/maximize/:type", pagePrefix), func(c echo.Context) error {
+	e.POST(fmt.Sprintf("%sapi/tabButton/maximize/:type", viewutils.PagePrefix), func(c echo.Context) error {
 		e.Logger.Print(c)
 		tt, err := viewutils.String2TabType(c.Param("type"))
 		if err != nil {
