@@ -37,75 +37,93 @@ templ Homepage(pd viewutils.PageData) {
 
 templ BodyContents(pd viewutils.PageData) {
 	<div class={ PageContainerCSS() }>
-		<div class={ PageHeaderContainerCSS() }>
-			Hello, chef!
+		<div id="pageHeader" class={ PageHeaderContainerCSS() }>
+			Hello, chef! welcome to 🍜 FOOd-BAR 🍜
 		</div>
-		<div id="tabButtons" class={ TabButtonContainerCSS() }>
-			@TabButton(viewutils.Recipe)
-			@TabButton(viewutils.Pantry)
-			@TabButton(viewutils.Menu)
-			@TabButton(viewutils.Shopping)
-			@TabButton(viewutils.Preplist)
-			@TabButton(viewutils.Earnings)
+		<div id="tabButtonContainer" class={ TabButtonContainerCSS() }>
+			@TabButton(true, viewutils.Recipe)
+			@TabButton(true, viewutils.Pantry)
+			@TabButton(true, viewutils.Menu)
+			@TabButton(true, viewutils.Shopping)
+			@TabButton(true, viewutils.Preplist)
+			@TabButton(true, viewutils.Earnings)
 		</div>
-		<div class={ TabContainerCSS() }>
-			@viewutils.RenderListWithComponent(pd.TabDatas, TabViewContainer)
+		<div id="tabViewContainer" class={ TabViewContainerCSS() }>
+			<div style="flex: 0"></div>
+			@viewutils.RenderListWithComponent(pd.TabDatas, TabContainer)
 		</div>
+	</div>
+}
+
+templ OOBtabViewContainer(td viewutils.TabData) {
+	<div id="tabViewContainer" hx-swap-oob="beforeend">
+		@TabContainer(td)
 	</div>
 }
 
 // this has to return a tab button that does the hx-post to pull up the tab
 // and also is able to detect if it is dragged and to where
-templ TabButton(tt viewutils.TabType) {
-	<div id={ fmt.Sprintf("tabButton_%s", tt) } class={ TabButtonItemCSS() }>
-		🍜	{ fmt.Sprintf("%s",tt) }
+templ TabButton(activate bool, tt viewutils.TabType) {
+	<div
+		hx-post={ fmt.Sprintf("/api/tabButton/activate/%s", tt) }
+		hx-swap="outerHTML"
+		id={ fmt.Sprintf("tabButton_%s", tt) }
+		class={ TabButtonItemCSS() }
+	>
+		<button type="submit">
+			🍜	{ fmt.Sprintf("%s",tt) }
+		</button>
 	</div>
 }
 
-templ TabViewContainer(td viewutils.TabData) {
-	<div id={ fmt.Sprintf("tabContainer_%s", td.Ttype) } class={ TabViewContainerCSS() }>
-		@RenderTabContents(td)
-	</div>
+templ TabContainer(td viewutils.TabData) {
+	if td.Active {
+		<div id={ fmt.Sprintf("tabContainer_%s", td.Ttype) } class={ TabContainerCSS("1") }>
+			@RenderTabContents(td)
+		</div>
+	} else {
+		<div id={ fmt.Sprintf("tabContainer_%s", td.Ttype) } class={ TabContainerCSS("0") }></div>
+	}
 }
 
 templ RenderTabContents(td viewutils.TabData) {
 	if td.Ttype == viewutils.Recipe {
-		<div style="text-align: center;">
+		<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } style="text-align: center;">
 			Recipes!
 		</div>
 		<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
 			@tabviews.RecipeTabContents(td)
 		</div>
 	} else if td.Ttype == viewutils.Pantry {
-		<div style="text-align: center;">
+		<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } style="text-align: center;">
 			Pantry!
 		</div>
 		<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
 			@tabviews.PantryTabContents(td)
 		</div>
 	} else if td.Ttype == viewutils.Menu {
-		<div style="text-align: center;">
+		<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } style="text-align: center;">
 			Menu!
 		</div>
 		<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
 			@tabviews.MenuTabContents(td)
 		</div>
 	} else if td.Ttype == viewutils.Shopping {
-		<div style="text-align: center;">
+		<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } style="text-align: center;">
 			Shopping!
 		</div>
 		<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
 			@tabviews.ShoppingTabContents(td)
 		</div>
 	} else if td.Ttype == viewutils.Preplist {
-		<div style="text-align: center;">
+		<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } style="text-align: center;">
 			Preplist!
 		</div>
 		<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
 			@tabviews.PreplistTabContents(td)
 		</div>
 	} else if td.Ttype == viewutils.Earnings {
-		<div style="text-align: center;">
+		<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } style="text-align: center;">
 			Earnings!
 		</div>
 		<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>

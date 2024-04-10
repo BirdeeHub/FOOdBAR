@@ -1,13 +1,13 @@
 package main
 
 import (
+	"errors"
 	"net/http"
 
 	"foodbar/views"
 	"foodbar/views/viewutils"
 
 	"github.com/a-h/templ"
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -18,123 +18,24 @@ func HTML(c echo.Context, code int, cmp templ.Component) error {
 	return cmp.Render(c.Request().Context(), c.Response().Writer)
 }
 
-func mkRecipeItem(name string) viewutils.TabItem {
-	return viewutils.TabItem{
-		ItemName: name,
-		Ttype:    viewutils.Recipe,
-		ItemID:   uuid.New(),
-	}
-}
-
-func mkPantryItem(name string) viewutils.TabItem {
-	return viewutils.TabItem{
-		ItemName: name,
-		Ttype:    viewutils.Pantry,
-		ItemID:   uuid.New(),
-	}
-}
-
-func mkMenuItem(name string) viewutils.TabItem {
-	return viewutils.TabItem{
-		ItemName: name,
-		Ttype:    viewutils.Menu,
-		ItemID:   uuid.New(),
-	}
-}
-
-func mkShoppingItem(name string) viewutils.TabItem {
-	return viewutils.TabItem{
-		ItemName: name,
-		Ttype:    viewutils.Shopping,
-		ItemID:   uuid.New(),
-	}
-}
-
-func mkPreplistItem(name string) viewutils.TabItem {
-	return viewutils.TabItem{
-		ItemName: name,
-		Ttype:    viewutils.Preplist,
-		ItemID:   uuid.New(),
-	}
-}
-
-func mkEarningsItem(name string) viewutils.TabItem {
-	return viewutils.TabItem{
-		ItemName: name,
-		Ttype:    viewutils.Earnings,
-		ItemID:   uuid.New(),
-	}
-}
-
-func newExampleRecipeTabData() viewutils.TabData {
-	return viewutils.TabData{
-		Items: []viewutils.TabItem{
-			mkRecipeItem("Chicken"),
-			mkRecipeItem("turd sandwich"),
-			mkRecipeItem("chicken masala"),
-			mkRecipeItem("tacos caliente"),
-		},
-		Ttype: viewutils.Recipe,
-	}
-}
-
-func newExamplePantryTabData() viewutils.TabData {
-	return viewutils.TabData{
-		Items: []viewutils.TabItem{
-			mkPantryItem("Chicken"),
-			mkPantryItem("turd sandwich"),
-			mkPantryItem("chicken masala"),
-			mkPantryItem("tacos caliente"),
-		},
-		Ttype: viewutils.Pantry,
-	}
-}
-
-func newExampleMenuTabData() viewutils.TabData {
-	return viewutils.TabData{
-		Items: []viewutils.TabItem{
-			mkMenuItem("Chicken"),
-			mkMenuItem("turd sandwich"),
-			mkMenuItem("chicken masala"),
-			mkMenuItem("tacos caliente"),
-		},
-		Ttype: viewutils.Menu,
-	}
-}
-
-func newExampleShoppingTabData() viewutils.TabData {
-	return viewutils.TabData{
-		Items: []viewutils.TabItem{
-			mkShoppingItem("Chicken"),
-			mkShoppingItem("turd sandwich"),
-			mkShoppingItem("chicken masala"),
-			mkShoppingItem("tacos caliente"),
-		},
-		Ttype: viewutils.Shopping,
-	}
-}
-
-func newExamplePreplistTabData() viewutils.TabData {
-	return viewutils.TabData{
-		Items: []viewutils.TabItem{
-			mkPreplistItem("Chicken"),
-			mkPreplistItem("turd sandwich"),
-			mkPreplistItem("chicken masala"),
-			mkPreplistItem("tacos caliente"),
-		},
-		Ttype: viewutils.Preplist,
-	}
-}
-
-func newExampleEarningsTabData() viewutils.TabData {
-	return viewutils.TabData{
-		Items: []viewutils.TabItem{
-			mkEarningsItem("Chicken"),
-			mkEarningsItem("turd sandwich"),
-			mkEarningsItem("chicken masala"),
-			mkEarningsItem("tacos caliente"),
-		},
-		Ttype: viewutils.Earnings,
+func TabToggleRenderer(activate bool, tt *viewutils.TabType, c echo.Context, data *viewutils.PageData, td viewutils.TabData) error {
+	if activate {
+		if !tt.IsActive() {
+			tt.ToggleActive()
+			data.TabDatas = append(data.TabDatas, td)
+			HTML(c, http.StatusOK, views.TabButton(!activate, *tt))
+			return HTML(c, http.StatusOK, views.OOBtabViewContainer(td))
+		} else {
+			return HTML(c, http.StatusOK, views.TabButton(!activate, *tt))
+		}
+	} else {
+		if tt.IsActive() {
+			tt.ToggleActive()
+			// TODO:: actually remove the tab from the page and page data
+			return HTML(c, http.StatusOK, views.TabButton(!activate, *tt))
+		} else {
+			return HTML(c, http.StatusOK, views.TabButton(!activate, *tt))
+		}
 	}
 }
 
@@ -145,22 +46,66 @@ func main() {
 		return templ.NewCSSMiddleware(hndl, views.StaticStyles...)
 	}))
 
-	data := viewutils.PageData{
-		TabDatas: []viewutils.TabData{
-			newExampleRecipeTabData(),
-			// newExamplePantryTabData(),
-			// newExampleMenuTabData(),
-			// newExampleShoppingTabData(),
-			// newExamplePreplistTabData(),
-			// newExampleEarningsTabData(),
-		},
-	}
+	data := viewutils.PageData{ TabDatas: []viewutils.TabData{} }
 
 	e.Static("/images", "images")
 
 	e.GET("/", func(c echo.Context) error {
 		e.Logger.Print(c)
 		return HTML(c, http.StatusOK, views.Homepage(data))
+	})
+	
+	e.DELETE("/api/tabButton/deactivate/:type", func(c echo.Context) error {
+		e.Logger.Print(c)
+		tt, err := viewutils.String2TabType(c.Param("type"))
+		if err != nil {
+			return echo.NewHTTPError(
+				http.StatusInternalServerError,
+				errors.New("not a valid tab button type"),
+			)
+		}
+		if *tt == viewutils.Recipe {
+			return TabToggleRenderer(false, tt, c, &data, newExampleRecipeTabData(true))
+		} else if *tt == viewutils.Pantry {
+			return TabToggleRenderer(false, tt, c, &data, newExamplePantryTabData(true))
+		} else if *tt == viewutils.Menu {
+			return TabToggleRenderer(false, tt, c, &data, newExampleMenuTabData(true))
+		} else if *tt == viewutils.Shopping {
+			return TabToggleRenderer(false, tt, c, &data, newExampleShoppingTabData(true))
+		} else if *tt == viewutils.Preplist {
+			return TabToggleRenderer(false, tt, c, &data, newExamplePreplistTabData(true))
+		} else if *tt == viewutils.Earnings {
+			return TabToggleRenderer(false, tt, c, &data, newExampleEarningsTabData(true))
+		}
+		return echo.NewHTTPError(
+			http.StatusInternalServerError,
+			errors.New("not a valid tab button type"),
+		)
+	})
+
+	e.POST("/api/tabButton/activate/:type", func(c echo.Context) error {
+		e.Logger.Print(c)
+		tt, err := viewutils.String2TabType(c.Param("type"))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		}
+		
+		// TODO: fetch these tabDatas from database
+		// TODO: implement buffered scrolling for infinite scrolling capabilities
+		if *tt == viewutils.Recipe {
+			return TabToggleRenderer(true, tt, c, &data, newExampleRecipeTabData(true))
+		} else if *tt == viewutils.Pantry {
+			return TabToggleRenderer(true, tt, c, &data, newExamplePantryTabData(true))
+		} else if *tt == viewutils.Menu {
+			return TabToggleRenderer(true, tt, c, &data, newExampleMenuTabData(true))
+		} else if *tt == viewutils.Shopping {
+			return TabToggleRenderer(true, tt, c, &data, newExampleShoppingTabData(true))
+		} else if *tt == viewutils.Preplist {
+			return TabToggleRenderer(true, tt, c, &data, newExamplePreplistTabData(true))
+		} else if *tt == viewutils.Earnings {
+			return TabToggleRenderer(true, tt, c, &data, newExampleEarningsTabData(true))
+		}
+		return echo.NewHTTPError(http.StatusInternalServerError, errors.New("not a valid tab button type"))
 	})
 
 	e.Logger.Fatal(e.Start(":42069"))

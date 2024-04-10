@@ -23,7 +23,6 @@ templ colorsCSS() {
 
 var StaticStyles []templ.CSSClass = []templ.CSSClass{
 	TabViewContainerCSS(),
-	TabContainerCSS(),
 	TabButtonItemCSS(),
 	TabButtonContainerCSS(),
 	PageHeaderContainerCSS(),
@@ -54,14 +53,14 @@ css TabButtonItemCSS() {
 	padding: 10px;
 }
 
-css TabContainerCSS() {
+css TabViewContainerCSS() {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
 }
 
-css TabViewContainerCSS() {
+css TabContainerCSS(flex string) {
 	display: flex;
 	flex-direction: column;
-	flex: 1;
+	flex: { flex };
 }
