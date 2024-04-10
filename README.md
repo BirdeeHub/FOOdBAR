@@ -1,5 +1,12 @@
 features
 
+TODO:
+maximize button for tabs
+efficient infinite scroll for all list style tabs
+database
+all the tabs
+
+
 recipe list and entry
 suggestion based on stock
 sort recipe by category, dietary, ingredients, % ingredients in stock, (total ingredient price?)
