@@ -99,7 +99,7 @@ templ MaximizeTabButton(tt viewutils.TabType) {
 			class={ TabHeaderItemCSS("0") }
 			style="cursor: pointer;"
 		>
-			<img src={ fmt.Sprintf("%simages/maximize-svgrepo-com.svg", viewutils.PagePrefix) } style="width: 2rem;"/>
+			@tabviews.Maximize()
 		</div>
 }
 
