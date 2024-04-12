@@ -20,28 +20,29 @@ func HTML(c echo.Context, code int, cmp templ.Component) error {
 	return cmp.Render(c.Request().Context(), c.Response().Writer)
 }
 
-func TabToggleRenderer(activate bool, tt *viewutils.TabType, c echo.Context, data *viewutils.PageData, td *viewutils.TabData) error {
-	if activate {
-		if !tt.IsActive() {
-			tt.ToggleActive()
-			data.TabDatas = append(data.TabDatas, *td)
-			HTML(c, http.StatusOK, views.TabButton(*tt))
-			return HTML(c, http.StatusOK, views.OOBtabViewContainer(*td))
-		} else {
-			return HTML(c, http.StatusOK, views.TabButton(*tt))
-		}
+type TabRenderer interface {
+	func(*viewutils.TabType, echo.Context, *viewutils.PageData, *viewutils.TabData) error
+}
+
+func TabDeactivateRenderer(tt *viewutils.TabType, c echo.Context, data *viewutils.PageData, td *viewutils.TabData) error {
+	if !tt.IsActive() {
+		tt.ToggleActive()
+		data.TabDatas = append(data.TabDatas, *td)
+		HTML(c, http.StatusOK, views.TabButton(*tt))
+		return HTML(c, http.StatusOK, views.OOBtabViewContainer(*td))
 	} else {
-		if tt.IsActive() {
-			tt.ToggleActive()
-			for i, td := range data.TabDatas {
-				if td.Ttype == *tt {
-					data.TabDatas = append(data.TabDatas[:i], data.TabDatas[i+1:]...)
-				}
-			}
-			return HTML(c, http.StatusOK, views.OOBtabButtonToggle(*tt))
-		} else {
-			return nil
-		}
+		return HTML(c, http.StatusOK, views.TabButton(*tt))
+	}
+}
+
+func TabActivateRenderer(tt *viewutils.TabType, c echo.Context, data *viewutils.PageData, td *viewutils.TabData) error {
+	if !tt.IsActive() {
+		tt.ToggleActive()
+		data.TabDatas = append(data.TabDatas, *td)
+		HTML(c, http.StatusOK, views.TabButton(*tt))
+		return HTML(c, http.StatusOK, views.OOBtabViewContainer(*td))
+	} else {
+		return HTML(c, http.StatusOK, views.TabButton(*tt))
 	}
 }
 
@@ -52,6 +53,10 @@ func TabMaximizeRenderer(tt *viewutils.TabType, c echo.Context, data *viewutils.
 		HTML(c, http.StatusOK, views.OOBtabButtonToggle(*tt))
 	}
 	return HTML(c, http.StatusOK, views.TabContainer(*td))
+}
+
+func RenderTab[TR TabRenderer](tr TR, tt *viewutils.TabType, c echo.Context, data *viewutils.PageData, td *viewutils.TabData) error {
+    return tr(tt, c, data, td)
 }
 
 func main() {
@@ -80,20 +85,7 @@ func main() {
 				errors.New("not a valid tab button type"),
 			)
 		}
-		switch *tt {
-		case viewutils.Recipe:
-			return TabToggleRenderer(false, tt, c, &pageData, nil)
-		case viewutils.Pantry:
-			return TabToggleRenderer(false, tt, c, &pageData, nil)
-		case viewutils.Menu:
-			return TabToggleRenderer(false, tt, c, &pageData, nil)
-		case viewutils.Shopping:
-			return TabToggleRenderer(false, tt, c, &pageData, nil)
-		case viewutils.Preplist:
-			return TabToggleRenderer(false, tt, c, &pageData, nil)
-		case viewutils.Earnings:
-			return TabToggleRenderer(false, tt, c, &pageData, nil)
-		}
+		RenderTab(TabDeactivateRenderer, tt, c, &pageData, nil)
 		return echo.NewHTTPError(
 			http.StatusInternalServerError,
 			errors.New("not a valid tab button type"),
@@ -108,27 +100,22 @@ func main() {
 		}
 
 		// TODO: fetch these tabDatas from database
+		var tabdata viewutils.TabData
 		switch *tt {
 		case viewutils.Recipe:
-			tabdata := db.NewExampleRecipeTabData()
-			return TabToggleRenderer(true, tt, c, &pageData, &tabdata)
+			tabdata = db.NewExampleRecipeTabData()
 		case viewutils.Pantry:
-			tabdata := db.NewExamplePantryTabData()
-			return TabToggleRenderer(true, tt, c, &pageData, &tabdata)
+			tabdata = db.NewExamplePantryTabData()
 		case viewutils.Menu:
-			tabdata := db.NewExampleMenuTabData()
-			return TabToggleRenderer(true, tt, c, &pageData, &tabdata)
+			tabdata = db.NewExampleMenuTabData()
 		case viewutils.Shopping:
-			tabdata := db.NewExampleShoppingTabData()
-			return TabToggleRenderer(true, tt, c, &pageData, &tabdata)
+			tabdata = db.NewExampleShoppingTabData()
 		case viewutils.Preplist:
-			tabdata := db.NewExamplePreplistTabData()
-			return TabToggleRenderer(true, tt, c, &pageData, &tabdata)
+			tabdata = db.NewExamplePreplistTabData()
 		case viewutils.Earnings:
-			tabdata := db.NewExampleEarningsTabData()
-			return TabToggleRenderer(true, tt, c, &pageData, &tabdata)
+			tabdata = db.NewExampleEarningsTabData()
 		}
-		return echo.NewHTTPError(http.StatusInternalServerError, errors.New("not a valid tab button type"))
+		return RenderTab(TabActivateRenderer, tt, c, &pageData, &tabdata)
 	})
 
 	e.POST(fmt.Sprintf("%sapi/tabButton/maximize/:type", viewutils.PagePrefix), func(c echo.Context) error {
@@ -146,27 +133,22 @@ func main() {
 		pageData.TabDatas = []viewutils.TabData{}
 
 		// TODO: fetch these tabDatas from database
+		var tabdata viewutils.TabData
 		switch *tt {
 		case viewutils.Recipe:
-			tabdata := db.NewExampleRecipeTabData()
-			return TabMaximizeRenderer(tt, c, &pageData, &tabdata)
+			tabdata = db.NewExampleRecipeTabData()
 		case viewutils.Pantry:
-			tabdata := db.NewExamplePantryTabData()
-			return TabMaximizeRenderer(tt, c, &pageData, &tabdata)
+			tabdata = db.NewExamplePantryTabData()
 		case viewutils.Menu:
-			tabdata := db.NewExampleMenuTabData()
-			return TabMaximizeRenderer(tt, c, &pageData, &tabdata)
+			tabdata = db.NewExampleMenuTabData()
 		case viewutils.Shopping:
-			tabdata := db.NewExampleShoppingTabData()
-			return TabMaximizeRenderer(tt, c, &pageData, &tabdata)
+			tabdata = db.NewExampleShoppingTabData()
 		case viewutils.Preplist:
-			tabdata := db.NewExamplePreplistTabData()
-			return TabMaximizeRenderer(tt, c, &pageData, &tabdata)
+			tabdata = db.NewExamplePreplistTabData()
 		case viewutils.Earnings:
-			tabdata := db.NewExampleEarningsTabData()
-			return TabMaximizeRenderer(tt, c, &pageData, &tabdata)
+			tabdata = db.NewExampleEarningsTabData()
 		}
-		return echo.NewHTTPError(http.StatusInternalServerError, errors.New("not a valid tab button type"))
+		return RenderTab(TabMaximizeRenderer, tt, c, &pageData, &tabdata)
 	})
 
 	e.Logger.Fatal(e.Start(":42069"))
