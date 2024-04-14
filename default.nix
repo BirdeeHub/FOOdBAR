@@ -23,4 +23,5 @@ buildGoApplication {
   preBuild = ''
     ${templ}/bin/templ generate
   '';
+  buildInputs = [ pkgs.sqlite ];
 }

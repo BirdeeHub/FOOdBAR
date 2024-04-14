@@ -2,11 +2,21 @@ package db
 
 import (
 	"foodbar/views/viewutils"
+	"log"
+
+	"database/sql"
 
 	"github.com/google/uuid"
+	_ "github.com/mattn/go-sqlite3"
 )
 
-
+func readTab(tt viewutils.TabType, userID uuid.UUID) viewutils.TabData {
+   db, err := sql.Open("sqlite3", "path/to/your/database.db")
+   if err != nil {
+       log.Fatal(err)
+   }
+   defer db.Close()
+}
 
 func MkRecipeItem(name string) viewutils.TabItem {
 	return viewutils.TabItem{

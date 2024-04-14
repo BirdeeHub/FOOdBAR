@@ -24,6 +24,10 @@ type TabRenderer interface {
 	func(*viewutils.TabType, echo.Context, *viewutils.PageData, *viewutils.TabData) error
 }
 
+func RenderTab[TR TabRenderer](tr TR, tt *viewutils.TabType, c echo.Context, data *viewutils.PageData, td *viewutils.TabData) error {
+    return tr(tt, c, data, td)
+}
+
 func TabDeactivateRenderer(tt *viewutils.TabType, c echo.Context, data *viewutils.PageData, td *viewutils.TabData) error {
 	if !tt.IsActive() {
 		tt.ToggleActive()
@@ -53,10 +57,6 @@ func TabMaximizeRenderer(tt *viewutils.TabType, c echo.Context, data *viewutils.
 		HTML(c, http.StatusOK, views.OOBtabButtonToggle(*tt))
 	}
 	return HTML(c, http.StatusOK, views.TabContainer(*td))
-}
-
-func RenderTab[TR TabRenderer](tr TR, tt *viewutils.TabType, c echo.Context, data *viewutils.PageData, td *viewutils.TabData) error {
-    return tr(tt, c, data, td)
 }
 
 func main() {
