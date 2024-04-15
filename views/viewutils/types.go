@@ -68,3 +68,7 @@ func (t *TabType) IsActive() bool {
 func (t *TabType) ToggleActive() {
 	tabActiveState[*t] = !tabActiveState[*t]
 }
+
+func (t *TabType) SetActive(v bool) {
+	tabActiveState[*t] = v
+}

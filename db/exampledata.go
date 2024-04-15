@@ -1,8 +1,8 @@
 package db
 
 import (
+	"fmt"
 	"foodbar/views/viewutils"
-	"log"
 
 	"database/sql"
 
@@ -10,12 +10,35 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func readTab(tt viewutils.TabType, userID uuid.UUID) viewutils.TabData {
-   db, err := sql.Open("sqlite3", "path/to/your/database.db")
-   if err != nil {
-       log.Fatal(err)
-   }
-   defer db.Close()
+func readTab(tt viewutils.TabType, userID uuid.UUID) (viewutils.TabData, error) {
+	db, err := sql.Open("sqlite3", "~/.local/share/FOOdBAR/db.db")
+	if err != nil {
+		return viewutils.TabData{}, err
+	}
+	defer db.Close()
+
+	tableName := fmt.Sprintf("%s_%s", userID, tt)
+
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS " + tableName + " (id INTEGER PRIMARY KEY, name TEXT)")
+	if err != nil {
+		return viewutils.TabData{}, err
+	}
+
+	rows, err := db.Query("SELECT name FROM " + tableName)
+	if err != nil {
+		return viewutils.TabData{}, err
+	}
+
+	var items []viewutils.TabItem
+	for rows.Next() {
+		var name string
+		if err := rows.Scan(&name); err != nil {
+			return viewutils.TabData{}, err
+		}
+		items = append(items, viewutils.TabItem{Ttype: tt})
+	}
+
+	return viewutils.TabData{Items: items, Ttype: tt}, nil
 }
 
 func MkRecipeItem(name string) viewutils.TabItem {
