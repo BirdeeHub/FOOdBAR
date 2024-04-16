@@ -2,6 +2,7 @@ package viewutils
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/google/uuid"
 )
@@ -10,7 +11,8 @@ const PagePrefixNoSlash = ""
 const PagePrefix = "/" + PagePrefixNoSlash
 
 type PageData struct {
-	TabDatas []TabData
+	userID   uuid.UUID
+	TabDatas []*TabData
 }
 
 type TabItem struct {
@@ -20,8 +22,9 @@ type TabItem struct {
 }
 
 type TabData struct {
+	Active bool
 	Ttype TabType
-	Items []TabItem
+	Items []*TabItem
 }
 
 type TabType string
@@ -52,23 +55,27 @@ func String2TabType(str string) (*TabType, error) {
 	return nil, errors.New("invalid TabType")
 }
 
-var tabActiveState = map[TabType]bool{
-	Recipe: false,
-	Pantry: false,
-	Menu: false,
-	Shopping: false,
-	Preplist: false,
-	Earnings: false,
+func (tbd *TabData) String() string {
+	return tbd.Ttype.String()
 }
 
-func (t *TabType) IsActive() bool {
-	return tabActiveState[*t]
+func (tbd *TabData) IsActive() bool {
+	return (*tbd).Active
 }
 
-func (t *TabType) ToggleActive() {
-	tabActiveState[*t] = !tabActiveState[*t]
+func (tbd *TabData) ToggleActive() {
+	(*tbd).Active = !(*tbd).Active
 }
 
-func (t *TabType) SetActive(v bool) {
-	tabActiveState[*t] = v
+func (tbd *TabData) SetActive(v bool) {
+	(*tbd).Active = v
+}
+
+func (pgd *PageData) GetTabDataByType(tt TabType) (*TabData, error) {
+	for _, t := range pgd.TabDatas {
+		if t.Ttype == tt {
+			return t, nil
+		}
+	}
+	return nil, errors.New(fmt.Sprintf("no %s tab", tt))
 }

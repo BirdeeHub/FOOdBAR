@@ -16,52 +16,52 @@ func HTML(c echo.Context, code int, cmp templ.Component) error {
 }
 
 type TabRenderer interface {
-	func(*viewutils.TabType, echo.Context, *viewutils.PageData, *viewutils.TabData) error
+	func(echo.Context, *viewutils.PageData, *viewutils.TabData) error
 }
 
-func RenderTab[TR TabRenderer](tr TR, tt *viewutils.TabType, c echo.Context, data *viewutils.PageData, td *viewutils.TabData) error {
-	return tr(tt, c, data, td)
+func RenderTab[TR TabRenderer](tr TR, c echo.Context, data *viewutils.PageData, td *viewutils.TabData) error {
+	return tr(c, data, td)
 }
 
-func TabDeactivateRenderer(tt *viewutils.TabType, c echo.Context, data *viewutils.PageData, td *viewutils.TabData) error {
-	if tt.IsActive() {
-		tt.SetActive(false)
+func TabDeactivateRenderer(c echo.Context, data *viewutils.PageData, td *viewutils.TabData) error {
+	if td.IsActive() {
+		td.SetActive(false)
 		for i, v := range data.TabDatas {
-			if v.Ttype == *tt {
-				data.TabDatas = append(data.TabDatas[:i], data.TabDatas[i+1:]...)
+			if v.Ttype == td.Ttype {
+				data.TabDatas[i].SetActive(false)
 				break
 			}
 		}
-		return HTML(c, http.StatusOK, views.OOBtabButtonToggle(*tt))
+		return HTML(c, http.StatusOK, views.OOBtabButtonToggle(td))
 	}
 	return nil
 }
 
-func TabActivateRenderer(tt *viewutils.TabType, c echo.Context, data *viewutils.PageData, td *viewutils.TabData) error {
-	if !tt.IsActive() {
-		tt.SetActive(true)
-		data.TabDatas = append(data.TabDatas, *td)
-		HTML(c, http.StatusOK, views.OOBtabViewContainer(*td))
-		return HTML(c, http.StatusOK, views.TabButton(*tt))
+func TabActivateRenderer(c echo.Context, data *viewutils.PageData, td *viewutils.TabData) error {
+	if !td.IsActive() {
+		td.SetActive(true)
+		data.TabDatas = append(data.TabDatas, td)
+		HTML(c, http.StatusOK, views.OOBtabViewContainer(td))
+		return HTML(c, http.StatusOK, views.TabButton(td))
 	} else {
-		return HTML(c, http.StatusOK, views.TabButton(*tt))
+		return HTML(c, http.StatusOK, views.TabButton(td))
 	}
 }
 
-func TabMaximizeRenderer(tt *viewutils.TabType, c echo.Context, data *viewutils.PageData, td *viewutils.TabData) error {
+func TabMaximizeRenderer(c echo.Context, data *viewutils.PageData, td *viewutils.TabData) error {
 	for _, v := range data.TabDatas {
-		if (v.Ttype.IsActive() && v.Ttype != *tt) {
-			v.Ttype.SetActive(false)
-			HTML(c, http.StatusOK, views.OOBtabButtonToggle(v.Ttype))
-		} else if (v.Ttype.IsActive() && v.Ttype == *tt) {
-			data.TabDatas = []viewutils.TabData{v}
+		if (v.IsActive() && v.Ttype != td.Ttype) {
+			v.SetActive(false)
+			HTML(c, http.StatusOK, views.OOBtabButtonToggle(v))
+		} else if (v.IsActive() && v.Ttype == td.Ttype) {
+			data.TabDatas = []*viewutils.TabData{v}
 		}
 	}
-	if !tt.IsActive() {
-		data.TabDatas = []viewutils.TabData{*td}
-		tt.SetActive(true)
-		HTML(c, http.StatusOK, views.OOBtabButtonToggle(*tt))
+	if !td.IsActive() {
+		data.TabDatas = []*viewutils.TabData{td}
+		td.SetActive(true)
+		HTML(c, http.StatusOK, views.OOBtabButtonToggle(td))
 	}
-	return HTML(c, http.StatusOK, views.TabContainer(*td))
+	return HTML(c, http.StatusOK, views.TabContainer(td))
 }
 

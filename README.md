@@ -1,3 +1,11 @@
+Page and tab data should be used to REQUEST from database.
+
+They should be stored in memory and their items should be fetched, which contain just uuid, name and tab type
+
+which should then be filled in by data queried from db based on the items.
+
+tabtype states should be stored by user
+
 features
 
 TODO:

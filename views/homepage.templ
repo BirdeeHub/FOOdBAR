@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"foodbar/views/viewutils"
 	"foodbar/views/tabviews"
+	foolib "foodbar/lib"
 )
 
 script htmxAllowedCodes() {
@@ -26,7 +27,7 @@ templ Homepage(pd viewutils.PageData) {
 			<meta charset="utf-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
 			<script src="https://unpkg.com/htmx.org/dist/htmx.min.js"></script>
-			<link rel="stylesheet" href={ fmt.Sprintf("%sstyles/templ.css", viewutils.PagePrefix) } />
+			<link rel="stylesheet" href={ fmt.Sprintf("%sstyles/templ.css", viewutils.PagePrefix) }/>
 		</head>
 		<body class="bodycolors">
 			@BodyContents(pd)
@@ -41,75 +42,70 @@ templ BodyContents(pd viewutils.PageData) {
 			Hello, chef! Welcome to 🍜 FOOd-BAR 🍜
 		</div>
 		<div id="tabButtonContainer" class={ TabButtonContainerCSS() }>
-			@TabButton(viewutils.Recipe)
-			@TabButton(viewutils.Pantry)
-			@TabButton(viewutils.Menu)
-			@TabButton(viewutils.Shopping)
-			@TabButton(viewutils.Preplist)
-			@TabButton(viewutils.Earnings)
+			@viewutils.RenderPointerListWithComponent(pd.TabDatas, TabButton)
 		</div>
 		<div id="tabViewContainer" class={ TabViewContainerCSS() }>
-			@viewutils.RenderListWithComponent(pd.TabDatas, TabContainer)
+			@viewutils.RenderPointerListWithComponent(foolib.FilterPointerSlice(func(t *viewutils.TabData) bool { return t.IsActive() }, pd.TabDatas), TabContainer)
 		</div>
 	</div>
 }
 
-templ OOBtabViewContainer(td viewutils.TabData) {
+templ OOBtabViewContainer(tbd *viewutils.TabData) {
 	<div id="tabViewContainer" hx-swap-oob="beforeend">
-		@TabContainer(td)
+		@TabContainer(tbd)
 	</div>
 }
 
-templ OOBtabButtonToggle(tt viewutils.TabType) {
-	<div id={ fmt.Sprintf("tabButton_%s", tt) } hx-swap-oob="outerHTML">
-		@TabButton(tt)
+templ OOBtabButtonToggle(tbd *viewutils.TabData) {
+	<div id={ fmt.Sprintf("tabButton_%s", tbd.String()) } hx-swap-oob="outerHTML">
+		@TabButton(tbd)
 	</div>
 }
 
 // this has to return a tab button that does the hx-post to pull up the tab
 // and also is able to detect if it is dragged and to where
-templ TabButton(tt viewutils.TabType) {
-	if !tt.IsActive() {
+templ TabButton(tbd *viewutils.TabData) {
+	if !tbd.IsActive() {
 		<div
-			hx-get={ fmt.Sprintf("%sapi/tabButton/activate/%s", viewutils.PagePrefix, tt) }
+			hx-get={ fmt.Sprintf("%sapi/tabButton/activate/%s", viewutils.PagePrefix, tbd.String()) }
 			hx-swap="outerHTML"
-			id={ fmt.Sprintf("tabButton_%s", tt) }
+			id={ fmt.Sprintf("tabButton_%s", tbd.String()) }
 			class={ TabButtonItemCSS() }
 		>
-			🍜	{ fmt.Sprintf("%s",tt) }
+			🍜	{ fmt.Sprintf("%s",tbd.String()) }
 		</div>
 	} else {
 		<div
-			hx-delete={ fmt.Sprintf("%sapi/tabButton/deactivate/%s", viewutils.PagePrefix, tt) }
-			hx-target={ fmt.Sprintf("#tabContainer_%s", tt) }
+			hx-delete={ fmt.Sprintf("%sapi/tabButton/deactivate/%s", viewutils.PagePrefix, tbd.String()) }
+			hx-target={ fmt.Sprintf("#tabContainer_%s", tbd.String()) }
 			hx-swap="outerHTML"
-			id={ fmt.Sprintf("tabButton_%s", tt) }
+			id={ fmt.Sprintf("tabButton_%s", tbd.String()) }
 			class={ TabButtonItemCSS() }
 		>
-			{ fmt.Sprintf("%s",tt) } 🍜
+			{ fmt.Sprintf("%s",tbd.String()) } 🍜
 		</div>
 	}
 }
 
 templ MaximizeTabButton(tt viewutils.TabType) {
-		<div
-			hx-post={ fmt.Sprintf("%sapi/tabButton/maximize/%s", viewutils.PagePrefix, tt) }
-			hx-target="#tabViewContainer"
-			id={ fmt.Sprintf("tabButton_%s", tt) }
-			class={ TabHeaderItemCSS("0") }
-			style="cursor: pointer;"
-		>
-			@viewutils.Maximize()
-		</div>
+	<div
+		hx-post={ fmt.Sprintf("%sapi/tabButton/maximize/%s", viewutils.PagePrefix, tt) }
+		hx-target="#tabViewContainer"
+		id={ fmt.Sprintf("tabButton_%s", tt) }
+		class={ TabHeaderItemCSS("0") }
+		style="cursor: pointer;"
+	>
+		@viewutils.Maximize()
+	</div>
 }
 
-templ TabContainer(td viewutils.TabData) {
+templ TabContainer(td *viewutils.TabData) {
 	<div id={ fmt.Sprintf("tabContainer_%s", td.Ttype) } class={ TabContainerCSS() }>
 		@RenderTabContents(td)
 	</div>
 }
 
-templ RenderTabContents(td viewutils.TabData) {
+templ RenderTabContents(td *viewutils.TabData) {
 	switch td.Ttype {
 		case viewutils.Recipe:
 			<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>

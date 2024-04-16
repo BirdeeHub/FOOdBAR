@@ -5,11 +5,11 @@ import (
 	"foodbar/views/viewutils"
 )
 
-templ EarningsTabContents(td viewutils.TabData) {
-	@viewutils.RenderListWithComponent(td.Items, EarningsItemContainer)
+templ EarningsTabContents(td *viewutils.TabData) {
+	@viewutils.RenderPointerListWithComponent(td.Items, EarningsItemContainer)
 }
 
-templ EarningsItemContainer(item viewutils.TabItem) {
+templ EarningsItemContainer(item *viewutils.TabItem) {
 	<div id={ fmt.Sprintf("%s", item.ItemID.String()) } class={ TabListItemCSS() }>
 		<div class={ ListItemElementCSS() }>
 			{ item.ItemName }
