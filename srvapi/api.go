@@ -3,7 +3,7 @@ package srvapi
 import (
 	"errors"
 	"fmt"
-	"foodbar/db"
+	// "foodbar/db"
 	"foodbar/views"
 	"foodbar/views/viewutils"
 	"net/http"
@@ -17,32 +17,32 @@ func initPageData(userID uuid.UUID) *viewutils.PageData {
 		UserID: userID,
 		TabDatas: []*viewutils.TabData{
 			{
-				Active: true,
+				Active: false,
 				Ttype: viewutils.Recipe,
 				Items: nil,
 			},
 			{
-				Active: true,
+				Active: false,
 				Ttype: viewutils.Pantry,
 				Items: nil,
 			},
 			{
-				Active: true,
+				Active: false,
 				Ttype: viewutils.Menu,
 				Items: nil,
 			},
 			{
-				Active: true,
+				Active: false,
 				Ttype: viewutils.Preplist,
 				Items: nil,
 			},
 			{
-				Active: true,
+				Active: false,
 				Ttype: viewutils.Shopping,
 				Items: nil,
 			},
 			{
-				Active: true,
+				Active: false,
 				Ttype: viewutils.Earnings,
 				Items: nil,
 			},
@@ -81,11 +81,9 @@ func SetupAPIroutes(e *echo.Echo) error {
 			)
 		}
 
-		// TODO: this database fetch should not be happening the way it is here
-		// Here we should just be passing in the in memory data from the pageData
-		// We will be fetching only the TabData.Items that we should render from database here
-		// and then filling them in later based on querying their UUIDs from the database.
-		tabdata, err := db.ReadTabData(*tt, pageData.UserID)
+		// TODO: fetch appropriate TabData.Items from database
+		// based on sort. Implement infinite scroll for them.
+		tabdata, err := pageData.GetTabDataByType(*tt)
 		return RenderTab(TabActivateRenderer, c, pageData, tabdata)
 	})
 
@@ -99,11 +97,9 @@ func SetupAPIroutes(e *echo.Echo) error {
 			)
 		}
 
-		// TODO: this database fetch should not be happening the way it is here
-		// Here we should just be passing in the in memory data from the pageData
-		// We will be fetching only the TabData.Items that we should render from database here
-		// and then filling them in later based on querying their UUIDs from the database.
-		tabdata, err := db.ReadTabData(*tt, pageData.UserID)
+		// TODO: fetch appropriate TabData.Items from database
+		// based on sort. Implement infinite scroll for them.
+		tabdata, err := pageData.GetTabDataByType(*tt)
 		return RenderTab(TabMaximizeRenderer, c, pageData, tabdata)
 	})
 	return nil

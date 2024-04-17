@@ -40,7 +40,6 @@ func TabDeactivateRenderer(c echo.Context, data *viewutils.PageData, td *viewuti
 func TabActivateRenderer(c echo.Context, data *viewutils.PageData, td *viewutils.TabData) error {
 	if !td.IsActive() {
 		td.SetActive(true)
-		data.TabDatas = append(data.TabDatas, td)
 		HTML(c, http.StatusOK, views.OOBtabViewContainer(td))
 		return HTML(c, http.StatusOK, views.TabButton(td))
 	} else {
@@ -53,12 +52,9 @@ func TabMaximizeRenderer(c echo.Context, data *viewutils.PageData, td *viewutils
 		if (v.IsActive() && v.Ttype != td.Ttype) {
 			v.SetActive(false)
 			HTML(c, http.StatusOK, views.OOBtabButtonToggle(v))
-		} else if (v.IsActive() && v.Ttype == td.Ttype) {
-			data.TabDatas = []*viewutils.TabData{v}
 		}
 	}
 	if !td.IsActive() {
-		data.TabDatas = []*viewutils.TabData{td}
 		td.SetActive(true)
 		HTML(c, http.StatusOK, views.OOBtabButtonToggle(td))
 	}
