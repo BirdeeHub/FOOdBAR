@@ -51,7 +51,6 @@ func initPageData(userID uuid.UUID) *viewutils.PageData {
 }
 
 func SetupAPIroutes(e *echo.Echo) error {
-	// TODO: prepopulate with empty tabDatas
 	pageData := initPageData(uuid.New())
 
 	e.GET(fmt.Sprintf("%s", viewutils.PagePrefix), func(c echo.Context) error {
@@ -82,6 +81,10 @@ func SetupAPIroutes(e *echo.Echo) error {
 			)
 		}
 
+		// TODO: this database fetch should not be happening the way it is here
+		// Here we should just be passing in the in memory data from the pageData
+		// We will be fetching only the TabData.Items that we should render from database here
+		// and then filling them in later based on querying their UUIDs from the database.
 		tabdata, err := db.ReadTabData(*tt, pageData.UserID)
 		return RenderTab(TabActivateRenderer, c, pageData, tabdata)
 	})
