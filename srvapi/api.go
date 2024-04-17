@@ -12,11 +12,47 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+func initPageData(userID uuid.UUID) *viewutils.PageData {
+	return &viewutils.PageData{
+		UserID: userID,
+		TabDatas: []*viewutils.TabData{
+			{
+				Active: true,
+				Ttype: viewutils.Recipe,
+				Items: nil,
+			},
+			{
+				Active: true,
+				Ttype: viewutils.Pantry,
+				Items: nil,
+			},
+			{
+				Active: true,
+				Ttype: viewutils.Menu,
+				Items: nil,
+			},
+			{
+				Active: true,
+				Ttype: viewutils.Preplist,
+				Items: nil,
+			},
+			{
+				Active: true,
+				Ttype: viewutils.Shopping,
+				Items: nil,
+			},
+			{
+				Active: true,
+				Ttype: viewutils.Earnings,
+				Items: nil,
+			},
+		},
+	}
+}
+
 func SetupAPIroutes(e *echo.Echo) error {
 	// TODO: prepopulate with empty tabDatas
-	pageData := viewutils.PageData{TabDatas: []*viewutils.TabData{}}
-	//TODO: get userID from session / figure out auth
-	userID := uuid.New()
+	pageData := initPageData(uuid.New())
 
 	e.GET(fmt.Sprintf("%s", viewutils.PagePrefix), func(c echo.Context) error {
 		e.Logger.Print(c)
@@ -33,7 +69,7 @@ func SetupAPIroutes(e *echo.Echo) error {
 			)
 		}
 		tabdata, err := pageData.GetTabDataByType(*tt)
-		return RenderTab(TabDeactivateRenderer, c, &pageData, tabdata)
+		return RenderTab(TabDeactivateRenderer, c, pageData, tabdata)
 	})
 
 	e.GET(fmt.Sprintf("%sapi/tabButton/activate/:type", viewutils.PagePrefix), func(c echo.Context) error {
@@ -46,8 +82,8 @@ func SetupAPIroutes(e *echo.Echo) error {
 			)
 		}
 
-		tabdata, err := db.ReadTabData(*tt, userID)
-		return RenderTab(TabActivateRenderer, c, &pageData, tabdata)
+		tabdata, err := db.ReadTabData(*tt, pageData.UserID)
+		return RenderTab(TabActivateRenderer, c, pageData, tabdata)
 	})
 
 	e.POST(fmt.Sprintf("%sapi/tabButton/maximize/:type", viewutils.PagePrefix), func(c echo.Context) error {
@@ -60,8 +96,8 @@ func SetupAPIroutes(e *echo.Echo) error {
 			)
 		}
 
-		tabdata, err := db.ReadTabData(*tt, userID)
-		return RenderTab(TabMaximizeRenderer, c, &pageData, tabdata)
+		tabdata, err := db.ReadTabData(*tt, pageData.UserID)
+		return RenderTab(TabMaximizeRenderer, c, pageData, tabdata)
 	})
 	return nil
 }

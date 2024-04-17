@@ -18,7 +18,7 @@ script htmxAllowedCodes() {
 	})
 }
 
-templ Homepage(pd viewutils.PageData) {
+templ Homepage(pd *viewutils.PageData) {
 	<!DOCTYPE html>
 	@colorsCSS()
 	<html lang="en">
@@ -36,7 +36,7 @@ templ Homepage(pd viewutils.PageData) {
 	</html>
 }
 
-templ BodyContents(pd viewutils.PageData) {
+templ BodyContents(pd *viewutils.PageData) {
 	<div class={ PageContainerCSS() }>
 		<div id="pageHeader" class={ PageHeaderContainerCSS() }>
 			Hello, chef! Welcome to 🍜 FOOd-BAR 🍜

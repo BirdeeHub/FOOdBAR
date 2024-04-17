@@ -11,7 +11,7 @@ const PagePrefixNoSlash = ""
 const PagePrefix = "/" + PagePrefixNoSlash
 
 type PageData struct {
-	userID   uuid.UUID
+	UserID   uuid.UUID
 	TabDatas []*TabData
 }
 
