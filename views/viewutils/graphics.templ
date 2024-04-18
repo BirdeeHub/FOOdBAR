@@ -1,7 +1,6 @@
 package viewutils
 
-import (
-)
+import ()
 
 templ Trashcan() {
 	<div style="width: 2rem;">
@@ -10,10 +9,6 @@ templ Trashcan() {
 			<path d="M4 2h16a1 1 0 011 1v1a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1zM3 6h18v16a1 1 0 01-1 1H4a1 1 0 01-1-1V6zm3 3v9a1 1 0 002 0v-9a1 1 0 00-2 0zm5 0v9a1 1 0 002 0v-9a1 1 0 00-2 0zm5 0v9a1 1 0 002 0v-9a1 1 0 00-2 0z"></path>
 		</svg>
 	</div>
-}
-
-templ BarsSAVAGE() {
-	<img src="/FOOdBAR/images/bars.svg" alt="loading" style="width: 2rem;"/>
 }
 
 templ Maximize() {
@@ -42,6 +37,103 @@ templ Maximize() {
 					></path>
 				</g>
 			</g>
+		</svg>
+	</div>
+}
+
+templ BarsSAVAGE() {
+	<div style="width: 2rem;">
+		<svg width="16" height="16" viewBox="0 0 135 140" xmlns="http://www.w3.org/2000/svg" fill="#494949">
+			<rect y="10" width="15" height="120" rx="6">
+				<animate
+					attributeName="height"
+					begin="0.5s"
+					dur="1s"
+					values="120;110;100;90;80;70;60;50;40;140;120"
+					calcMode="linear"
+					repeatCount="indefinite"
+				></animate>
+				<animate
+					attributeName="y"
+					begin="0.5s"
+					dur="1s"
+					values="10;15;20;25;30;35;40;45;50;0;10"
+					calcMode="linear"
+					repeatCount="indefinite"
+				></animate>
+			</rect>
+			<rect x="30" y="10" width="15" height="120" rx="6">
+				<animate
+					attributeName="height"
+					begin="0.25s"
+					dur="1s"
+					values="120;110;100;90;80;70;60;50;40;140;120"
+					calcMode="linear"
+					repeatCount="indefinite"
+				></animate>
+				<animate
+					attributeName="y"
+					begin="0.25s"
+					dur="1s"
+					values="10;15;20;25;30;35;40;45;50;0;10"
+					calcMode="linear"
+					repeatCount="indefinite"
+				></animate>
+			</rect>
+			<rect x="60" width="15" height="140" rx="6">
+				<animate
+					attributeName="height"
+					begin="0s"
+					dur="1s"
+					values="120;110;100;90;80;70;60;50;40;140;120"
+					calcMode="linear"
+					repeatCount="indefinite"
+				></animate>
+				<animate
+					attributeName="y"
+					begin="0s"
+					dur="1s"
+					values="10;15;20;25;30;35;40;45;50;0;10"
+					calcMode="linear"
+					repeatCount="indefinite"
+				></animate>
+			</rect>
+			<rect x="90" y="10" width="15" height="120" rx="6">
+				<animate
+					attributeName="height"
+					begin="0.25s"
+					dur="1s"
+					values="120;110;100;90;80;70;60;50;40;140;120"
+					calcMode="linear"
+					repeatCount="indefinite"
+				></animate>
+				<animate
+					attributeName="y"
+					begin="0.25s"
+					dur="1s"
+					values="10;15;20;25;30;35;40;45;50;0;10"
+					calcMode="linear"
+					repeatCount="indefinite"
+				></animate>
+			</rect>
+			<rect x="120" y="10" width="15" height="120" rx="6">
+				<animate
+					attributeName="height"
+					begin="0.5s"
+					dur="1s"
+					values="120;110;100;90;80;70;60;50;40;140;120"
+					calcMode="linear"
+					repeatCount="indefinite"
+				></animate>
+				<animate
+					attributeName="y"
+					begin="0.5s"
+					dur="1s"
+					values="10;15;20;25;30;35;40;45;50;0;10"
+					calcMode="linear"
+					repeatCount="indefinite"
+				></animate>
+			</rect>
 		</svg>
 	</div>
 }

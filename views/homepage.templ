@@ -62,8 +62,7 @@ templ OOBtabButtonToggle(tbd *viewutils.TabData) {
 	</div>
 }
 
-// this has to return a tab button that does the hx-post to pull up the tab
-// and also is able to detect if it is dragged and to where
+// TODO: make this have a loading animation
 templ TabButton(tbd *viewutils.TabData) {
 	if !tbd.IsActive() {
 		<div
