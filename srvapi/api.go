@@ -12,18 +12,27 @@ import (
 )
 
 func SetupAPIroutes(e *echo.Echo) error {
-	pageData := viewutils.InitPageData(uuid.New())
+	var pageData *viewutils.PageData = nil
 
 	e.GET("/", func(c echo.Context) error {
+		if pageData == nil {
+			pageData = viewutils.InitPageData(uuid.New())
+		}
 		return c.Redirect(http.StatusPermanentRedirect, "/FOOdBAR")
 	})
 
 	e.GET("/FOOdBAR", func(c echo.Context) error {
+		if pageData == nil {
+			pageData = viewutils.InitPageData(uuid.New())
+		}
 		e.Logger.Print(c)
 		return HTML(c, http.StatusOK, views.Homepage(pageData))
 	})
 
 	e.DELETE("/FOOdBAR/api/tabButton/deactivate/:type", func(c echo.Context) error {
+		if pageData == nil {
+			pageData = viewutils.InitPageData(uuid.New())
+		}
 		e.Logger.Print(c)
 		tt, err := viewutils.String2TabType(c.Param("type"))
 		if err != nil {
@@ -37,6 +46,9 @@ func SetupAPIroutes(e *echo.Echo) error {
 	})
 
 	e.GET("/FOOdBAR/api/tabButton/activate/:type", func(c echo.Context) error {
+		if pageData == nil {
+			pageData = viewutils.InitPageData(uuid.New())
+		}
 		e.Logger.Print(c)
 		tt, err := viewutils.String2TabType(c.Param("type"))
 		if err != nil {
@@ -53,6 +65,9 @@ func SetupAPIroutes(e *echo.Echo) error {
 	})
 
 	e.POST("/FOOdBAR/api/tabButton/maximize/:type", func(c echo.Context) error {
+		if pageData == nil {
+			pageData = viewutils.InitPageData(uuid.New())
+		}
 		e.Logger.Print(c)
 		tt, err := viewutils.String2TabType(c.Param("type"))
 		if err != nil {
