@@ -2,7 +2,6 @@ package srvapi
 
 import (
 	"errors"
-	"fmt"
 	// "FOOdBAR/db"
 	"FOOdBAR/views"
 	"FOOdBAR/views/viewutils"
@@ -15,12 +14,12 @@ import (
 func SetupAPIroutes(e *echo.Echo) error {
 	pageData := viewutils.InitPageData(uuid.New())
 
-	e.GET(fmt.Sprintf("%s", viewutils.PagePrefix), func(c echo.Context) error {
+	e.GET("/FOOdBAR", func(c echo.Context) error {
 		e.Logger.Print(c)
 		return HTML(c, http.StatusOK, views.Homepage(pageData))
 	})
 
-	e.DELETE(fmt.Sprintf("%sapi/tabButton/deactivate/:type", viewutils.PagePrefix), func(c echo.Context) error {
+	e.DELETE("/FOOdBAR/api/tabButton/deactivate/:type", func(c echo.Context) error {
 		e.Logger.Print(c)
 		tt, err := viewutils.String2TabType(c.Param("type"))
 		if err != nil {
@@ -33,7 +32,7 @@ func SetupAPIroutes(e *echo.Echo) error {
 		return RenderTab(TabDeactivateRenderer, c, pageData, tabdata)
 	})
 
-	e.GET(fmt.Sprintf("%sapi/tabButton/activate/:type", viewutils.PagePrefix), func(c echo.Context) error {
+	e.GET("/FOOdBAR/api/tabButton/activate/:type", func(c echo.Context) error {
 		e.Logger.Print(c)
 		tt, err := viewutils.String2TabType(c.Param("type"))
 		if err != nil {
@@ -49,7 +48,7 @@ func SetupAPIroutes(e *echo.Echo) error {
 		return RenderTab(TabActivateRenderer, c, pageData, tabdata)
 	})
 
-	e.POST(fmt.Sprintf("%sapi/tabButton/maximize/:type", viewutils.PagePrefix), func(c echo.Context) error {
+	e.POST("/FOOdBAR/api/tabButton/maximize/:type", func(c echo.Context) error {
 		e.Logger.Print(c)
 		tt, err := viewutils.String2TabType(c.Param("type"))
 		if err != nil {

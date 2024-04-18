@@ -27,7 +27,7 @@ templ Homepage(pd *viewutils.PageData) {
 			<meta charset="utf-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
 			<script src="https://unpkg.com/htmx.org/dist/htmx.min.js"></script>
-			<link rel="stylesheet" href={ fmt.Sprintf("%sstyles/templ.css", viewutils.PagePrefix) }/>
+			<link rel="stylesheet" href="/FOOdBAR/styles/templ.css"/>
 		</head>
 		<body class="bodycolors">
 			@BodyContents(pd)
@@ -67,7 +67,7 @@ templ OOBtabButtonToggle(tbd *viewutils.TabData) {
 templ TabButton(tbd *viewutils.TabData) {
 	if !tbd.IsActive() {
 		<div
-			hx-get={ fmt.Sprintf("%sapi/tabButton/activate/%s", viewutils.PagePrefix, tbd.String()) }
+			hx-get={ fmt.Sprintf("/FOOdBAR/api/tabButton/activate/%s", tbd.String()) }
 			hx-swap="outerHTML"
 			id={ fmt.Sprintf("tabButton_%s", tbd.String()) }
 			class={ TabButtonItemCSS() }
@@ -76,7 +76,7 @@ templ TabButton(tbd *viewutils.TabData) {
 		</div>
 	} else {
 		<div
-			hx-delete={ fmt.Sprintf("%sapi/tabButton/deactivate/%s", viewutils.PagePrefix, tbd.String()) }
+			hx-delete={ fmt.Sprintf("/FOOdBAR/api/tabButton/deactivate/%s", tbd.String()) }
 			hx-target={ fmt.Sprintf("#tabContainer_%s", tbd.String()) }
 			hx-swap="outerHTML"
 			id={ fmt.Sprintf("tabButton_%s", tbd.String()) }
@@ -89,7 +89,7 @@ templ TabButton(tbd *viewutils.TabData) {
 
 templ MaximizeTabButton(tt viewutils.TabType) {
 	<div
-		hx-post={ fmt.Sprintf("%sapi/tabButton/maximize/%s", viewutils.PagePrefix, tt) }
+		hx-post={ fmt.Sprintf("/FOOdBAR/api/tabButton/maximize/%s", tt) }
 		hx-target="#tabViewContainer"
 		id={ fmt.Sprintf("tabButton_%s", tt) }
 		class={ TabHeaderItemCSS("0") }

@@ -2,11 +2,9 @@ package srvapi
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 
 	"FOOdBAR/views"
-	"FOOdBAR/views/viewutils"
 
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
@@ -18,10 +16,10 @@ func Init() {
 	e.Use(middleware.Logger())
 	e.Use(echo.WrapMiddleware(func(hndl http.Handler) http.Handler {
 		cssmiddleware := templ.NewCSSMiddleware(hndl, views.StaticStyles...)
-		cssmiddleware.Path = fmt.Sprintf("%sstyles/templ.css", viewutils.PagePrefix)
+		cssmiddleware.Path = "/FOOdBAR/styles/templ.css"
 		return cssmiddleware
 	}))
-	e.Static(fmt.Sprintf("%simages", viewutils.PagePrefix), fmt.Sprintf("%simages", viewutils.PagePrefixNoSlash))
+	e.Static("/FOOdBAR/images", "images")
 
 	err := SetupAPIroutes(e)
 	if err != nil {
