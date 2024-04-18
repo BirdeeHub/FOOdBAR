@@ -21,6 +21,10 @@ func Init() {
 	}))
 	e.Static("/FOOdBAR/images", "images")
 
+	e.GET("/", func(c echo.Context) error {
+		return c.Redirect(http.StatusPermanentRedirect, "/FOOdBAR")
+	})
+
 	err := SetupAPIroutes(e)
 	if err != nil {
 		echo.NewHTTPError(
