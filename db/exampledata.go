@@ -2,7 +2,7 @@ package db
 
 import (
 	"fmt"
-	"foodbar/views/viewutils"
+	"FOOdBAR/views/viewutils"
 
 	"database/sql"
 

@@ -1,8 +1,8 @@
 package srvapi
 
 import (
-	"foodbar/views"
-	"foodbar/views/viewutils"
+	"FOOdBAR/views"
+	"FOOdBAR/views/viewutils"
 	"net/http"
 
 	"github.com/a-h/templ"

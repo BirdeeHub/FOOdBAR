@@ -1,6 +1,6 @@
 package main
 import (
-	"foodbar/srvapi"
+	"FOOdBAR/srvapi"
 )
 func main() {
 	srvapi.Init()

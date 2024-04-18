@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"foodbar/views"
-	"foodbar/views/viewutils"
+	"FOOdBAR/views"
+	"FOOdBAR/views/viewutils"
 
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"

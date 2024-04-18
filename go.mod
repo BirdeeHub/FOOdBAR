@@ -1,4 +1,4 @@
-module foodbar
+module FOOdBAR
 
 go 1.22.1
 

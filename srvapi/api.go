@@ -3,9 +3,9 @@ package srvapi
 import (
 	"errors"
 	"fmt"
-	// "foodbar/db"
-	"foodbar/views"
-	"foodbar/views/viewutils"
+	// "FOOdBAR/db"
+	"FOOdBAR/views"
+	"FOOdBAR/views/viewutils"
 	"net/http"
 
 	"github.com/google/uuid"
