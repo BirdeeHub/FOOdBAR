@@ -14,6 +14,10 @@ import (
 func SetupAPIroutes(e *echo.Echo) error {
 	pageData := viewutils.InitPageData(uuid.New())
 
+	e.GET("/", func(c echo.Context) error {
+		return c.Redirect(http.StatusPermanentRedirect, "/FOOdBAR")
+	})
+
 	e.GET("/FOOdBAR", func(c echo.Context) error {
 		e.Logger.Print(c)
 		return HTML(c, http.StatusOK, views.Homepage(pageData))
