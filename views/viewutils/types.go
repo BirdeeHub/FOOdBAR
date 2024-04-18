@@ -22,6 +22,7 @@ type TabItem struct {
 }
 
 type TabData struct {
+	UserID uuid.UUID
 	Active bool
 	Ttype TabType
 	Items []*TabItem
@@ -79,3 +80,48 @@ func (pgd *PageData) GetTabDataByType(tt TabType) (*TabData, error) {
 	}
 	return nil, errors.New(fmt.Sprintf("no %s tab", tt))
 }
+
+func InitPageData(userID uuid.UUID) *PageData {
+	return &PageData{
+		UserID: userID,
+		TabDatas: []*TabData{
+			{
+				UserID: userID,
+				Active: false,
+				Ttype: Recipe,
+				Items: nil,
+			},
+			{
+				UserID: userID,
+				Active: false,
+				Ttype: Pantry,
+				Items: nil,
+			},
+			{
+				UserID: userID,
+				Active: false,
+				Ttype: Menu,
+				Items: nil,
+			},
+			{
+				UserID: userID,
+				Active: false,
+				Ttype: Preplist,
+				Items: nil,
+			},
+			{
+				UserID: userID,
+				Active: false,
+				Ttype: Shopping,
+				Items: nil,
+			},
+			{
+				UserID: userID,
+				Active: false,
+				Ttype: Earnings,
+				Items: nil,
+			},
+		},
+	}
+}
+

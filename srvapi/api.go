@@ -12,46 +12,8 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func initPageData(userID uuid.UUID) *viewutils.PageData {
-	return &viewutils.PageData{
-		UserID: userID,
-		TabDatas: []*viewutils.TabData{
-			{
-				Active: false,
-				Ttype: viewutils.Recipe,
-				Items: nil,
-			},
-			{
-				Active: false,
-				Ttype: viewutils.Pantry,
-				Items: nil,
-			},
-			{
-				Active: false,
-				Ttype: viewutils.Menu,
-				Items: nil,
-			},
-			{
-				Active: false,
-				Ttype: viewutils.Preplist,
-				Items: nil,
-			},
-			{
-				Active: false,
-				Ttype: viewutils.Shopping,
-				Items: nil,
-			},
-			{
-				Active: false,
-				Ttype: viewutils.Earnings,
-				Items: nil,
-			},
-		},
-	}
-}
-
 func SetupAPIroutes(e *echo.Echo) error {
-	pageData := initPageData(uuid.New())
+	pageData := viewutils.InitPageData(uuid.New())
 
 	e.GET(fmt.Sprintf("%s", viewutils.PagePrefix), func(c echo.Context) error {
 		e.Logger.Print(c)

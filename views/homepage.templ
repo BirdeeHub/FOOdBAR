@@ -72,7 +72,7 @@ templ TabButton(tbd *viewutils.TabData) {
 			id={ fmt.Sprintf("tabButton_%s", tbd.String()) }
 			class={ TabButtonItemCSS() }
 		>
-			🍜	{ fmt.Sprintf("%s",tbd.String()) }
+			{ fmt.Sprintf("🍜 %s",tbd.String()) }
 		</div>
 	} else {
 		<div
@@ -82,7 +82,7 @@ templ TabButton(tbd *viewutils.TabData) {
 			id={ fmt.Sprintf("tabButton_%s", tbd.String()) }
 			class={ TabButtonItemCSS() }
 		>
-			{ fmt.Sprintf("%s",tbd.String()) } 🍜
+			{ fmt.Sprintf("%s 🍜",tbd.String()) }
 		</div>
 	}
 }
