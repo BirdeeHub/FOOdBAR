@@ -7,6 +7,7 @@ import (
 	"FOOdBAR/views"
 
 	"github.com/a-h/templ"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -25,7 +26,8 @@ func Init() {
 		return c.Redirect(http.StatusPermanentRedirect, "/FOOdBAR")
 	})
 
-	err := SetupAPIroutes(e)
+	userID := uuid.New()
+	err := SetupAPIroutes(e, userID)
 	if err != nil {
 		echo.NewHTTPError(
 			http.StatusTeapot,
