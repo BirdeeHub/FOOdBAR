@@ -481,3 +481,68 @@ So you can add it at the top level to apply to all routes, or on specific route 
 Then in your login handler, you would generate and return a valid JWT token upon successful login which will grant access to the restricted routes.
 
 No need to manually check authentication in each handler!
+
+> Does the handler have to be called restrictedHandler? how does the middleware figure out what handlers are restricted and which are not?
+
+Good catch! The name of the handler function itself doesn't matter for the middleware to work. 
+
+The JWT middleware will check every request for a valid JWT token automatically based on the configuration. 
+
+It doesn't know or care what each handler function is named. The only thing that matters is:
+
+- The middleware is configured to check for a valid JWT 
+
+- Each protected route is defined after the middleware is added
+
+So in your example, any routes defined after `e.Use(middleware.JWTWithConfig(...))` will be protected by the JWT middleware.
+
+The middleware doesn't know specifically which handlers are restricted. It will check every request on any route after it is added.
+
+The handler can be named anything (e.g. `protectedHandler`, `apiHandler`, etc). The middleware will still check the request for a valid JWT before allowing it through.
+
+So in summary:
+
+- Add JWT middleware at the top level 
+
+- Any routes defined after that will be protected 
+
+- The middleware doesn't care what the handler functions are named
+
+- It will check every request on those routes for a valid JWT
+
+Hope this helps explain how the middleware works! The handler naming itself doesn't matter.
+
+> So, if I just do it immediately all pages will redirect to /login? I dont see anywhere in this code where the path to redirect to was provided in JWTwithConfig middleware setup
+>
+
+You're correct - the JWTWithConfig middleware by itself will simply return a 401 Unauthorized error if the JWT is invalid or missing. It won't redirect to a login page.
+
+To redirect to a specific login page URL, you need to chain the JWT middleware with the UnauthorizedHandler middleware, like this:
+
+```go
+e := echo.New()
+
+e.Use(middleware.JWTWithConfig(middleware.JWTConfig{
+  SigningKey: []byte("secret"),
+}))
+
+e.Use(middleware.UnauthorizedHandler(func(c echo.Context) error {
+  return c.Redirect(http.StatusTemporaryRedirect, "/login")
+}))
+
+// Restricted routes here 
+e.GET("/restricted", restrictedHandler)
+
+// Login route
+e.GET("/login", loginHandler)
+```
+
+The UnauthorizedHandler middleware checks for a 401 error from the JWT middleware. If it finds one, it will call the provided handler function to redirect to /login.
+
+So in summary:
+
+- JWT middleware checks for valid token 
+- UnauthorizedHandler looks for 401 error
+- Custom handler redirects to login page
+
+This way you can have a centralized redirect when authentication fails, without having to check in each route handler.
