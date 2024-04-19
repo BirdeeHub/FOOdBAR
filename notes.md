@@ -415,3 +415,69 @@ Some key points:
 - LIMIT without ORDER BY will give arbitrary rows rather than top values.
 
 So in summary, use ORDER BY and LIMIT together to get the top N rows according to a specified ordering. Add a WHERE clause to filter before selecting top values.
+
+
+---
+
+Auth
+
+To make /FOOdBAR route restricted to authenticated users, you can do something like:
+
+```go
+e.GET("/FOOdBAR", func(c echo.Context) error {
+  if !isAuthenticated(c) {
+    return c.Redirect(http.StatusTemporaryRedirect, "/login") 
+  }
+
+  // render FOOdBAR page
+})
+
+func isAuthenticated(c echo.Context) bool {
+  // check for valid JWT token
+  // return true if valid, false otherwise
+}
+```
+
+And then handle the /login route separately:
+
+```go 
+e.GET("/login", loginPage) 
+
+func loginPage(c echo.Context) error {
+  // render login page
+}
+```
+
+This will redirect unauthenticated users trying to access /FOOdBAR to the /login route instead.
+
+The isAuthenticated function would check for a valid JWT token in the request to determine if the user is authenticated or not before allowing access to /FOOdBAR.
+
+> I see, so I have to check for authentication on every route, and redirect if not authenticated? I thought there was a middleware I could use with echo server to do this automatically?
+
+You're right, Echo does provide middleware to handle authentication for you. 
+
+The middleware you can use is `middleware.JWTWithConfig`:
+
+```go
+e := echo.New()
+
+// Middleware
+e.Use(middleware.JWTWithConfig(middleware.JWTConfig{
+  SigningKey: []byte("secret"),
+}))
+
+e.GET("/FOOdBAR", restrictedHandler)
+
+func restrictedHandler(c echo.Context) error {
+  // this will only be called if JWT token is valid
+  return c.String(http.StatusOK, "Welcome!") 
+}
+```
+
+This will automatically check for a valid JWT token on any routes you want to restrict access to. If no valid token is present, it will return a 401 Unauthorized error.
+
+So you can add it at the top level to apply to all routes, or on specific route groups if you only want to restrict access to some routes.
+
+Then in your login handler, you would generate and return a valid JWT token upon successful login which will grant access to the restricted routes.
+
+No need to manually check authentication in each handler!
