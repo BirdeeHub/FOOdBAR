@@ -39,6 +39,10 @@ func Init() {
 	e := echo.New()
 	e.Use(middleware.Logger())
 
+	// TODO: figure out how to HTTPS
+	// e.Pre(middleware.HTTPSRedirect())
+
+	// TODO: get a much better key from a file
 	signingKey := []byte("secret")
 
 	e.GET("/", func(c echo.Context) error {
@@ -46,6 +50,8 @@ func Init() {
 	})
 
 	e.GET(fmt.Sprintf("%s/login", viewutils.PagePrefix), func(c echo.Context) error {
+		// TODO: Make a login and signup form to submit username/password
+		// TODO: check login and retrieve uuid or generate uuid and store with user and pass in db
 		c.Logger().Print(c)
 		userID := uuid.New()
 		cookie, err := GenerateJWTfromIDandKey(userID, signingKey)
@@ -74,6 +80,8 @@ func Init() {
 		}
 		return c.Redirect(http.StatusPermanentRedirect, fmt.Sprintf("%s", viewutils.PagePrefix))
 	})
+
+	// NOTE: Authed routes below
 
 	r := e.Group(fmt.Sprintf("%s", viewutils.PagePrefix))
 
@@ -106,5 +114,7 @@ func Init() {
 		)
 	}
 
+	// TODO: figure out how to HTTPS
+	// e.Logger.Fatal(e.StartTLS(":42069", "cert.pem", "key.pem"))
 	e.Logger.Fatal(e.Start(":42069"))
 }
