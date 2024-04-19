@@ -1,5 +1,10 @@
 package loginPage
 
+import (
+	"fmt"
+	"FOOdBAR/views/viewutils"
+)
+
 script htmxAllowedCodes() {
 	document.addEventListener("DOMContentLoaded", (event) => {
 		document.body.addEventListener("htmx:beforeSwap", function(evt) {
@@ -29,8 +34,18 @@ templ LoginPage() {
 }
 
 templ LoginForm() {
-	TEST
+	<form id="loginform" action={ viewutils.HXurl(fmt.Sprintf("%s/submitlogin", viewutils.PagePrefix)) } method="GET" enctype="application/x-www-form-urlencoded">
+		<input value="" type="text" name="username"/>
+		<input value="" type="password" name="password"/>
+		<button type="submit">sign in</button>
+	</form>
 }
 
 templ SignupForm() {
+	<form id="signupform" action={ viewutils.HXurl(fmt.Sprintf("%s/submitsignup", viewutils.PagePrefix)) } method="GET" enctype="application/x-www-form-urlencoded">
+		<input value="" type="text" name="username"/>
+		<input value="" type="password" name="password"/>
+		<input value="" type="password" name="confirmpassword"/>
+		<button type="submit">sign up</button>
+	</form>
 }

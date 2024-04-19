@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"FOOdBAR/views"
+	"FOOdBAR/views/loginPage"
 	"FOOdBAR/views/viewutils"
 
 	"github.com/a-h/templ"
@@ -43,7 +44,7 @@ func Init() {
 	// e.Pre(middleware.HTTPSRedirect())
 
 	// TODO: get a much better key from a file
-	signingKey := []byte("secret")
+	signingKey := []byte("secret-passphrasewillitwork")
 
 	e.GET("/", func(c echo.Context) error {
 		return c.Redirect(http.StatusPermanentRedirect, fmt.Sprintf("%s", viewutils.PagePrefix))
@@ -52,14 +53,7 @@ func Init() {
 	e.GET(fmt.Sprintf("%s/login", viewutils.PagePrefix), func(c echo.Context) error {
 		// TODO: Make a login and signup form to submit username/password
 		// TODO: check login and retrieve uuid or generate uuid and store with user and pass in db
-		c.Logger().Print(c)
-		userID := uuid.New()
-		cookie, err := GenerateJWTfromIDandKey(userID, signingKey)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, err)
-		}
-		c.SetCookie(cookie)
-		return c.Redirect(http.StatusPermanentRedirect, fmt.Sprintf("%s", viewutils.PagePrefix))
+		return HTML(c, http.StatusOK, loginPage.LoginPage())
 	})
 
 	e.GET(fmt.Sprintf("%s/submitlogin", viewutils.PagePrefix), func(c echo.Context) error {
@@ -67,10 +61,10 @@ func Init() {
 		userID := uuid.New()
 		cookie, err := GenerateJWTfromIDandKey(userID, signingKey)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, err)
+			return echo.NewHTTPError(http.StatusTeapot, err)
 		}
 		c.SetCookie(cookie)
-		return c.Redirect(http.StatusPermanentRedirect, fmt.Sprintf("%s", viewutils.PagePrefix))
+		return c.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("%s", viewutils.PagePrefix))
 	})
 
 	e.GET(fmt.Sprintf("%s/submitsignup", viewutils.PagePrefix), func(c echo.Context) error {
@@ -78,10 +72,10 @@ func Init() {
 		userID := uuid.New()
 		cookie, err := GenerateJWTfromIDandKey(userID, signingKey)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, err)
+			return echo.NewHTTPError(http.StatusTeapot, err)
 		}
 		c.SetCookie(cookie)
-		return c.Redirect(http.StatusPermanentRedirect, fmt.Sprintf("%s", viewutils.PagePrefix))
+		return c.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("%s", viewutils.PagePrefix))
 	})
 
 	// NOTE: Authed routes below

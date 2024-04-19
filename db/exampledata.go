@@ -10,6 +10,16 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+
+
+// func NewUser(username string, password string) (uuid.UUID, error) {
+//     db, err := sql.Open("sqlite3", "~/.local/share/FOOdBAR/auth.db")
+//     if err != nil {
+//         return uuid.Nil, err
+//     }
+//     defer db.Close()
+// }
+
 func ReadTabData(tt viewutils.TabType, userID uuid.UUID) (*viewutils.TabData, error) {
 	db, err := sql.Open("sqlite3", "~/.local/share/FOOdBAR/db.db")
 	if err != nil {

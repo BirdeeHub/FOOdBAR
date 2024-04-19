@@ -4,9 +4,6 @@ schema = 3
   [mod."github.com/a-h/templ"]
     version = "v0.2.663"
     hash = "sha256-6bM4Oekpt8qIeeQLo1OZYwkaFfksJnNUzhNOPDbdmpg="
-  [mod."github.com/davecgh/go-spew"]
-    version = "v1.1.1"
-    hash = "sha256-nhzSUrE1fCkN0+RL04N4h8jWmRFPPPWbCuDc7Ss0akI="
   [mod."github.com/golang-jwt/jwt"]
     version = "v3.2.2+incompatible"
     hash = "sha256-LOkpuXhWrFayvVf1GOaOmZI5YKEsgqVSb22aF8LnCEM="
@@ -34,12 +31,6 @@ schema = 3
   [mod."github.com/mattn/go-sqlite3"]
     version = "v1.14.22"
     hash = "sha256-CWF2Hjg43658NhaePWbGzS19gHJXjuTroG5c0W3hgYQ="
-  [mod."github.com/pmezard/go-difflib"]
-    version = "v1.0.0"
-    hash = "sha256-/FtmHnaGjdvEIKAJtrUfEhV7EVo5A/eYrtdnUkuxLDA="
-  [mod."github.com/stretchr/testify"]
-    version = "v1.8.4"
-    hash = "sha256-MoOmRzbz9QgiJ+OOBo5h5/LbilhJfRUryvzHJmXAWjo="
   [mod."github.com/valyala/bytebufferpool"]
     version = "v1.0.0"
     hash = "sha256-I9FPZ3kCNRB+o0dpMwBnwZ35Fj9+ThvITn8a3Jr8mAY="
@@ -61,6 +52,3 @@ schema = 3
   [mod."golang.org/x/time"]
     version = "v0.5.0"
     hash = "sha256-W6RgwgdYTO3byIPOFxrP2IpAZdgaGowAaVfYby7AULU="
-  [mod."gopkg.in/yaml.v3"]
-    version = "v3.0.1"
-    hash = "sha256-FqL9TKYJ0XkNwJFnq9j0VvJ5ZUU1RvH/52h/f5bkYAU="
