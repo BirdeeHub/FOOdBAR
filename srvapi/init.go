@@ -56,7 +56,7 @@ func Init() {
 		return HTML(c, http.StatusOK, loginPage.LoginPage("login"))
 	})
 
-	e.GET(fmt.Sprintf("%s/submitlogin", viewutils.PagePrefix), func(c echo.Context) error {
+	e.POST(fmt.Sprintf("%s/submitlogin", viewutils.PagePrefix), func(c echo.Context) error {
 		username := c.Get("username")
 		password := c.Get("password")
 		c.Logger().Print(username)
@@ -71,7 +71,7 @@ func Init() {
 		return c.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("%s", viewutils.PagePrefix))
 	})
 
-	e.GET(fmt.Sprintf("%s/submitsignup", viewutils.PagePrefix), func(c echo.Context) error {
+	e.POST(fmt.Sprintf("%s/submitsignup", viewutils.PagePrefix), func(c echo.Context) error {
 		c.Logger().Print(c)
 		userID := uuid.New()
 		cookie, err := GenerateJWTfromIDandKey(userID, signingKey)

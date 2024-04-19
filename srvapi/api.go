@@ -51,6 +51,15 @@ func SetupAPIroutes(e *echo.Group) error {
 		return HTML(c, http.StatusOK, views.Homepage(GetPageData(userID)))
 	})
 
+	e.POST("", func(c echo.Context) error {
+		userID, err := GetUserFromToken(c)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, err)
+		}
+		c.Logger().Print(c)
+		return HTML(c, http.StatusOK, views.Homepage(GetPageData(userID)))
+	})
+
 	e.DELETE("/api/tabButton/deactivate/:type", func(c echo.Context) error {
 		userID, err := GetUserFromToken(c)
 		if err != nil {
