@@ -3,6 +3,7 @@ package viewutils
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -10,8 +11,9 @@ import (
 const PagePrefix = "/FOOdBAR"
 
 type PageData struct {
-	UserID   uuid.UUID
-	TabDatas []*TabData
+	UserID     uuid.UUID
+	TabDatas   []*TabData
+	LastActive time.Time
 }
 
 type TabItem struct {
@@ -23,8 +25,8 @@ type TabItem struct {
 type TabData struct {
 	UserID uuid.UUID
 	Active bool
-	Ttype TabType
-	Items []*TabItem
+	Ttype  TabType
+	Items  []*TabItem
 }
 
 type TabType string
@@ -83,44 +85,44 @@ func (pgd *PageData) GetTabDataByType(tt TabType) (*TabData, error) {
 func InitPageData(userID uuid.UUID) *PageData {
 	return &PageData{
 		UserID: userID,
+		LastActive: time.Now(),
 		TabDatas: []*TabData{
 			{
 				UserID: userID,
 				Active: false,
-				Ttype: Recipe,
-				Items: nil,
+				Ttype:  Recipe,
+				Items:  nil,
 			},
 			{
 				UserID: userID,
 				Active: false,
-				Ttype: Pantry,
-				Items: nil,
+				Ttype:  Pantry,
+				Items:  nil,
 			},
 			{
 				UserID: userID,
 				Active: false,
-				Ttype: Menu,
-				Items: nil,
+				Ttype:  Menu,
+				Items:  nil,
 			},
 			{
 				UserID: userID,
 				Active: false,
-				Ttype: Preplist,
-				Items: nil,
+				Ttype:  Preplist,
+				Items:  nil,
 			},
 			{
 				UserID: userID,
 				Active: false,
-				Ttype: Shopping,
-				Items: nil,
+				Ttype:  Shopping,
+				Items:  nil,
 			},
 			{
 				UserID: userID,
 				Active: false,
-				Ttype: Earnings,
-				Items: nil,
+				Ttype:  Earnings,
+				Items:  nil,
 			},
 		},
 	}
 }
-

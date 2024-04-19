@@ -2,6 +2,7 @@ package srvapi
 
 import (
 	"errors"
+	"time"
 	// "FOOdBAR/db"
 	"FOOdBAR/views"
 	"FOOdBAR/views/viewutils"
@@ -13,8 +14,8 @@ import (
 )
 
 func GetClaimFromToken(c echo.Context, claim string) interface{} {
-    user := c.Get("user").(*jwt.Token)
-    claims := user.Claims.(jwt.MapClaims)
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
 	return claims[claim]
 }
 
@@ -27,20 +28,25 @@ func GetUserFromToken(c echo.Context) (uuid.UUID, error) {
 	}
 }
 
-func SetupAPIroutes(e *echo.Group) error {
-	var pageData map[uuid.UUID]*viewutils.PageData = make(map[uuid.UUID]*viewutils.PageData)
+var pageDatas map[uuid.UUID]*viewutils.PageData = make(map[uuid.UUID]*viewutils.PageData)
 
+func GetPageData(userID uuid.UUID) *viewutils.PageData {
+	if pageDatas[userID] == nil {
+		pageDatas[userID] = viewutils.InitPageData(userID)
+	}
+	pageDatas[userID].LastActive = time.Now()
+	return pageDatas[userID]
+}
+
+func SetupAPIroutes(e *echo.Group) error {
 
 	e.GET("", func(c echo.Context) error {
 		userID, err := GetUserFromToken(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
-		if pageData[userID] == nil {
-			pageData[userID] = viewutils.InitPageData(userID)
-		}
 		c.Logger().Print(c)
-		return HTML(c, http.StatusOK, views.Homepage(pageData[userID]))
+		return HTML(c, http.StatusOK, views.Homepage(GetPageData(userID)))
 	})
 
 	e.DELETE("/api/tabButton/deactivate/:type", func(c echo.Context) error {
@@ -48,9 +54,6 @@ func SetupAPIroutes(e *echo.Group) error {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
-		if pageData[userID] == nil {
-			pageData[userID] = viewutils.InitPageData(userID)
-		}
 		c.Logger().Print(c)
 		tt, err := viewutils.String2TabType(c.Param("type"))
 		if err != nil {
@@ -59,8 +62,9 @@ func SetupAPIroutes(e *echo.Group) error {
 				errors.New("not a valid tab type"),
 			)
 		}
-		tabdata, err := pageData[userID].GetTabDataByType(*tt)
-		return RenderTab(TabDeactivateRenderer, c, pageData[userID], tabdata)
+		pageData := GetPageData(userID)
+		tabdata, err := pageData.GetTabDataByType(*tt)
+		return RenderTab(TabDeactivateRenderer, c, pageData, tabdata)
 	})
 
 	e.GET("/api/tabButton/activate/:type", func(c echo.Context) error {
@@ -68,9 +72,6 @@ func SetupAPIroutes(e *echo.Group) error {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
-		if pageData[userID] == nil {
-			pageData[userID] = viewutils.InitPageData(userID)
-		}
 		c.Logger().Print(c)
 		tt, err := viewutils.String2TabType(c.Param("type"))
 		if err != nil {
@@ -82,8 +83,9 @@ func SetupAPIroutes(e *echo.Group) error {
 
 		// TODO: fetch appropriate TabData.Items from database
 		// based on sort. Implement infinite scroll for them.
-		tabdata, err := pageData[userID].GetTabDataByType(*tt)
-		return RenderTab(TabActivateRenderer, c, pageData[userID], tabdata)
+		pageData := GetPageData(userID)
+		tabdata, err := pageData.GetTabDataByType(*tt)
+		return RenderTab(TabActivateRenderer, c, pageData, tabdata)
 	})
 
 	e.POST("/api/tabButton/maximize/:type", func(c echo.Context) error {
@@ -91,9 +93,6 @@ func SetupAPIroutes(e *echo.Group) error {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
-		if pageData[userID] == nil {
-			pageData[userID] = viewutils.InitPageData(userID)
-		}
 		c.Logger().Print(c)
 		tt, err := viewutils.String2TabType(c.Param("type"))
 		if err != nil {
@@ -105,8 +104,9 @@ func SetupAPIroutes(e *echo.Group) error {
 
 		// TODO: fetch appropriate TabData.Items from database
 		// based on sort. Implement infinite scroll for them.
-		tabdata, err := pageData[userID].GetTabDataByType(*tt)
-		return RenderTab(TabMaximizeRenderer, c, pageData[userID], tabdata)
+		pageData := GetPageData(userID)
+		tabdata, err := pageData.GetTabDataByType(*tt)
+		return RenderTab(TabMaximizeRenderer, c, pageData, tabdata)
 	})
 	return nil
 }

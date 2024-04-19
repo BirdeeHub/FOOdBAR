@@ -56,8 +56,9 @@ func Init() {
 		userID := uuid.New()
 		cookie, err := GenerateJWTfromIDandKey(userID, signingKey)
 		if err != nil {
-			c.SetCookie(cookie)
+			return echo.NewHTTPError(http.StatusInternalServerError, err)
 		}
+		c.SetCookie(cookie)
 		return c.Redirect(http.StatusPermanentRedirect, fmt.Sprintf("%s", viewutils.PagePrefix))
 	})
 
@@ -66,8 +67,9 @@ func Init() {
 		userID := uuid.New()
 		cookie, err := GenerateJWTfromIDandKey(userID, signingKey)
 		if err != nil {
-			c.SetCookie(cookie)
+			return echo.NewHTTPError(http.StatusInternalServerError, err)
 		}
+		c.SetCookie(cookie)
 		return c.Redirect(http.StatusPermanentRedirect, fmt.Sprintf("%s", viewutils.PagePrefix))
 	})
 
@@ -76,8 +78,9 @@ func Init() {
 		userID := uuid.New()
 		cookie, err := GenerateJWTfromIDandKey(userID, signingKey)
 		if err != nil {
-			c.SetCookie(cookie)
+			return echo.NewHTTPError(http.StatusInternalServerError, err)
 		}
+		c.SetCookie(cookie)
 		return c.Redirect(http.StatusPermanentRedirect, fmt.Sprintf("%s", viewutils.PagePrefix))
 	})
 
