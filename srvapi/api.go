@@ -12,10 +12,14 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+func GetClaimFromToken(c echo.Context, claim string) interface{} {
+    user := c.Get("user").(*jwt.Token)
+    claims := user.Claims.(jwt.MapClaims)
+	return claims[claim]
+}
+
 func GetUserFromToken(c echo.Context) (uuid.UUID, error) {
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
-	switch userID := claims["sub"].(type) {
+	switch userID := GetClaimFromToken(c, "sub").(type) {
 	case string:
 		return uuid.Parse(userID)
 	default:

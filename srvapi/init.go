@@ -39,6 +39,8 @@ func Init() {
 	e := echo.New()
 	e.Use(middleware.Logger())
 
+	signingKey := []byte("secret")
+
 	e.GET("/", func(c echo.Context) error {
 		return c.Redirect(http.StatusPermanentRedirect, fmt.Sprintf("%s", viewutils.PagePrefix))
 	})
@@ -46,8 +48,7 @@ func Init() {
 	e.GET(fmt.Sprintf("%s/login", viewutils.PagePrefix), func(c echo.Context) error {
 		c.Logger().Print(c)
 		userID := uuid.New()
-		key := []byte("secret")
-		cookie, err := GenerateJWTfromIDandKey(userID, key)
+		cookie, err := GenerateJWTfromIDandKey(userID, signingKey)
 		if err != nil {
 			c.SetCookie(cookie)
 		}
@@ -57,8 +58,7 @@ func Init() {
 	e.GET(fmt.Sprintf("%s/submitlogin", viewutils.PagePrefix), func(c echo.Context) error {
 		c.Logger().Print(c)
 		userID := uuid.New()
-		key := []byte("secret")
-		cookie, err := GenerateJWTfromIDandKey(userID, key)
+		cookie, err := GenerateJWTfromIDandKey(userID, signingKey)
 		if err != nil {
 			c.SetCookie(cookie)
 		}
@@ -68,8 +68,7 @@ func Init() {
 	e.GET(fmt.Sprintf("%s/submitsignup", viewutils.PagePrefix), func(c echo.Context) error {
 		c.Logger().Print(c)
 		userID := uuid.New()
-		key := []byte("secret")
-		cookie, err := GenerateJWTfromIDandKey(userID, key)
+		cookie, err := GenerateJWTfromIDandKey(userID, signingKey)
 		if err != nil {
 			c.SetCookie(cookie)
 		}
@@ -87,7 +86,7 @@ func Init() {
 			}
 			return err
 		},
-		SigningKey: []byte("secret"),
+		SigningKey: signingKey,
 	}
 	r.Use(echojwt.WithConfig(config))
 
