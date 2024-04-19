@@ -19,31 +19,31 @@ import (
 
 func Init() {
 	e := echo.New()
+	e.Use(middleware.Logger())
 
 	e.GET("/", func(c echo.Context) error {
-		return c.Redirect(http.StatusPermanentRedirect, "/FOOdBAR")
+		return c.Redirect(http.StatusPermanentRedirect, fmt.Sprintf("%s", viewutils.PagePrefix))
 	})
 
 	userID := uuid.New()
-	e.GET("/login", func(c echo.Context) error {
+	e.GET(fmt.Sprintf("%s/login", viewutils.PagePrefix), func(c echo.Context) error {
+		c.Logger().Print(c)
 		claims := jwt.RegisteredClaims{
 			Subject:   userID.String(),
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 72)),
 		}
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-		// Generate encoded token and send it as response.
 		t, err := token.SignedString([]byte("secret"))
 		if err != nil {
 			return err
 		}
 		c.SetCookie(&http.Cookie{
 			Name:     "token",
-			Value:    "Bearer "+t,
+			Value:    t,
 			Path:     fmt.Sprintf("%s", viewutils.PagePrefix),
-			SameSite: http.SameSiteNoneMode,
+			SameSite: http.SameSiteStrictMode,
 		})
-		// return c.NoContent(http.StatusOK)
-		return c.Redirect(http.StatusPermanentRedirect, "/FOOdBAR")
+		return c.Redirect(http.StatusPermanentRedirect, fmt.Sprintf("%s", viewutils.PagePrefix))
 	})
 
 	r := e.Group(fmt.Sprintf("%s", viewutils.PagePrefix))
@@ -53,7 +53,7 @@ func Init() {
 		TokenLookup: "cookie:token",
 		ErrorHandler: func(c echo.Context, err error) error {
 			if err != nil {
-				return c.Redirect(http.StatusTemporaryRedirect, "/login")
+				return c.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("%s/login", viewutils.PagePrefix))
 			}
 			return err
 		},
