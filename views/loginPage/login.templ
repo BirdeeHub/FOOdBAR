@@ -16,7 +16,7 @@ script htmxAllowedCodes() {
 	})
 }
 
-templ LoginPage() {
+templ LoginPage(formtype string) {
 	<!DOCTYPE html>
 	@colorsCSS()
 	<html lang="en">
@@ -27,7 +27,9 @@ templ LoginPage() {
 			<script src="https://unpkg.com/htmx.org/dist/htmx.min.js"></script>
 		</head>
 		<body class="bodycolors">
-			@LoginForm()
+			<div id="loginform">
+				@LoginForm()
+			</div>
 			@htmxAllowedCodes()
 		</body>
 	</html>
@@ -35,17 +37,21 @@ templ LoginPage() {
 
 templ LoginForm() {
 	<form id="loginform" action={ viewutils.HXurl(fmt.Sprintf("%s/submitlogin", viewutils.PagePrefix)) } method="GET" enctype="application/x-www-form-urlencoded">
-		<input value="" type="text" name="username"/>
-		<input value="" type="password" name="password"/>
+		<div style="flex-direction: column">
+			<input value="" type="text" name="username"/>
+			<input value="" type="password" name="password"/>
+		</div>
 		<button type="submit">sign in</button>
 	</form>
 }
 
 templ SignupForm() {
 	<form id="signupform" action={ viewutils.HXurl(fmt.Sprintf("%s/submitsignup", viewutils.PagePrefix)) } method="GET" enctype="application/x-www-form-urlencoded">
-		<input value="" type="text" name="username"/>
-		<input value="" type="password" name="password"/>
-		<input value="" type="password" name="confirmpassword"/>
+		<div style="flex-direction: row">
+			<input value="" type="text" name="username"/>
+			<input value="" type="password" name="password"/>
+			<input value="" type="password" name="confirmpassword"/>
+		</div>
 		<button type="submit">sign up</button>
 	</form>
 }

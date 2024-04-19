@@ -53,10 +53,14 @@ func Init() {
 	e.GET(fmt.Sprintf("%s/login", viewutils.PagePrefix), func(c echo.Context) error {
 		// TODO: Make a login and signup form to submit username/password
 		// TODO: check login and retrieve uuid or generate uuid and store with user and pass in db
-		return HTML(c, http.StatusOK, loginPage.LoginPage())
+		return HTML(c, http.StatusOK, loginPage.LoginPage("login"))
 	})
 
 	e.GET(fmt.Sprintf("%s/submitlogin", viewutils.PagePrefix), func(c echo.Context) error {
+		username := c.Get("username")
+		password := c.Get("password")
+		c.Logger().Print(username)
+		c.Logger().Print(password)
 		c.Logger().Print(c)
 		userID := uuid.New()
 		cookie, err := GenerateJWTfromIDandKey(userID, signingKey)
