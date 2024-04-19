@@ -54,6 +54,28 @@ func Init() {
 		return c.Redirect(http.StatusPermanentRedirect, fmt.Sprintf("%s", viewutils.PagePrefix))
 	})
 
+	e.GET(fmt.Sprintf("%s/submitlogin", viewutils.PagePrefix), func(c echo.Context) error {
+		c.Logger().Print(c)
+		userID := uuid.New()
+		key := []byte("secret")
+		cookie, err := GenerateJWTfromIDandKey(userID, key)
+		if err != nil {
+			c.SetCookie(cookie)
+		}
+		return c.Redirect(http.StatusPermanentRedirect, fmt.Sprintf("%s", viewutils.PagePrefix))
+	})
+
+	e.GET(fmt.Sprintf("%s/submitsignup", viewutils.PagePrefix), func(c echo.Context) error {
+		c.Logger().Print(c)
+		userID := uuid.New()
+		key := []byte("secret")
+		cookie, err := GenerateJWTfromIDandKey(userID, key)
+		if err != nil {
+			c.SetCookie(cookie)
+		}
+		return c.Redirect(http.StatusPermanentRedirect, fmt.Sprintf("%s", viewutils.PagePrefix))
+	})
+
 	r := e.Group(fmt.Sprintf("%s", viewutils.PagePrefix))
 
 	config := echojwt.Config{
