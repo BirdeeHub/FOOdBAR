@@ -12,14 +12,26 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func SetupAPIroutes(e *echo.Group, userID uuid.UUID) error {
+func GetUserFromToken(c echo.Context) (uuid.UUID, error) {
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	switch userID := claims["sub"].(type) {
+	case string:
+		return uuid.Parse(userID)
+	default:
+		return uuid.Nil, errors.New("invalid userID")
+	}
+}
+
+func SetupAPIroutes(e *echo.Group) error {
 	var pageData *viewutils.PageData = nil
 
+
 	e.GET("", func(c echo.Context) error {
-		user := c.Get("token").(*jwt.Token)
-		claims := user.Claims.(jwt.MapClaims)
-		c.Logger().Print(claims)
-		c.Logger().Print(claims["sub"])
+		userID, err := GetUserFromToken(c)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, err)
+		}
 		if pageData == nil {
 			pageData = viewutils.InitPageData(userID)
 		}
@@ -28,6 +40,10 @@ func SetupAPIroutes(e *echo.Group, userID uuid.UUID) error {
 	})
 
 	e.DELETE("/api/tabButton/deactivate/:type", func(c echo.Context) error {
+		userID, err := GetUserFromToken(c)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, err)
+		}
 		if pageData == nil {
 			pageData = viewutils.InitPageData(userID)
 		}
@@ -44,6 +60,10 @@ func SetupAPIroutes(e *echo.Group, userID uuid.UUID) error {
 	})
 
 	e.GET("/api/tabButton/activate/:type", func(c echo.Context) error {
+		userID, err := GetUserFromToken(c)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, err)
+		}
 		if pageData == nil {
 			pageData = viewutils.InitPageData(userID)
 		}
@@ -63,6 +83,10 @@ func SetupAPIroutes(e *echo.Group, userID uuid.UUID) error {
 	})
 
 	e.POST("/api/tabButton/maximize/:type", func(c echo.Context) error {
+		userID, err := GetUserFromToken(c)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, err)
+		}
 		if pageData == nil {
 			pageData = viewutils.InitPageData(userID)
 		}

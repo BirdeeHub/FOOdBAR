@@ -17,6 +17,24 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
+func GenerateJWTfromIDandKey(userID uuid.UUID, key []byte) (*http.Cookie, error) {
+	claims := jwt.RegisteredClaims{
+		Subject:   userID.String(),
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 72)),
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	t, err := token.SignedString(key)
+	if err != nil {
+		return nil, err
+	}
+	return &http.Cookie{
+		Name:     "user",
+		Value:    t,
+		Path:     fmt.Sprintf("%s", viewutils.PagePrefix),
+		SameSite: http.SameSiteStrictMode,
+	}, nil
+}
+
 func Init() {
 	e := echo.New()
 	e.Use(middleware.Logger())
@@ -25,32 +43,22 @@ func Init() {
 		return c.Redirect(http.StatusPermanentRedirect, fmt.Sprintf("%s", viewutils.PagePrefix))
 	})
 
-	userID := uuid.New()
 	e.GET(fmt.Sprintf("%s/login", viewutils.PagePrefix), func(c echo.Context) error {
 		c.Logger().Print(c)
-		claims := jwt.RegisteredClaims{
-			Subject:   userID.String(),
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 72)),
-		}
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-		t, err := token.SignedString([]byte("secret"))
+		userID := uuid.New()
+		key := []byte("secret")
+		cookie, err := GenerateJWTfromIDandKey(userID, key)
 		if err != nil {
-			return err
+			c.SetCookie(cookie)
 		}
-		c.SetCookie(&http.Cookie{
-			Name:     "token",
-			Value:    t,
-			Path:     fmt.Sprintf("%s", viewutils.PagePrefix),
-			SameSite: http.SameSiteStrictMode,
-		})
 		return c.Redirect(http.StatusPermanentRedirect, fmt.Sprintf("%s", viewutils.PagePrefix))
 	})
 
 	r := e.Group(fmt.Sprintf("%s", viewutils.PagePrefix))
 
 	config := echojwt.Config{
-		ContextKey: "token",
-		TokenLookup: "cookie:token",
+		ContextKey: "user",
+		TokenLookup: "cookie:user",
 		ErrorHandler: func(c echo.Context, err error) error {
 			if err != nil {
 				return c.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("%s/login", viewutils.PagePrefix))
@@ -69,7 +77,7 @@ func Init() {
 	}))
 	r.Static("/images", "images")
 
-	err := SetupAPIroutes(r, userID)
+	err := SetupAPIroutes(r)
 	if err != nil {
 		echo.NewHTTPError(
 			http.StatusTeapot,
