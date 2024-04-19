@@ -18,7 +18,7 @@ func SetupAPIroutes(e *echo.Group, userID uuid.UUID) error {
 	e.GET("", func(c echo.Context) error {
 		user := c.Get("token").(*jwt.Token)
 		claims := user.Claims.(jwt.MapClaims)
-		c.Logger().Print(claims["sub"])
+		c.Logger().Print(claims)
 		c.Logger().Print(claims["exp"])
 		if pageData == nil {
 			pageData = viewutils.InitPageData(userID)
