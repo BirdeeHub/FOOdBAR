@@ -120,7 +120,7 @@ Ensure to replace `'https://example.com/endpoint'` with the actual endpoint URL 
 
 ---
 
-#sqlite
+# sqlite
 
 
 Using SQLite in Go is relatively straightforward thanks to the `database/sql` package provided by the Go standard library and the `github.com/mattn/go-sqlite3` package, which serves as a SQLite driver for Go.
@@ -419,7 +419,7 @@ So in summary, use ORDER BY and LIMIT together to get the top N rows according t
 
 ---
 
-Auth
+# Auth
 
 To make /FOOdBAR route restricted to authenticated users, you can do something like:
 
@@ -546,3 +546,50 @@ So in summary:
 - Custom handler redirects to login page
 
 This way you can have a centralized redirect when authentication fails, without having to check in each route handler.
+
+
+> How would I specify that some routes are NOT restricted after definine the JWT middleware?
+
+There are a couple ways you can specify that some routes should not be restricted by the JWT middleware after it's been defined globally:
+
+1. Use route groups:
+
+```go
+e := echo.New()
+
+// Secured routes
+e.Use(middleware.JWTWithConfig(...)) 
+
+e.GET("/restricted", restrictedHandler) 
+
+// Public routes
+public := e.Group("")
+public.GET("/public", publicHandler) 
+```
+
+Here the /public route is defined outside the group with JWT middleware, so it will not require authentication.
+
+2. Skip middleware on specific routes: 
+
+```go
+e.Use(middleware.JWTWithConfig(...))
+
+e.GET("/restricted", restrictedHandler, middleware.JWTWithConfig(skipper))
+e.GET("/public", publicHandler)
+```
+
+The `skipper` option skips JWT checking on that route.
+
+3. Add middleware conditionally:
+
+```go 
+e.GET("/public", publicHandler)
+
+r := e.Group("/restricted")
+r.Use(middleware.JWTWithConfig(...)) 
+r.GET("", restrictedHandler)
+```
+
+Here the JWT middleware is only added to the /restricted group.
+
+So in summary, you can use route groups, skip middleware, or add middleware to specific groups to exclude some routes from JWT authentication.

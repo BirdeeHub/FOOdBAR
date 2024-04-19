@@ -7,6 +7,8 @@ import (
 	"github.com/google/uuid"
 )
 
+const PagePrefix = "/FOOdBAR"
+
 type PageData struct {
 	UserID   uuid.UUID
 	TabDatas []*TabData

@@ -11,22 +11,22 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func SetupAPIroutes(e *echo.Echo, userID uuid.UUID) error {
+func SetupAPIroutes(e *echo.Group, userID uuid.UUID) error {
 	var pageData *viewutils.PageData = nil
 
-	e.GET("/FOOdBAR", func(c echo.Context) error {
+	e.GET("", func(c echo.Context) error {
 		if pageData == nil {
 			pageData = viewutils.InitPageData(userID)
 		}
-		e.Logger.Print(c)
+		c.Logger().Print(c)
 		return HTML(c, http.StatusOK, views.Homepage(pageData))
 	})
 
-	e.DELETE("/FOOdBAR/api/tabButton/deactivate/:type", func(c echo.Context) error {
+	e.DELETE("/api/tabButton/deactivate/:type", func(c echo.Context) error {
 		if pageData == nil {
 			pageData = viewutils.InitPageData(userID)
 		}
-		e.Logger.Print(c)
+		c.Logger().Print(c)
 		tt, err := viewutils.String2TabType(c.Param("type"))
 		if err != nil {
 			return echo.NewHTTPError(
@@ -38,11 +38,11 @@ func SetupAPIroutes(e *echo.Echo, userID uuid.UUID) error {
 		return RenderTab(TabDeactivateRenderer, c, pageData, tabdata)
 	})
 
-	e.GET("/FOOdBAR/api/tabButton/activate/:type", func(c echo.Context) error {
+	e.GET("/api/tabButton/activate/:type", func(c echo.Context) error {
 		if pageData == nil {
 			pageData = viewutils.InitPageData(userID)
 		}
-		e.Logger.Print(c)
+		c.Logger().Print(c)
 		tt, err := viewutils.String2TabType(c.Param("type"))
 		if err != nil {
 			return echo.NewHTTPError(
@@ -57,11 +57,11 @@ func SetupAPIroutes(e *echo.Echo, userID uuid.UUID) error {
 		return RenderTab(TabActivateRenderer, c, pageData, tabdata)
 	})
 
-	e.POST("/FOOdBAR/api/tabButton/maximize/:type", func(c echo.Context) error {
+	e.POST("/api/tabButton/maximize/:type", func(c echo.Context) error {
 		if pageData == nil {
 			pageData = viewutils.InitPageData(userID)
 		}
-		e.Logger.Print(c)
+		c.Logger().Print(c)
 		tt, err := viewutils.String2TabType(c.Param("type"))
 		if err != nil {
 			return echo.NewHTTPError(
