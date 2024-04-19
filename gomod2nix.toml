@@ -2,14 +2,14 @@ schema = 3
 
 [mod]
   [mod."github.com/a-h/templ"]
-    version = "v0.2.648"
-    hash = "sha256-s5z0VUXQd7JUGhNMrNA7Txfn4qS6eTIakLgmn0xOy88="
+    version = "v0.2.663"
+    hash = "sha256-6bM4Oekpt8qIeeQLo1OZYwkaFfksJnNUzhNOPDbdmpg="
   [mod."github.com/golang-jwt/jwt"]
     version = "v3.2.2+incompatible"
     hash = "sha256-LOkpuXhWrFayvVf1GOaOmZI5YKEsgqVSb22aF8LnCEM="
   [mod."github.com/golang-jwt/jwt/v5"]
-    version = "v5.0.0"
-    hash = "sha256-eJhOeyjkEwQAN9cwwAIU4RqnbzHmbDYW27/EzcKgj9Q="
+    version = "v5.2.1"
+    hash = "sha256-3AMtL0kAD5L2/3eHf/Q6+hqga8mEaeEs+Hcdlx65go4="
   [mod."github.com/google/uuid"]
     version = "v1.6.0"
     hash = "sha256-VWl9sqUzdOuhW0KzQlv0gwwUQClYkmZwSydHG2sALYw="
@@ -17,8 +17,8 @@ schema = 3
     version = "v4.2.0"
     hash = "sha256-E92MPiFVLqWGE6GKs5C6qftzPUPkPTSgwHfPFLbDZ5M="
   [mod."github.com/labstack/echo/v4"]
-    version = "v4.11.4"
-    hash = "sha256-pVKfkZtxi5e/1MTK2RcKWSgNpEbRDo3lKUVKo01WYO0="
+    version = "v4.12.0"
+    hash = "sha256-TPXJv/6C53bnmcEYxa9g5Mft8u/rLT96q64tQ9+RtKU="
   [mod."github.com/labstack/gommon"]
     version = "v0.4.2"
     hash = "sha256-395+BETDpv15L2lsCiEccwakXgEQxKHlYBAU0Ot3qhY="
@@ -38,14 +38,14 @@ schema = 3
     version = "v1.2.2"
     hash = "sha256-gp+lNXE8zjO+qJDM/YbS6V43HFsYP6PKn4ux1qa5lZ0="
   [mod."golang.org/x/crypto"]
-    version = "v0.17.0"
-    hash = "sha256-/vzBaeD/Ymyc7cpjBvSfJfuZ57zWa9LOaZM7b33eIx0="
+    version = "v0.22.0"
+    hash = "sha256-2+u9nd32+Bi7EEv7QFc12CRTbfV7DApNv+yKIr7+lTw="
   [mod."golang.org/x/net"]
-    version = "v0.19.0"
-    hash = "sha256-3M5rKEvJx4cO/q+06cGjR5sxF5JpnUWY0+fQttrWdT4="
+    version = "v0.24.0"
+    hash = "sha256-w1c21ljta5wNIyel9CSIn/crPzwOCRofNKhqmfs4aEQ="
   [mod."golang.org/x/sys"]
-    version = "v0.15.0"
-    hash = "sha256-n7TlABF6179RzGq3gctPDKDPRtDfnwPdjNCMm8ps2KY="
+    version = "v0.19.0"
+    hash = "sha256-cmuL31TYLJmDm/fDnI2Sn0wB88cpdOHV1+urorsJWx4="
   [mod."golang.org/x/text"]
     version = "v0.14.0"
     hash = "sha256-yh3B0tom1RfzQBf1RNmfdNWF1PtiqxV41jW1GVS6JAg="

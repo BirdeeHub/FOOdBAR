@@ -17,7 +17,8 @@
 let
   templ = inputs.templ.packages.${pkgs.system}.templ;
   air = pkgs.writeShellScriptBin "air" ''
-    ${pkgs.air}/bin/air -c ${import ./.air.nix { inherit pkgs air templ gomod2nix goEnv; inherit (pkgs) go; }}
+    export PATH=${pkgs.lib.makeBinPath [ pkgs.air templ gomod2nix goEnv ]}:$PATH
+    ${pkgs.air}/bin/air -c ${pkgs.writeText "air-toml" (builtins.readFile ./.air.toml)}
   '';
   goEnv = mkGoEnv { pwd = ./.; };
 in
