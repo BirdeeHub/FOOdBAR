@@ -12,7 +12,7 @@ templ PreplistTabContents(td *viewutils.TabData) {
 templ PreplistItemContainer(item *viewutils.TabItem) {
 	<div id={ fmt.Sprintf("%s", item.ItemID.String()) } class={ TabListItemCSS() }>
 		<div class={ ListItemElementCSS() }>
-			{ item.ItemName }
+			{ item.ItemType }
 		</div>
 		<div class={ ListItemElementCSS() }>
 			@viewutils.Trashcan()

@@ -12,7 +12,7 @@ templ ShoppingTabContents(td *viewutils.TabData) {
 templ ShoppingItemContainer(item *viewutils.TabItem) {
 	<div id={ fmt.Sprintf("%s", item.ItemID.String()) } class={ TabListItemCSS() }>
 		<div class={ ListItemElementCSS() }>
-			{ item.ItemName }
+			{ item.ItemType }
 		</div>
 		<div class={ ListItemElementCSS() }>
 			@viewutils.Trashcan()
