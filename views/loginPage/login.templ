@@ -37,7 +37,7 @@ templ LoginPage(formtype string) {
 
 templ LoginForm() {
 	<form id="loginform" action={ viewutils.HXurl(fmt.Sprintf("%s/submitlogin", viewutils.PagePrefix)) } method="POST" enctype="application/x-www-form-urlencoded">
-		<div style="flex-direction: column">
+		<div style="flex-direction: row">
 			<input value="" type="text" name="username"/>
 			<input value="" type="password" name="password"/>
 		</div>
