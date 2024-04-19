@@ -12,7 +12,7 @@ templ RecipeTabContents(td *viewutils.TabData) {
 templ RecipeItemContainer(item *viewutils.TabItem) {
 	<div id={ fmt.Sprintf("%s", item.ItemID.String()) } class={ TabListItemCSS() }>
 		<div class={ ListItemElementCSS() }>
-			{ item.ItemType }
+			{ item.ItemID.String() }
 		</div>
 		<div class={ ListItemElementCSS() }>
 			@viewutils.Trashcan()

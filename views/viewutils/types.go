@@ -18,7 +18,7 @@ type PageData struct {
 
 type TabItem struct {
 	ItemID   uuid.UUID
-	ItemType string
+	Expanded bool
 	Ttype    TabType
 }
 
