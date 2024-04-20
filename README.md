@@ -3,11 +3,19 @@
 ## This is my first attempt at making a webpage,
 ## It is also my first time using go, htmx, sql, js, html, css, templ, authentication, routing, etc.
 
-This program will be a tracker app for a friend's small catering buisness when it is finished.
+This program will be a tracker app for a friend's small catering/personal chef buisness when it is finished.
 
 Mostly though, it is a way for me to learn web development as I have not done any before.
 
 There will likely be some spaghetti that I will figure out how to handle better as I go.
+
+### Name:
+
+It's FU'd Beyond Any Recognition
+
+The FOOdBAR tracks the food in the FOOdb and tells you how much FOOd you have and sold and what it cost,
+and reminds you of recipes that fit those criteria best. Allowing you to cook more variety with less headache
+
 
 
 ### TODO AND IDEAS:
