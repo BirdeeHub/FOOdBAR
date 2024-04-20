@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"FOOdBAR/db"
@@ -50,6 +51,7 @@ func WipeAuth(c echo.Context) {
 }
 
 func Init() {
+	dbpath := os.Getenv("FOOdBAR_STATE")
 	e := echo.New()
 	e.Use(middleware.Logger())
 
@@ -82,7 +84,7 @@ func Init() {
 		// TODO: return visible error message if fail
 		username := c.FormValue("username")
 		password := c.FormValue("password")
-		userID, err := db.AuthUser(username, password)
+		userID, err := db.AuthUser(username, password, dbpath)
 		if err != nil {
 			// TODO: return visible error message if fail as hx oob swap
 			WipeAuth(c)
@@ -109,7 +111,7 @@ func Init() {
 			// TODO: return visible error message if fail as hx oob swap
 			return echo.NewHTTPError(http.StatusNotAcceptable, errors.New("Passwords don't match"))
 		}
-		userID, err := db.CreateUser(username, password)
+		userID, err := db.CreateUser(username, password, dbpath)
 		if err != nil {
 			// TODO: return visible error message if fail as hx oob swap
 			WipeAuth(c)

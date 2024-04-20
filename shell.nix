@@ -30,8 +30,7 @@ pkgs.mkShell {
     air
     templ
   ];
-  AUTH_DB = "/home/birdee/.local/share/FOOdBAR/auth.db";
-  FOOdBAR_DB = "/home/birdee/.local/share/FOOdBAR/FOOdBAR.db";
+  FOOdBAR_STATE = "/home/birdee/.local/share";
   shellHook = ''
     exec ${pkgs.zsh}/bin/zsh
   '';

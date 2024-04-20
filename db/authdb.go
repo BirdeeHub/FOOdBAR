@@ -4,7 +4,7 @@ import (
 	"crypto/sha256"
 	"database/sql"
 	"errors"
-	"os"
+	"fmt"
 	"strings"
 
 	foodlib "FOOdBAR/lib"
@@ -13,20 +13,20 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func AuthUser(username string, password string) (uuid.UUID, error) {
-	authDB := os.Getenv("AUTH_DB")
-	if authDB == "" {
-		return uuid.Nil, errors.New("AUTH_DB env var not set")
+func AuthUser(username string, password string, dbpath string) (uuid.UUID, error) {
+	if dbpath == "" {
+		dbpath = "/tmp"
 	}
+	authDB := fmt.Sprintf("%s/FOodBAR/auth.db", dbpath)
 	authdbpath, err := foodlib.CreateEmptyFileIfNotExists(authDB)
 	if err != nil {
 		return uuid.Nil, err
 	}
 	db, err := sql.Open("sqlite3", authdbpath)
+	defer db.Close()
 	if err != nil {
 		return uuid.Nil, err
 	}
-	defer db.Close()
 
 	// prepare statement (for input sanitization)
 	stmt, err := db.Prepare("SELECT password, userID FROM user_auth_table WHERE username = ?")
@@ -71,11 +71,11 @@ func AuthUser(username string, password string) (uuid.UUID, error) {
 	return userID, nil
 }
 
-func CreateUser(username string, password string) (uuid.UUID, error) {
-	authDB := os.Getenv("AUTH_DB")
-	if authDB == "" {
-		return uuid.Nil, errors.New("AUTH_DB env var not set")
+func CreateUser(username string, password string, dbpath string) (uuid.UUID, error) {
+	if dbpath == "" {
+		dbpath = "/tmp"
 	}
+	authDB := fmt.Sprintf("%s/FOodBAR/auth.db", dbpath)
 	authdbpath, err := foodlib.CreateEmptyFileIfNotExists(authDB)
 	if err != nil {
 		return uuid.Nil, err

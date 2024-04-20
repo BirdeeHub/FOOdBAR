@@ -27,8 +27,7 @@ buildGoApplication {
   '';
   postFixup = ''
     wrapProgram $out/bin/FOOdBAR \
-      --set AUTH_DB ${dbpath}/FOOdBAR/auth.db \
-      --set FOOdBAR_DB ${dbpath}/FOOdBAR/FOOdBAR.db
+      --set FOOdBAR_STATE ${dbpath}
   '';
   buildInputs = [ pkgs.sqlite ];
 }
