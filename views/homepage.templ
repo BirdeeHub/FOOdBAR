@@ -132,18 +132,6 @@ templ TabButton(tbd *viewutils.TabData) {
 	}
 }
 
-templ MaximizeTabButton(tt viewutils.TabType) {
-	<div
-		hx-post={ fmt.Sprintf("%s/api/tabButton/maximize/%s", viewutils.PagePrefix, tt) }
-		hx-target="#tabViewContainer"
-		id={ fmt.Sprintf("tabButton_%s", tt) }
-		class={ TabHeaderItemCSS("0") }
-		style="cursor: pointer;"
-	>
-		@viewutils.Maximize()
-	</div>
-}
-
 templ TabContainer(td *viewutils.TabData) {
 	<div id={ fmt.Sprintf("tabContainer_%s", td.Ttype) } class={ TabContainerCSS() }>
 		@RenderTabContents(td)
