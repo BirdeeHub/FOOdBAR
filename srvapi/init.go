@@ -36,6 +36,18 @@ func GenerateJWTfromIDandKey(userID uuid.UUID, key []byte) (*http.Cookie, error)
 		SameSite: http.SameSiteStrictMode,
 	}, nil
 }
+func WipeAuth(c echo.Context) {
+    // Set the cookie with the same name and an expiration time in the past
+    expiration := time.Now().AddDate(0, 0, -1)
+    cookie := http.Cookie{
+        Name:    "user",
+        Value:   "",
+		Path:     fmt.Sprintf("%s", viewutils.PagePrefix),
+        Expires: expiration,
+		SameSite: http.SameSiteStrictMode,
+    }
+    http.SetCookie(c.Response().Writer, &cookie)
+}
 
 func Init() {
 	e := echo.New()
@@ -45,7 +57,7 @@ func Init() {
 	// e.Pre(middleware.HTTPSRedirect())
 
 	// TODO: get a much better key from a file
-	signingKey := []byte("secret-passphrasewillitwork")
+	signingKey := []byte("secret-passphrase-willitwork")
 
 	e.GET("/", func(c echo.Context) error {
 		return c.Redirect(http.StatusPermanentRedirect, fmt.Sprintf("%s", viewutils.PagePrefix))
@@ -72,13 +84,15 @@ func Init() {
 		password := c.FormValue("password")
 		userID, err := db.AuthUser(username, password)
 		if err != nil {
-			// TODO: return visible error message if fail
+			// TODO: return visible error message if fail as hx oob swap
+			WipeAuth(c)
 			c.Logger().Print(err)
 			return echo.NewHTTPError(http.StatusNotAcceptable, err)
 		}
 		c.Logger().Print(userID)
 		cookie, err := GenerateJWTfromIDandKey(userID, signingKey)
 		if err != nil {
+			WipeAuth(c)
 			c.Logger().Print(err)
 			return echo.NewHTTPError(http.StatusTeapot, err)
 		}
@@ -91,18 +105,21 @@ func Init() {
 		password := c.FormValue("password")
 		confirmpassword := c.FormValue("confirmpassword")
 		if password != confirmpassword {
-			// TODO: return visible error message if fail
+			WipeAuth(c)
+			// TODO: return visible error message if fail as hx oob swap
 			return echo.NewHTTPError(http.StatusNotAcceptable, errors.New("Passwords don't match"))
 		}
 		userID, err := db.CreateUser(username, password)
 		if err != nil {
-			// TODO: return visible error message if fail
+			// TODO: return visible error message if fail as hx oob swap
+			WipeAuth(c)
 			c.Logger().Print(err)
 			return echo.NewHTTPError(http.StatusNotAcceptable, err)
 		}
 		c.Logger().Print(userID)
 		cookie, err := GenerateJWTfromIDandKey(userID, signingKey)
 		if err != nil {
+			WipeAuth(c)
 			c.Logger().Print(err)
 			return echo.NewHTTPError(http.StatusTeapot, err)
 		}
@@ -114,19 +131,42 @@ func Init() {
 
 	r := e.Group(fmt.Sprintf("%s", viewutils.PagePrefix))
 
-	config := echojwt.Config{
+	jwtConfig := echojwt.Config{
 		ContextKey: "user",
 		TokenLookup: "cookie:user",
-		ErrorHandler: func(c echo.Context, err error) error {
+		SuccessHandler: func(c echo.Context) {
+			userID, err := GetUserFromToken(c)
 			if err != nil {
-				return c.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("%s/login", viewutils.PagePrefix))
+				WipeAuth(c)
+				c.Logger().Print(err)
+				return
 			}
+			user := c.Get("user").(*jwt.Token)
+			claims := user.Claims.(jwt.MapClaims)
+			expirationtime, err := claims.GetExpirationTime()
+			if err != nil {
+				WipeAuth(c)
+				c.Logger().Print(err)
+				return
+			}
+			if time.Until(expirationtime.Time) < time.Hour {
+				cookie, err := GenerateJWTfromIDandKey(userID, signingKey)
+				if err != nil {
+					WipeAuth(c)
+					c.Logger().Print(err)
+					return
+				}
+				c.SetCookie(cookie)
+			}
+		},
+		ErrorHandler: func(c echo.Context, err error) error {
+			WipeAuth(c)
 			c.Logger().Print(err)
-			return err
+			return c.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("%s/login", viewutils.PagePrefix))
 		},
 		SigningKey: signingKey,
 	}
-	r.Use(echojwt.WithConfig(config))
+	r.Use(echojwt.WithConfig(jwtConfig))
 
 	r.Use(middleware.Logger())
 	r.Use(echo.WrapMiddleware(func(hndl http.Handler) http.Handler {

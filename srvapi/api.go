@@ -28,8 +28,8 @@ func GetUserFromToken(c echo.Context) (uuid.UUID, error) {
 	}
 }
 
-// TODO: Make it so that it clears old ones
-// TODO: Implement client side caching of pageData in case it times out a still-valid login
+// TODO: Make it so that it clears old ones every so often
+// TODO: Implement client side caching of pageData in case it times out a still-valid login?
 var pageDatas map[uuid.UUID]*viewutils.PageData = make(map[uuid.UUID]*viewutils.PageData)
 
 func GetPageData(userID uuid.UUID) *viewutils.PageData {
