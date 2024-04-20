@@ -38,16 +38,16 @@ func GenerateJWTfromIDandKey(userID uuid.UUID, key []byte) (*http.Cookie, error)
 	}, nil
 }
 func WipeAuth(c echo.Context) {
-    // Set the cookie with the same name and an expiration time in the past
-    expiration := time.Now().AddDate(0, 0, -1)
-    cookie := http.Cookie{
-        Name:    "user",
-        Value:   "",
+	// Set the cookie with the same name and an expiration time in the past
+	expiration := time.Now().AddDate(0, 0, -1)
+	cookie := http.Cookie{
+		Name:     "user",
+		Value:    "",
 		Path:     fmt.Sprintf("%s", viewutils.PagePrefix),
-        Expires: expiration,
+		Expires:  expiration,
 		SameSite: http.SameSiteStrictMode,
-    }
-    http.SetCookie(c.Response().Writer, &cookie)
+	}
+	http.SetCookie(c.Response().Writer, &cookie)
 }
 
 func Init() {
@@ -86,9 +86,9 @@ func Init() {
 		password := c.FormValue("password")
 		userID, err := db.AuthUser(username, password, dbpath)
 		if err != nil {
-			// TODO: return visible error message if fail as hx oob swap
 			WipeAuth(c)
 			c.Logger().Print(err)
+			// TODO: return visible error message if fail as hx oob swap
 			return echo.NewHTTPError(http.StatusNotAcceptable, err)
 		}
 		c.Logger().Print(userID)
@@ -108,14 +108,16 @@ func Init() {
 		confirmpassword := c.FormValue("confirmpassword")
 		if password != confirmpassword {
 			WipeAuth(c)
+			err := errors.New("Passwords don't match")
+			c.Logger().Print(err)
 			// TODO: return visible error message if fail as hx oob swap
-			return echo.NewHTTPError(http.StatusNotAcceptable, errors.New("Passwords don't match"))
+			return echo.NewHTTPError(http.StatusNotAcceptable, err)
 		}
 		userID, err := db.CreateUser(username, password, dbpath)
 		if err != nil {
-			// TODO: return visible error message if fail as hx oob swap
 			WipeAuth(c)
 			c.Logger().Print(err)
+			// TODO: return visible error message if fail as hx oob swap
 			return echo.NewHTTPError(http.StatusNotAcceptable, err)
 		}
 		c.Logger().Print(userID)
@@ -134,7 +136,7 @@ func Init() {
 	r := e.Group(fmt.Sprintf("%s", viewutils.PagePrefix))
 
 	jwtConfig := echojwt.Config{
-		ContextKey: "user",
+		ContextKey:  "user",
 		TokenLookup: "cookie:user",
 		SuccessHandler: func(c echo.Context) {
 			userID, err := GetUserFromToken(c)
