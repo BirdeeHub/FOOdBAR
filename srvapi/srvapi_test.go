@@ -2,15 +2,15 @@ package srvapi_test
 // TODO: write tests that actually make sense instead of letting AI try
 /*
 import (
+	"FOOdBAR/srvapi"
+	"FOOdBAR/views/viewutils"
+
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
-
-	"FOOdBAR/srvapi"
-	"FOOdBAR/views/viewutils"
 )
 
 func TestHTML(t *testing.T) {
