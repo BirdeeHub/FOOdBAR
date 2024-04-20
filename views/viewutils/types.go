@@ -149,3 +149,15 @@ func InitPageData(userID uuid.UUID) *PageData {
 	}
 	return pd
 }
+
+// TODO: Make it so that it clears old ones every so often
+// TODO: Implement client side caching of pageData in case it times out a still-valid login?
+var pageDatas map[uuid.UUID]*PageData = make(map[uuid.UUID]*PageData)
+
+func GetPageData(userID uuid.UUID) *PageData {
+	if pageDatas[userID] == nil {
+		pageDatas[userID] = InitPageData(userID)
+	}
+	pageDatas[userID].LastActive = time.Now()
+	return pageDatas[userID]
+}

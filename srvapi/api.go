@@ -2,7 +2,6 @@ package srvapi
 
 import (
 	"errors"
-	"time"
 	// "FOOdBAR/db"
 	"FOOdBAR/views"
 	"FOOdBAR/views/viewutils"
@@ -28,18 +27,6 @@ func GetUserFromToken(c echo.Context) (uuid.UUID, error) {
 	}
 }
 
-// TODO: Make it so that it clears old ones every so often
-// TODO: Implement client side caching of pageData in case it times out a still-valid login?
-var pageDatas map[uuid.UUID]*viewutils.PageData = make(map[uuid.UUID]*viewutils.PageData)
-
-func GetPageData(userID uuid.UUID) *viewutils.PageData {
-	if pageDatas[userID] == nil {
-		pageDatas[userID] = viewutils.InitPageData(userID)
-	}
-	pageDatas[userID].LastActive = time.Now()
-	return pageDatas[userID]
-}
-
 func SetupAPIroutes(e *echo.Group) error {
 
 	e.GET("", func(c echo.Context) error {
@@ -48,7 +35,7 @@ func SetupAPIroutes(e *echo.Group) error {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
 		c.Logger().Print(c)
-		return HTML(c, http.StatusOK, views.Homepage(GetPageData(userID)))
+		return HTML(c, http.StatusOK, views.Homepage(viewutils.GetPageData(userID)))
 	})
 
 	e.POST("", func(c echo.Context) error {
@@ -57,7 +44,7 @@ func SetupAPIroutes(e *echo.Group) error {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
 		c.Logger().Print(c)
-		return HTML(c, http.StatusOK, views.Homepage(GetPageData(userID)))
+		return HTML(c, http.StatusOK, views.Homepage(viewutils.GetPageData(userID)))
 	})
 
 	e.DELETE("/api/tabButton/deactivate/:type", func(c echo.Context) error {
@@ -73,7 +60,7 @@ func SetupAPIroutes(e *echo.Group) error {
 				errors.New("not a valid tab type"),
 			)
 		}
-		pageData := GetPageData(userID)
+		pageData := viewutils.GetPageData(userID)
 		tabdata, err := pageData.GetTabDataByType(*tt)
 		return RenderTab(TabDeactivateRenderer, c, pageData, tabdata)
 	})
@@ -94,7 +81,7 @@ func SetupAPIroutes(e *echo.Group) error {
 
 		// TODO: fetch appropriate TabData.Items from database
 		// based on sort. Implement infinite scroll for them.
-		pageData := GetPageData(userID)
+		pageData := viewutils.GetPageData(userID)
 		tabdata, err := pageData.GetTabDataByType(*tt)
 		return RenderTab(TabActivateRenderer, c, pageData, tabdata)
 	})
@@ -115,7 +102,7 @@ func SetupAPIroutes(e *echo.Group) error {
 
 		// TODO: fetch appropriate TabData.Items from database
 		// based on sort. Implement infinite scroll for them.
-		pageData := GetPageData(userID)
+		pageData := viewutils.GetPageData(userID)
 		tabdata, err := pageData.GetTabDataByType(*tt)
 		return RenderTab(TabMaximizeRenderer, c, pageData, tabdata)
 	})
