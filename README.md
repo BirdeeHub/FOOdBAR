@@ -23,9 +23,9 @@ database efficient infinite scroll for all list style tabs
 
 shopping price search feature?
 
-styling/animation?
-
 write some damn tests
+
+styling/animation?
 
 recipe list and entry
 
