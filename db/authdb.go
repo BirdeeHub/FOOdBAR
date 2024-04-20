@@ -81,11 +81,11 @@ func CreateUser(username string, password string) (uuid.UUID, error) {
 
 	_, err = db.Exec("INSERT INTO user_auth_table (username, password, userID) VALUES (?, ?, ?)", username, hashedPassword[:], userID.String())
 	if err != nil {
-        // Check if the error is due to a constraint violation (duplicate username)
-        if strings.Contains(err.Error(), "UNIQUE constraint failed") {
-            return uuid.Nil, errors.New("username already exists")
-        }
-        return uuid.Nil, err
+		// Check if the error is due to a constraint violation (duplicate username)
+		if strings.Contains(err.Error(), "UNIQUE constraint failed") {
+			return uuid.Nil, errors.New("username already exists")
+		}
+		return uuid.Nil, err
 	}
 
 	return userID, nil
