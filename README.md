@@ -1,10 +1,11 @@
 # This repo is an extreme work in progress, it is NOT EVEN CLOSE TO FINISHED!!!!
 
-## It is my first time makind a webpage, and first time using go, htmx, sql, js, html, css, templ, routing, etc.
+## This is my first attempt at making a webpage,
+## It is also my first time using go, htmx, sql, js, html, css, templ, authentication, routing, etc.
 
-This repo will be a tracker app for a small catering buisness when it is finished.
+This program will be a tracker app for a friend's small catering buisness when it is finished.
 
-Mostly though, it is a way for me to learn web development as I have not done much of it.
+Mostly though, it is a way for me to learn web development as I have not done any before.
 
 
 ### TODO AND IDEAS:
@@ -46,7 +47,7 @@ recipe entry should have completion for existing items in ingredients dietary, c
 
 # AI VOMIT
 
-Below is stuff that is probably mostly random AI garbage but I might take 1 or 2 useful things from it still
+Below is stuff that is probably mostly random AI garbage but I might take 1 or 2 useful things from it still to look up further
 
 ---
 
