@@ -58,12 +58,13 @@ type SortMethod string
 
 const (
 	Inactive   SortMethod = ""
-	Descending            = "DESC"
-	Ascending             = "ASC"
-	Random                = "RANDOM()"
+	Descending            = "DESC;"
+	Ascending             = "ASC;"
+	Random                = "RANDOM();"
+	Custom                = "END;"
 	// Others can be made with CASE WHEN condition THEN value ELSE value END
-	// When using that syntax, the key in TabData.OrderBy should be "customSortKey"
-	// so that it can be left out in the query
+	// when using this syntax, put the CASE WHEN... etc... into the OrderBy key
+	// and then put Custom as the SortMethod
 )
 
 type TabData struct {
