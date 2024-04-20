@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"FOOdBAR/db"
 	"FOOdBAR/views"
 	"FOOdBAR/views/loginPage"
 	"FOOdBAR/views/viewutils"
@@ -66,16 +67,19 @@ func Init() {
 	})
 
 	e.POST(fmt.Sprintf("%s/submitlogin", viewutils.PagePrefix), func(c echo.Context) error {
-		// TODO: check login and retrieve uuid
 		// TODO: return visible error message if fail
 		username := c.FormValue("username")
 		password := c.FormValue("password")
-		c.Logger().Print(username)
-		c.Logger().Print(password)
-		c.Logger().Print(c)
-		userID := uuid.New()
+		userID, err := db.AuthUser(username, password)
+		if err != nil {
+			// TODO: return visible error message if fail
+			c.Logger().Print(err)
+			return echo.NewHTTPError(http.StatusNotAcceptable, err)
+		}
+		c.Logger().Print(userID)
 		cookie, err := GenerateJWTfromIDandKey(userID, signingKey)
 		if err != nil {
+			c.Logger().Print(err)
 			return echo.NewHTTPError(http.StatusTeapot, err)
 		}
 		c.SetCookie(cookie)
@@ -83,16 +87,23 @@ func Init() {
 	})
 
 	e.POST(fmt.Sprintf("%s/submitsignup", viewutils.PagePrefix), func(c echo.Context) error {
-		// TODO: generate uuid and store with user and pass in db
-		// TODO: return visible error message if fail
 		username := c.FormValue("username")
 		password := c.FormValue("password")
-		c.Logger().Print(username)
-		c.Logger().Print(password)
-		c.Logger().Print(c)
-		userID := uuid.New()
+		confirmpassword := c.FormValue("confirmpassword")
+		if password != confirmpassword {
+			// TODO: return visible error message if fail
+			return echo.NewHTTPError(http.StatusNotAcceptable, errors.New("Passwords don't match"))
+		}
+		userID, err := db.CreateUser(username, password)
+		if err != nil {
+			// TODO: return visible error message if fail
+			c.Logger().Print(err)
+			return echo.NewHTTPError(http.StatusNotAcceptable, err)
+		}
+		c.Logger().Print(userID)
 		cookie, err := GenerateJWTfromIDandKey(userID, signingKey)
 		if err != nil {
+			c.Logger().Print(err)
 			return echo.NewHTTPError(http.StatusTeapot, err)
 		}
 		c.SetCookie(cookie)
@@ -110,6 +121,7 @@ func Init() {
 			if err != nil {
 				return c.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("%s/login", viewutils.PagePrefix))
 			}
+			c.Logger().Print(err)
 			return err
 		},
 		SigningKey: signingKey,
@@ -126,6 +138,7 @@ func Init() {
 
 	err := SetupAPIroutes(r)
 	if err != nil {
+		e.Logger.Print(err)
 		echo.NewHTTPError(
 			http.StatusTeapot,
 			errors.New("server api setup failed: "+err.Error()),
