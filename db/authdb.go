@@ -5,18 +5,53 @@ import (
 	"database/sql"
 	"errors"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/google/uuid"
 	_ "github.com/mattn/go-sqlite3"
 )
 
+func createEmptyFileIfNotExists(filename string) (string, error) {
+	// Create the directory if it doesn't exist
+	err := os.MkdirAll(filepath.Dir(filename), 0700)
+	if err != nil {
+		return "", err
+	}
+
+	// Try to open the file in read-only mode
+	filetry, err := os.Open(filename)
+	filetry.Close()
+	if os.IsNotExist(err) {
+		file, err := os.Create(filename)
+		defer file.Close()
+		if err != nil {
+			return "", err
+		}
+		err = file.Chmod(0600)
+		if err != nil {
+			return "", err
+		}
+	} else if err != nil {
+		return "", err
+	}
+	absPath, err := filepath.Abs(filename)
+	if err != nil {
+		return "", err
+	}
+	return absPath, nil
+}
+
 func AuthUser(username string, password string) (uuid.UUID, error) {
 	authDB := os.Getenv("AUTH_DB")
 	if authDB == "" {
 		return uuid.Nil, errors.New("AUTH_DB env var not set")
 	}
-	db, err := sql.Open("sqlite3", authDB)
+	authdbpath, err := createEmptyFileIfNotExists(authDB)
+	if err != nil {
+		return uuid.Nil, err
+	}
+	db, err := sql.Open("sqlite3", authdbpath)
 	if err != nil {
 		return uuid.Nil, err
 	}
@@ -66,7 +101,15 @@ func AuthUser(username string, password string) (uuid.UUID, error) {
 }
 
 func CreateUser(username string, password string) (uuid.UUID, error) {
-	db, err := sql.Open("sqlite3", "/var/db/FOOdBAR/auth.db")
+	authDB := os.Getenv("AUTH_DB")
+	if authDB == "" {
+		return uuid.Nil, errors.New("AUTH_DB env var not set")
+	}
+	authdbpath, err := createEmptyFileIfNotExists(authDB)
+	if err != nil {
+		return uuid.Nil, err
+	}
+	db, err := sql.Open("sqlite3", authdbpath)
 	if err != nil {
 		return uuid.Nil, err
 	}

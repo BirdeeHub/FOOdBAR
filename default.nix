@@ -11,6 +11,7 @@
   )
 , buildGoApplication ? pkgs.buildGoApplication
 , inputs ? {}
+, dbpath ? "/tmp"
 }: let
   templ = inputs.templ.packages.${pkgs.system}.templ;
 in
@@ -20,11 +21,13 @@ buildGoApplication {
   pwd = ./.;
   src = ./.;
   modules = ./gomod2nix.toml;
+  nativeBuildInputs = with pkgs; [ templ makeWrapper ];
   preBuild = ''
-    ${templ}/bin/templ generate
+    templ generate
+  '';
+  postFixup = ''
+    wrapProgram $out/bin/FOOdBAR \
+      --set AUTH_DB ${dbpath}/FOOdBAR/auth.db
   '';
   buildInputs = [ pkgs.sqlite ];
-  env = {
-    AUTH_DB = "/home/birdee/.local/share/FOOdBAR/auth.db";
-  };
 }
