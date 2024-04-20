@@ -45,12 +45,13 @@ setup go, htmx, templ, echo project
 
 made it be buildable by nix, and included a dev shell
 
-defined the basic routes and templates needed for the tab skeleton
+defined the basic api routes and templates needed for the tab skeleton
 
 set up authentication via JWT and auth database
 
 defined skeleton of runtime state type objects
 
+defined part of the skeleton for the tabs themselves
 
 ### TODO AND IDEAS:
 database for tab items
