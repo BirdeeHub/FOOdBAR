@@ -16,10 +16,27 @@ It's FU'd Beyond Any Recognition
 The FOOdBAR tracks the food in the FOOdb and tells you how much FOOd you have and sold and what it cost,
 and reminds you of recipes that fit those criteria best. Allowing you to cook more variety with less headache
 
+### Done so far:
+
+setup go, htmx, templ, echo project
+
+made it be buildable by nix, and included a dev shell
+
+defined the basic routes and templates needed for the tab skeleton
+
+set up authentication via JWT and auth database
+
+defined skeleton of runtime state type objects
 
 
 ### TODO AND IDEAS:
-database efficient infinite scroll for all list style tabs
+database for tab items
+
+expandable elements for tab items
+
+Would be nice to have dynamic resizing with the mouse
+
+infinite scroll for all list style tabs
 
 shopping price search feature?
 
@@ -41,9 +58,6 @@ total workflow, 3 interaction stages. Generate menu, input orders and generate t
 
 6 tab interface? recipe database, menu tab where you have the menu and track orders, prep list, shopping list, stock list, profit review
 
-All are list style tabs with expandable elements
-
-Would be nice to have these able to be dynamically resized with the mouse
 
 recipes will need category, dietary, ingredients, estimated cost, fields, ingredients should have an optional scaling factor for scaling recipes accurately
 
