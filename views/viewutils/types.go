@@ -13,7 +13,8 @@ const PagePrefix = "/FOOdBAR"
 type TabType string
 
 const (
-	Recipe   TabType = "Recipe"
+	Invalid  TabType = ""
+	Recipe           = "Recipe"
 	Pantry           = "Pantry"
 	Menu             = "Menu"
 	Shopping         = "Shopping"
@@ -24,7 +25,8 @@ const (
 type ColorScheme string
 
 const (
-	Dark  ColorScheme = "dark"
+	None  ColorScheme = ""
+	Dark              = "dark"
 	Light             = "light"
 )
 
@@ -84,9 +86,14 @@ type TabItem struct {
 func (tbd *TabData) AddTabItem(ti *TabItem) {
 	tbd.Parent.LastActive = time.Now()
 	ti.Parent = tbd
-	itemID := uuid.New()
-	ti.ItemID = itemID
 	ti.Ttype = tbd.Ttype
+
+	itemID := uuid.New()
+	if ti.ItemID == uuid.Nil {
+		ti.ItemID = itemID
+	} else {
+		itemID = ti.ItemID
+	}
 	tbd.Items[itemID] = ti
 }
 
