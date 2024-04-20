@@ -62,9 +62,11 @@ Would be nice to have dynamic resizing with the mouse
 
 infinite scroll for all list style tabs
 
-shopping price search feature?
-
 write some damn tests
+
+make it http*S*
+
+shopping price search feature?
 
 styling/animation?
 
