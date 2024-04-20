@@ -47,6 +47,20 @@ func SetupAPIroutes(e *echo.Group, dbpath string) error {
 		return HTML(c, http.StatusOK, views.Homepage(viewutils.GetPageData(userID)))
 	})
 
+	e.POST("/api/mediaQuery", func(c echo.Context) error {
+		userID, err := GetUserFromToken(c)
+		if err != nil {
+			return c.NoContent(http.StatusOK)
+		}
+		pageData := viewutils.GetPageData(userID)
+		if c.FormValue("query") == "(prefers-color-scheme: dark)" && c.FormValue("value") == "dark" {
+			pageData.Palette = viewutils.Dark
+		} else {
+			pageData.Palette = viewutils.Light
+		}
+		return c.NoContent(http.StatusOK)
+	})
+
 	e.DELETE("/api/tabButton/deactivate/:type", func(c echo.Context) error {
 		userID, err := GetUserFromToken(c)
 		if err != nil {

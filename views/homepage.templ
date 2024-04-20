@@ -7,8 +7,54 @@ import (
 	foolib "FOOdBAR/lib"
 )
 
-script htmxAllowedCodes() {
+script htmxAllowedCodes(mediaQueryEndpoint string) {
 	document.addEventListener("DOMContentLoaded", (event) => {
+		// Function to send the media query value to the endpoint
+		function sendMediaQueryValue(querystring, value) {
+			// Define the endpoint URL
+			const endpoint = mediaQueryEndpoint;
+			const data = new URLSearchParams();
+			data.append('query', querystring);
+			data.append('value', value);
+			const options = {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded' // Specify the content type as JSON
+				},
+				body: data // Convert the data object to a JSON string
+			}
+			// Send a GET request to the endpoint
+			fetch(endpoint, options)
+				.then(response => {
+					if (response.ok) {
+						console.log('Media query value sent successfully');
+					} else {
+						console.error('Failed to send media query value');
+					}
+				})
+				.catch(error => {
+					console.error('Error occurred while sending media query value:', error);
+				});
+		}
+		
+		// Function to check the value of the media query when the page loads
+		function checkMediaQuery() {
+			// Define your media query here
+			const querystring = '(prefers-color-scheme: dark)';
+			const mediaQuery = window.matchMedia(querystring);
+			
+			// Check if the media query matches
+			if (mediaQuery.matches) {
+				// If the media query matches, send its value to the endpoint
+				sendMediaQueryValue(querystring, 'dark');
+			} else {
+				// If the media query doesn't match, send a default value or handle accordingly
+				sendMediaQueryValue(querystring, 'light');
+			}
+		}
+
+		checkMediaQuery()
+
 		document.body.addEventListener("htmx:beforeSwap", function(evt) {
 			if (evt.detail.xhr.status === 422) {
 				evt.detail.shouldSwap = true;
@@ -20,6 +66,7 @@ script htmxAllowedCodes() {
 
 templ Homepage(pd *viewutils.PageData) {
 	<!DOCTYPE html>
+	@htmxAllowedCodes(fmt.Sprintf("%s/api/mediaQuery", viewutils.PagePrefix))
 	@colorsCSS()
 	<html lang="en">
 		<head>
@@ -31,7 +78,6 @@ templ Homepage(pd *viewutils.PageData) {
 		</head>
 		<body class="bodycolors">
 			@BodyContents(pd)
-			@htmxAllowedCodes()
 		</body>
 	</html>
 }

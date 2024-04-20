@@ -21,6 +21,13 @@ const (
 	Earnings         = "Earnings"
 )
 
+type ColorScheme string
+
+const (
+	Dark  ColorScheme = "dark"
+	Light             = "light"
+)
+
 func GetTabTypes() [6]TabType {
 	return [...]TabType{Recipe, Pantry, Menu, Shopping, Preplist, Earnings}
 }
@@ -41,6 +48,7 @@ func String2TabType(str string) (*TabType, error) {
 type PageData struct {
 	UserID     uuid.UUID
 	TabDatas   []*TabData
+	Palette    ColorScheme
 	LastActive time.Time
 }
 
