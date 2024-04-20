@@ -56,8 +56,10 @@ func Init() {
 
 	e.GET(fmt.Sprintf("%s/loginform/:formtype", viewutils.PagePrefix), func(c echo.Context) error {
 		formtype := c.Param("formtype")
-		if formtype == "login" || formtype == "signup" {
-			return HTML(c, http.StatusOK, loginPage.LoginPageContents(formtype))
+		if formtype == "login" {
+			return HTML(c, http.StatusOK, loginPage.LoginPageContents(loginPage.LoginType))
+		} else if formtype == "signup" {
+			return HTML(c, http.StatusOK, loginPage.LoginPageContents(loginPage.SignupType))
 		} else {
 			return echo.NewHTTPError(http.StatusUnprocessableEntity, errors.New("Invalid formtype"))
 		}

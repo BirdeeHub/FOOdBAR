@@ -5,6 +5,13 @@ import (
 	"FOOdBAR/views/viewutils"
 )
 
+type LoginFormType string
+
+const (
+	LoginType LoginFormType = "login"
+	SignupType LoginFormType = "signup"
+)
+
 script htmxAllowedCodes() {
 	document.addEventListener("DOMContentLoaded", (event) => {
 		document.body.addEventListener("htmx:beforeSwap", function(evt) {
@@ -16,7 +23,7 @@ script htmxAllowedCodes() {
 	})
 }
 
-templ LoginPage(formtype string) {
+templ LoginPage(formtype LoginFormType) {
 	<!DOCTYPE html>
 	@colorsCSS()
 	<html lang="en">
@@ -33,14 +40,14 @@ templ LoginPage(formtype string) {
 	</html>
 }
 
-templ LoginPageContents(formtype string) {
+templ LoginPageContents(formtype LoginFormType) {
 	<div id="loginpage" class={ displayFlex("column") }>
 		@FormTypeButton(formtype)
 		@LoginForm(formtype)
 	</div>
 }
 
-templ FormTypeButton(formtype string) {
+templ FormTypeButton(formtype LoginFormType) {
 	if formtype != "login" {
 		<div
 			hx-get={ fmt.Sprintf("%s/loginform/%s", viewutils.PagePrefix, "login") }
@@ -64,7 +71,7 @@ templ FormTypeButton(formtype string) {
 	}
 }
 
-templ LoginForm(formtype string) {
+templ LoginForm(formtype LoginFormType) {
 	if formtype == "login" {
 		<form
 			id="loginform"
