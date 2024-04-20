@@ -27,7 +27,7 @@ func GetUserFromToken(c echo.Context) (uuid.UUID, error) {
 	}
 }
 
-func SetupAPIroutes(e *echo.Group) error {
+func SetupAPIroutes(e *echo.Group, dbpath string) error {
 
 	e.GET("", func(c echo.Context) error {
 		userID, err := GetUserFromToken(c)

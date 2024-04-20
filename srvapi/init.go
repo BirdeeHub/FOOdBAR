@@ -49,7 +49,7 @@ func WipeAuth(c echo.Context) {
 	http.SetCookie(c.Response().Writer, &cookie)
 }
 
-func Init(dbpath string, signingKey []byte) {
+func Init(dbpath string, signingKey []byte, listenOn string) {
 	e := echo.New()
 	e.Use(middleware.Logger())
 
@@ -172,9 +172,9 @@ func Init(dbpath string, signingKey []byte) {
 		cssmiddleware.Path = fmt.Sprintf("%s/styles/templ.css", viewutils.PagePrefix)
 		return cssmiddleware
 	}))
-	r.Static("/images", "images")
+	r.Static("/images", "FdBimg")
 
-	err := SetupAPIroutes(r)
+	err := SetupAPIroutes(r, dbpath)
 	if err != nil {
 		e.Logger.Print(err)
 		echo.NewHTTPError(
@@ -185,5 +185,5 @@ func Init(dbpath string, signingKey []byte) {
 
 	// TODO: figure out how to HTTPS
 	// e.Logger.Fatal(e.StartTLS(":42069", "cert.pem", "key.pem"))
-	e.Logger.Fatal(e.Start(":42069"))
+	e.Logger.Fatal(e.Start(listenOn))
 }

@@ -101,12 +101,6 @@ templ LoginForm(formtype LoginFormType, e error) {
 	}
 }
 
-templ LoginFormOOB(formtype LoginFormType, e error) {
-	<div id="loginform" hx-swap-oob="outerHTML">
-		@LoginFormContents(formtype, e)
-	</div>
-}
-
 templ LoginFormContents(formtype LoginFormType, e error) {
 	if formtype == LoginType {
 		<input value="" type="text" name="username"/>

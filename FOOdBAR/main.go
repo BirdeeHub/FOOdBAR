@@ -8,5 +8,6 @@ func main() {
 	// TODO: get a much better key from a file
 	signingKey := []byte("secret-passphrase-willitwork")
 	dbpath := os.Getenv("FOOdBAR_STATE")
-	srvapi.Init(dbpath, signingKey)
+	listenOn := ":42069"
+	srvapi.Init(dbpath, signingKey, listenOn)
 }

@@ -44,17 +44,30 @@ type PageData struct {
 	LastActive time.Time
 }
 
+type SortMethod string
+
+const (
+	Inactive   SortMethod = ""
+	Descending            = "DESC"
+	Ascending             = "ASC"
+	Random                = "RANDOM()"
+	// Others can be made with CASE WHEN condition THEN value ELSE value END
+	// When using that syntax, the key in TabData.OrderBy should be "customSortKey"
+	// so that it can be left out in the query
+)
+
 type TabData struct {
-	Parent   *PageData
-	Active bool
-	Ttype  TabType
-	Items  map[uuid.UUID]*TabItem
+	Parent  *PageData
+	Active  bool
+	Ttype   TabType
+	Items   map[uuid.UUID]*TabItem
+	OrderBy map[string]SortMethod
 }
 
 type TabItem struct {
-	Parent   *TabData
-	ItemID   uuid.UUID
-	Ttype    TabType
+	Parent *TabData
+	ItemID uuid.UUID
+	Ttype  TabType
 
 	Expanded bool
 }
