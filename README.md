@@ -9,6 +9,29 @@ Mostly though, it is a way for me to learn web development as I have not done an
 
 There will likely be some spaghetti that I will figure out how to handle better as I go.
 
+### Install and development building instructions
+
+For now it is packaged for nix only so install nix package manager, then clone the repo and cd into it
+
+Then to build or run use ```nix build --show-trace``` or ```nix run --show-trace```
+
+and to hack around with it with hot reload run the following 2 commands:
+
+```bash
+nix develop --show-trace
+# then inside the shell:
+air
+```
+
+If you dont want to install nix, the following should work, and the air command might work, assuming you have go, templ, and sqlite3 installed.
+```bash
+go mod tidy && templ generate && go build -o dist/FOOdBAR ./FOOdBAR/main.go
+```
+-OR-
+```bash
+air
+```
+
 ### Name:
 
 It's FU'd Beyond Any Recognition
