@@ -89,13 +89,10 @@ func (tbd *TabData) AddTabItem(ti *TabItem) {
 	ti.Parent = tbd
 	ti.Ttype = tbd.Ttype
 
-	itemID := uuid.New()
 	if ti.ItemID == uuid.Nil {
-		ti.ItemID = itemID
-	} else {
-		itemID = ti.ItemID
+		ti.ItemID = uuid.New()
 	}
-	tbd.Items[itemID] = ti
+	tbd.Items[ti.ItemID] = ti
 }
 
 func (tbd *TabData) GetTabItems() []*TabItem {
