@@ -45,6 +45,8 @@ Run the program, and then visit localhost:42069 (or other configured value)
 
 recipe entry should have completion for existing items in ingredients dietary, category, etc but not for name or instructions or amounts or prices.
 
+---
+
 # AI VOMIT
 
 Below is stuff that is probably mostly random AI garbage but I might take 1 or 2 useful things from it still to look up further
