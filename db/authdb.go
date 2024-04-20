@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"database/sql"
 	"errors"
+	"os"
 	"strings"
 
 	"github.com/google/uuid"
@@ -11,7 +12,11 @@ import (
 )
 
 func AuthUser(username string, password string) (uuid.UUID, error) {
-	db, err := sql.Open("sqlite3", "/home/birdee/.local/share/FOOdBAR/auth.db")
+	authDB := os.Getenv("AUTH_DB")
+	if authDB == "" {
+		return uuid.Nil, errors.New("AUTH_DB env var not set")
+	}
+	db, err := sql.Open("sqlite3", authDB)
 	if err != nil {
 		return uuid.Nil, err
 	}
@@ -61,7 +66,7 @@ func AuthUser(username string, password string) (uuid.UUID, error) {
 }
 
 func CreateUser(username string, password string) (uuid.UUID, error) {
-	db, err := sql.Open("sqlite3", "/home/birdee/.local/share/FOOdBAR/auth.db")
+	db, err := sql.Open("sqlite3", "/var/db/FOOdBAR/auth.db")
 	if err != nil {
 		return uuid.Nil, err
 	}

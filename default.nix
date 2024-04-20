@@ -24,4 +24,7 @@ buildGoApplication {
     ${templ}/bin/templ generate
   '';
   buildInputs = [ pkgs.sqlite ];
+  env = {
+    AUTH_DB = "/home/birdee/.local/share/FOOdBAR/auth.db";
+  };
 }
