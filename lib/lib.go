@@ -1,5 +1,40 @@
 package lib
 
+import (
+	"os"
+	"path/filepath"
+)
+
+func CreateEmptyFileIfNotExists(filename string) (string, error) {
+	// Create the directory if it doesn't exist
+	err := os.MkdirAll(filepath.Dir(filename), 0700)
+	if err != nil {
+		return "", err
+	}
+
+	// Try to open the file in read-only mode
+	filetry, err := os.Open(filename)
+	filetry.Close()
+	if os.IsNotExist(err) {
+		file, err := os.Create(filename)
+		defer file.Close()
+		if err != nil {
+			return "", err
+		}
+		err = file.Chmod(0600)
+		if err != nil {
+			return "", err
+		}
+	} else if err != nil {
+		return "", err
+	}
+	absPath, err := filepath.Abs(filename)
+	if err != nil {
+		return "", err
+	}
+	return absPath, nil
+}
+
 func MapSlice[T *any, V *any](f func(T) V, list []T) ([]V) {
     var ret []V
     for _, item := range list {

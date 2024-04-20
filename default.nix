@@ -16,7 +16,7 @@
   templ = inputs.templ.packages.${pkgs.system}.templ;
 in
 buildGoApplication {
-  pname = "myapp";
+  pname = "FOOdBAR";
   version = "0.1";
   pwd = ./.;
   src = ./.;
@@ -27,7 +27,8 @@ buildGoApplication {
   '';
   postFixup = ''
     wrapProgram $out/bin/FOOdBAR \
-      --set AUTH_DB ${dbpath}/FOOdBAR/auth.db
+      --set AUTH_DB ${dbpath}/FOOdBAR/auth.db \
+      --set FOOdBAR_DB ${dbpath}/FOOdBAR/FOOdBAR.db
   '';
   buildInputs = [ pkgs.sqlite ];
 }

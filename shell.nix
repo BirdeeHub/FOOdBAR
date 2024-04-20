@@ -31,6 +31,7 @@ pkgs.mkShell {
     templ
   ];
   AUTH_DB = "/home/birdee/.local/share/FOOdBAR/auth.db";
+  FOOdBAR_DB = "/home/birdee/.local/share/FOOdBAR/FOOdBAR.db";
   shellHook = ''
     exec ${pkgs.zsh}/bin/zsh
   '';
