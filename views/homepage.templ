@@ -153,64 +153,16 @@ templ TabContainer(td *viewutils.TabData) {
 templ RenderTabContents(td *viewutils.TabData) {
 	switch td.Ttype {
 		case viewutils.Recipe:
-			<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>
-				<div class={ TabHeaderTitleCSS() }>
-					Recipes!
-				</div>
-				@MaximizeTabButton(td.Ttype)
-			</div>
-			<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
-				@tabviews.RecipeTabContents(td)
-			</div>
+			@tabviews.RenderRecipeTab(td)
 		case viewutils.Pantry:
-			<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>
-				<div class={ TabHeaderTitleCSS() }>
-					Pantry!
-				</div>
-				@MaximizeTabButton(td.Ttype)
-			</div>
-			<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
-				@tabviews.PantryTabContents(td)
-			</div>
+			@tabviews.RenderPantryTab(td)
 		case viewutils.Menu:
-			<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>
-				<div class={ TabHeaderTitleCSS() }>
-					Menu!
-				</div>
-				@MaximizeTabButton(td.Ttype)
-			</div>
-			<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
-				@tabviews.MenuTabContents(td)
-			</div>
+			@tabviews.RenderMenuTab(td)
 		case viewutils.Shopping:
-			<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>
-				<div class={ TabHeaderTitleCSS() }>
-					Shopping!
-				</div>
-				@MaximizeTabButton(td.Ttype)
-			</div>
-			<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
-				@tabviews.ShoppingTabContents(td)
-			</div>
+			@tabviews.RenderShoppingTab(td)
 		case viewutils.Preplist:
-			<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>
-				<div class={ TabHeaderTitleCSS() }>
-					Preplist!
-				</div>
-				@MaximizeTabButton(td.Ttype)
-			</div>
-			<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
-				@tabviews.PreplistTabContents(td)
-			</div>
+			@tabviews.RenderPreplistTab(td)
 		case viewutils.Earnings:
-			<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>
-				<div class={ TabHeaderTitleCSS() }>
-					Earnings!
-				</div>
-				@MaximizeTabButton(td.Ttype)
-			</div>
-			<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
-				@tabviews.EarningsTabContents(td)
-			</div>
+			@tabviews.RenderEarningsTab(td)
 	}
 }

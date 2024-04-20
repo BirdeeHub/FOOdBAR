@@ -1,0 +1,18 @@
+package tabviews
+
+import (
+	"fmt"
+	"FOOdBAR/views/viewutils"
+)
+
+templ MaximizeTabButton(tt viewutils.TabType) {
+	<div
+		hx-post={ fmt.Sprintf("%s/api/tabButton/maximize/%s", viewutils.PagePrefix, tt) }
+		hx-target="#tabViewContainer"
+		id={ fmt.Sprintf("tabButton_%s", tt) }
+		class={ TabHeaderItemCSS("0") }
+		style="cursor: pointer;"
+	>
+		@viewutils.Maximize()
+	</div>
+}

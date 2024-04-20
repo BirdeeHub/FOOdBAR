@@ -19,3 +19,15 @@ templ EarningsItemContainer(item *viewutils.TabItem) {
 		</div>
 	</div>
 }
+
+templ RenderEarningsTab(td *viewutils.TabData) {
+	<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>
+		<div class={ TabHeaderTitleCSS() }>
+			Earnings!
+		</div>
+		@MaximizeTabButton(td.Ttype)
+	</div>
+	<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
+		@RecipeTabContents(td)
+	</div>
+}
