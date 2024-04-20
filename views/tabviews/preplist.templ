@@ -28,6 +28,6 @@ templ RenderPreplistTab(td *viewutils.TabData) {
 		@MaximizeTabButton(td.Ttype)
 	</div>
 	<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
-		@PantryTabContents(td)
+		@PreplistTabContents(td)
 	</div>
 }
