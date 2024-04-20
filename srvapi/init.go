@@ -49,15 +49,12 @@ func WipeAuth(c echo.Context) {
 	http.SetCookie(c.Response().Writer, &cookie)
 }
 
-func Init(dbpath string) {
+func Init(dbpath string, signingKey []byte) {
 	e := echo.New()
 	e.Use(middleware.Logger())
 
 	// TODO: figure out how to HTTPS
 	// e.Pre(middleware.HTTPSRedirect())
-
-	// TODO: get a much better key from a file
-	signingKey := []byte("secret-passphrase-willitwork")
 
 	e.GET("/", func(c echo.Context) error {
 		return c.Redirect(http.StatusPermanentRedirect, fmt.Sprintf("%s", viewutils.PagePrefix))

@@ -5,6 +5,8 @@ import (
 	"os"
 )
 func main() {
+	// TODO: get a much better key from a file
+	signingKey := []byte("secret-passphrase-willitwork")
 	dbpath := os.Getenv("FOOdBAR_STATE")
-	srvapi.Init(dbpath)
+	srvapi.Init(dbpath, signingKey)
 }

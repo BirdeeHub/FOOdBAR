@@ -9,7 +9,7 @@ tmp_dir = "tmp"
   # cmd ="nix build --show-trace"
   bin = "./tmp/main"
   pre_cmd = [ "go mod tidy", "[[ $DEVSHELL == 0 ]] && gomod2nix" ]
-  cmd = "templ generate && go build -o ./tmp/main cmd/main.go"
+  cmd = "templ generate && go build -o ./tmp/main FOOdBAR/main.go"
   delay = 0
   exclude_dir = ["node_modules", "assets", "tmp", "vendor", "testdata"]
   exclude_file = []
@@ -17,7 +17,7 @@ tmp_dir = "tmp"
   exclude_unchanged = false
   follow_symlink = false
   full_bin = ""
-  # include_dir = ["cmd", "views", "pkg", "srvapi", "db", "layout", "lib", "images" ]
+  # include_dir = ["FOOdBAR", "views", "pkg", "srvapi", "db", "layout", "lib", "images" ]
   include_ext = ["go", "html", "tpl", "tmpl", "templ"]
   include_file = []
   kill_delay = "0s"
