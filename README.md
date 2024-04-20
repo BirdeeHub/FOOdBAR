@@ -7,6 +7,8 @@ This program will be a tracker app for a friend's small catering buisness when i
 
 Mostly though, it is a way for me to learn web development as I have not done any before.
 
+There will likely be some spaghetti that I will figure out how to handle better as I go.
+
 
 ### TODO AND IDEAS:
 database efficient infinite scroll for all list style tabs
@@ -14,6 +16,8 @@ database efficient infinite scroll for all list style tabs
 shopping price search feature?
 
 styling/animation?
+
+write some damn tests
 
 recipe list and entry
 
