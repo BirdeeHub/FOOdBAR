@@ -21,37 +21,81 @@ templ LoginPage(formtype string) {
 	@colorsCSS()
 	<html lang="en">
 		<head>
-			<title>🍜 FOOd-BAR (login)</title>
+			<title>🍜 Log in!</title>
 			<meta charset="utf-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
 			<script src="https://unpkg.com/htmx.org/dist/htmx.min.js"></script>
 		</head>
 		<body class="bodycolors">
-			<div id="loginform">
-				@LoginForm()
-			</div>
+			@LoginPageContents(formtype)
 			@htmxAllowedCodes()
 		</body>
 	</html>
 }
 
-templ LoginForm() {
-	<form id="loginform" action={ viewutils.HXurl(fmt.Sprintf("%s/submitlogin", viewutils.PagePrefix)) } method="POST" enctype="application/x-www-form-urlencoded">
-		<div style="flex-direction: row">
-			<input value="" type="text" name="username"/>
-			<input value="" type="password" name="password"/>
-		</div>
-		<button type="submit">sign in</button>
-	</form>
+templ LoginPageContents(formtype string) {
+	<div id="loginpage" class={ displayFlex("column") }>
+		@FormTypeButton(formtype)
+		@LoginForm(formtype)
+	</div>
 }
 
-templ SignupForm() {
-	<form id="signupform" action={ viewutils.HXurl(fmt.Sprintf("%s/submitsignup", viewutils.PagePrefix)) } method="POST" enctype="application/x-www-form-urlencoded">
-		<div style="flex-direction: row">
-			<input value="" type="text" name="username"/>
-			<input value="" type="password" name="password"/>
-			<input value="" type="password" name="confirmpassword"/>
+templ FormTypeButton(formtype string) {
+	if formtype != "login" {
+		<div
+			hx-get={ fmt.Sprintf("%s/loginform/%s", viewutils.PagePrefix, "login") }
+			hx-swap="outerHTML"
+			hx-target="#loginpage"
+			id="loginbutton"
+			class={ button(), displayFlex("column") }
+		>
+			Log in!
 		</div>
-		<button type="submit">sign up</button>
-	</form>
+	} else {
+		<div
+			hx-get={ fmt.Sprintf("%s/loginform/%s", viewutils.PagePrefix, "signup") }
+			hx-swap="outerHTML"
+			hx-target="#loginpage"
+			id="signupbutton"
+			class={ button(), displayFlex("column") }
+		>
+			Sign up!
+		</div>
+	}
+}
+
+templ LoginForm(formtype string) {
+	if formtype == "login" {
+		<form
+			id="loginform"
+			action={ viewutils.HXurl(fmt.Sprintf("%s/submitlogin", viewutils.PagePrefix)) }
+			method="POST"
+			enctype="application/x-www-form-urlencoded"
+			class={ displayFlex("column") }
+		>
+			<div class={ displayFlex("row") }>
+				<input value="" type="text" name="username"/>
+				<input value="" type="password" name="password"/>
+			</div>
+			<button class={ button() } type="submit">log in</button>
+		</form>
+	} else {
+		<form
+			id="signupform"
+			action={ viewutils.HXurl(fmt.Sprintf("%s/submitsignup", viewutils.PagePrefix)) }
+			method="POST"
+			enctype="application/x-www-form-urlencoded"
+			class={ displayFlex("column") }
+		>
+			<div class={ displayFlex("column") }>
+				Username:
+				<input value="" type="text" name="username"/>
+				Password:
+				<input value="" type="password" name="password"/>
+				Confirm password:
+				<input value="" type="password" name="confirmpassword"/>
+			</div>
+			<button class={ button() } type="submit">sign up</button>
+		</form>
+	}
 }

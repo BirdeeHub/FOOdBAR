@@ -51,8 +51,16 @@ func Init() {
 	})
 
 	e.GET(fmt.Sprintf("%s/login", viewutils.PagePrefix), func(c echo.Context) error {
-		// TODO: Make a login and signup form to submit username/password
 		return HTML(c, http.StatusOK, loginPage.LoginPage("login"))
+	})
+
+	e.GET(fmt.Sprintf("%s/loginform/:formtype", viewutils.PagePrefix), func(c echo.Context) error {
+		formtype := c.Param("formtype")
+		if formtype == "login" || formtype == "signup" {
+			return HTML(c, http.StatusOK, loginPage.LoginPageContents(formtype))
+		} else {
+			return echo.NewHTTPError(http.StatusUnprocessableEntity, errors.New("Invalid formtype"))
+		}
 	})
 
 	e.POST(fmt.Sprintf("%s/submitlogin", viewutils.PagePrefix), func(c echo.Context) error {
@@ -73,6 +81,10 @@ func Init() {
 
 	e.POST(fmt.Sprintf("%s/submitsignup", viewutils.PagePrefix), func(c echo.Context) error {
 		// TODO: generate uuid and store with user and pass in db
+		username := c.FormValue("username")
+		password := c.FormValue("password")
+		c.Logger().Print(username)
+		c.Logger().Print(password)
 		c.Logger().Print(c)
 		userID := uuid.New()
 		cookie, err := GenerateJWTfromIDandKey(userID, signingKey)
