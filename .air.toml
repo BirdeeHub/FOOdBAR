@@ -4,9 +4,6 @@ tmp_dir = "tmp"
 
 [build]
   args_bin = []
-  # bin = "./result/bin/cmd"
-  # pre_cmd = [ "git add ." ]
-  # cmd ="nix build --show-trace"
   bin = "./tmp/main"
   pre_cmd = [ "go mod tidy", "[[ $DEVSHELL == 0 ]] && gomod2nix" ]
   cmd = "templ generate && go build -o ./tmp/main FOOdBAR/main.go"
