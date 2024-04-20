@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"os"
 	"time"
 
 	"FOOdBAR/db"
@@ -50,8 +49,7 @@ func WipeAuth(c echo.Context) {
 	http.SetCookie(c.Response().Writer, &cookie)
 }
 
-func Init() {
-	dbpath := os.Getenv("FOOdBAR_STATE")
+func Init(dbpath string) {
 	e := echo.New()
 	e.Use(middleware.Logger())
 

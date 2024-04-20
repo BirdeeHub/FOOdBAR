@@ -1,7 +1,10 @@
 package main
+
 import (
 	"FOOdBAR/srvapi"
+	"os"
 )
 func main() {
-	srvapi.Init()
+	dbpath := os.Getenv("FOOdBAR_STATE")
+	srvapi.Init(dbpath)
 }
