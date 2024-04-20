@@ -6,7 +6,7 @@ import (
 )
 
 templ RecipeTabContents(td *viewutils.TabData) {
-	@viewutils.RenderPointerListWithComponent(td.Items, RecipeItemContainer)
+	@viewutils.RenderPointerListWithComponent(td.GetTabItems(), RecipeItemContainer)
 }
 
 templ RecipeItemContainer(item *viewutils.TabItem) {

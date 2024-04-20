@@ -415,3 +415,120 @@ Some key points:
 - LIMIT without ORDER BY will give arbitrary rows rather than top values.
 
 So in summary, use ORDER BY and LIMIT together to get the top N rows according to a specified ordering. Add a WHERE clause to filter before selecting top values.
+
+
+> how do I sanitize a string before I use it in a query in go
+
+
+Sanitizing strings before using them in a database query in Go is crucial to prevent SQL injection attacks. You should use parameterized queries or prepared statements instead of directly concatenating strings into your SQL queries. Most SQL database libraries for Go support this feature.
+
+Here's an example using the `database/sql` package along with `github.com/lib/pq` for PostgreSQL:
+
+```go
+package main
+
+import (
+    "database/sql"
+    "fmt"
+    _ "github.com/lib/pq"
+)
+
+func main() {
+    // Connect to the database
+    db, err := sql.Open("postgres", "user=username dbname=mydb sslmode=disable")
+    if err != nil {
+        panic(err)
+    }
+    defer db.Close()
+
+    // Example input string
+    userInput := "some input"
+
+    // Use a prepared statement to execute the query safely
+    stmt, err := db.Prepare("SELECT * FROM my_table WHERE my_column = $1")
+    if err != nil {
+        panic(err)
+    }
+    defer stmt.Close()
+
+    // Execute the prepared statement with the sanitized input
+    rows, err := stmt.Query(userInput)
+    if err != nil {
+        panic(err)
+    }
+    defer rows.Close()
+
+    // Process the query results
+    for rows.Next() {
+        var id int
+        var data string
+        if err := rows.Scan(&id, &data); err != nil {
+            panic(err)
+        }
+        fmt.Printf("ID: %d, Data: %s\n", id, data)
+    }
+    if err := rows.Err(); err != nil {
+        panic(err)
+    }
+}
+```
+
+In this example, we're using a prepared statement with the `$1` placeholder to safely inject the user input into the SQL query. This way, the database driver handles the sanitization of the input for you, preventing SQL injection attacks.
+
+
+
+
+Yes, SQLite also supports parameterized queries, which can help prevent SQL injection attacks. Here's how you can use parameterized queries with SQLite in Go:
+
+```go
+package main
+
+import (
+	"database/sql"
+	"fmt"
+	_ "github.com/mattn/go-sqlite3"
+)
+
+func main() {
+	// Connect to the SQLite database
+	db, err := sql.Open("sqlite3", "./example.db")
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	// Example input string
+	userInput := "some input"
+
+	// Use a prepared statement to execute the query safely
+	stmt, err := db.Prepare("SELECT * FROM my_table WHERE my_column = ?")
+	if err != nil {
+		panic(err)
+	}
+	defer stmt.Close()
+
+	// Execute the prepared statement with the sanitized input
+	rows, err := stmt.Query(userInput)
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+
+	// Process the query results
+	for rows.Next() {
+		var id int
+		var data string
+		if err := rows.Scan(&id, &data); err != nil {
+			panic(err)
+		}
+		fmt.Printf("ID: %d, Data: %s\n", id, data)
+	}
+	if err := rows.Err(); err != nil {
+		panic(err)
+	}
+}
+```
+
+In this example, we're using the `?` placeholder as a parameter in the SQL query. When you call `Query`, you pass the user input as an argument, and SQLite automatically handles the proper escaping and sanitization of the input, ensuring it's treated as data rather than part of the SQL command.
+
+

@@ -6,7 +6,7 @@ import (
 )
 
 templ PantryTabContents(td *viewutils.TabData) {
-	@viewutils.RenderPointerListWithComponent(td.Items, PantryItemContainer)
+	@viewutils.RenderPointerListWithComponent(td.GetTabItems(), PantryItemContainer)
 }
 
 templ PantryItemContainer(item *viewutils.TabItem) {

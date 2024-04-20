@@ -6,7 +6,7 @@ import (
 )
 
 templ PreplistTabContents(td *viewutils.TabData) {
-	@viewutils.RenderPointerListWithComponent(td.Items, PreplistItemContainer)
+	@viewutils.RenderPointerListWithComponent(td.GetTabItems(), PreplistItemContainer)
 }
 
 templ PreplistItemContainer(item *viewutils.TabItem) {

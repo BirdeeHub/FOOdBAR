@@ -67,6 +67,7 @@ func Init() {
 
 	e.POST(fmt.Sprintf("%s/submitlogin", viewutils.PagePrefix), func(c echo.Context) error {
 		// TODO: check login and retrieve uuid
+		// TODO: return visible error message if fail
 		username := c.FormValue("username")
 		password := c.FormValue("password")
 		c.Logger().Print(username)
@@ -83,6 +84,7 @@ func Init() {
 
 	e.POST(fmt.Sprintf("%s/submitsignup", viewutils.PagePrefix), func(c echo.Context) error {
 		// TODO: generate uuid and store with user and pass in db
+		// TODO: return visible error message if fail
 		username := c.FormValue("username")
 		password := c.FormValue("password")
 		c.Logger().Print(username)
@@ -97,7 +99,7 @@ func Init() {
 		return c.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("%s", viewutils.PagePrefix))
 	})
 
-	// NOTE: Authed routes below
+	// NOTE: Authenticated routes below
 
 	r := e.Group(fmt.Sprintf("%s", viewutils.PagePrefix))
 

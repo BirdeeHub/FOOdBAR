@@ -10,25 +10,6 @@ import (
 
 const PagePrefix = "/FOOdBAR"
 
-type PageData struct {
-	UserID     uuid.UUID
-	TabDatas   []*TabData
-	LastActive time.Time
-}
-
-type TabItem struct {
-	ItemID   uuid.UUID
-	Expanded bool
-	Ttype    TabType
-}
-
-type TabData struct {
-	UserID uuid.UUID
-	Active bool
-	Ttype  TabType
-	Items  []*TabItem
-}
-
 type TabType string
 
 const (
@@ -57,23 +38,67 @@ func String2TabType(str string) (*TabType, error) {
 	return nil, errors.New("invalid TabType")
 }
 
+type PageData struct {
+	UserID     uuid.UUID
+	TabDatas   []*TabData
+	LastActive time.Time
+}
+
+type TabData struct {
+	Parent   *PageData
+	Active bool
+	Ttype  TabType
+	Items  map[uuid.UUID]*TabItem
+}
+
+type TabItem struct {
+	Parent   *TabData
+	ItemID   uuid.UUID
+	Ttype    TabType
+
+	Expanded bool
+}
+
+func (tbd *TabData) AddTabItem(ti *TabItem) {
+	tbd.Parent.LastActive = time.Now()
+	ti.Parent = tbd
+	itemID := uuid.New()
+	ti.ItemID = itemID
+	ti.Ttype = tbd.Ttype
+	tbd.Items[itemID] = ti
+}
+
+func (tbd *TabData) GetTabItems() []*TabItem {
+	tbd.Parent.LastActive = time.Now()
+	var tis []*TabItem
+	for _, ti := range tbd.Items {
+		tis = append(tis, ti)
+	}
+	return tis
+}
+
 func (tbd *TabData) String() string {
+	tbd.Parent.LastActive = time.Now()
 	return tbd.Ttype.String()
 }
 
 func (tbd *TabData) IsActive() bool {
+	tbd.Parent.LastActive = time.Now()
 	return (*tbd).Active
 }
 
 func (tbd *TabData) ToggleActive() {
+	tbd.Parent.LastActive = time.Now()
 	(*tbd).Active = !(*tbd).Active
 }
 
 func (tbd *TabData) SetActive(v bool) {
+	tbd.Parent.LastActive = time.Now()
 	(*tbd).Active = v
 }
 
 func (pgd *PageData) GetTabDataByType(tt TabType) (*TabData, error) {
+	pgd.LastActive = time.Now()
 	for _, t := range pgd.TabDatas {
 		if t.Ttype == tt {
 			return t, nil
@@ -83,46 +108,44 @@ func (pgd *PageData) GetTabDataByType(tt TabType) (*TabData, error) {
 }
 
 func InitPageData(userID uuid.UUID) *PageData {
-	return &PageData{
-		UserID: userID,
+	pd := &PageData{
+		UserID:     userID,
 		LastActive: time.Now(),
 		TabDatas: []*TabData{
 			{
-				UserID: userID,
 				Active: false,
 				Ttype:  Recipe,
-				Items:  nil,
+				Items:  make(map[uuid.UUID]*TabItem),
 			},
 			{
-				UserID: userID,
 				Active: false,
 				Ttype:  Pantry,
-				Items:  nil,
+				Items:  make(map[uuid.UUID]*TabItem),
 			},
 			{
-				UserID: userID,
 				Active: false,
 				Ttype:  Menu,
-				Items:  nil,
+				Items:  make(map[uuid.UUID]*TabItem),
 			},
 			{
-				UserID: userID,
 				Active: false,
 				Ttype:  Preplist,
-				Items:  nil,
+				Items:  make(map[uuid.UUID]*TabItem),
 			},
 			{
-				UserID: userID,
 				Active: false,
 				Ttype:  Shopping,
-				Items:  nil,
+				Items:  make(map[uuid.UUID]*TabItem),
 			},
 			{
-				UserID: userID,
 				Active: false,
 				Ttype:  Earnings,
-				Items:  nil,
+				Items:  make(map[uuid.UUID]*TabItem),
 			},
 		},
 	}
+	for _, td := range pd.TabDatas {
+		td.Parent = pd
+	}
+	return pd
 }
