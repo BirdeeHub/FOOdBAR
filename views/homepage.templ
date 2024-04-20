@@ -36,24 +36,18 @@ script htmxAllowedCodes(mediaQueryEndpoint string) {
 					console.error('Error occurred while sending media query value:', error);
 				});
 		}
-		
-		// Function to check the value of the media query when the page loads
-		function checkMediaQuery() {
+		function checkColorscheme() {
 			// Define your media query here
 			const querystring = '(prefers-color-scheme: dark)';
 			const mediaQuery = window.matchMedia(querystring);
-			
-			// Check if the media query matches
 			if (mediaQuery.matches) {
-				// If the media query matches, send its value to the endpoint
 				sendMediaQueryValue(querystring, 'dark');
 			} else {
-				// If the media query doesn't match, send a default value or handle accordingly
 				sendMediaQueryValue(querystring, 'light');
 			}
 		}
 
-		checkMediaQuery()
+		checkColorscheme()
 
 		document.body.addEventListener("htmx:beforeSwap", function(evt) {
 			if (evt.detail.xhr.status === 422) {
