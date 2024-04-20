@@ -22,6 +22,7 @@ nix develop --show-trace
 # then inside the shell:
 air
 ```
+Then go to localhost:42069 in a web browser
 
 If you dont want to install nix, the following should work, and the air command might work, assuming you have go, templ, and sqlite3 installed.
 ```bash
@@ -66,10 +67,6 @@ write some damn tests
 
 make it http*S*
 
-shopping price search feature?
-
-styling/animation?
-
 recipe list and entry
 
 suggestion based on stock
@@ -84,18 +81,19 @@ total workflow, 3 interaction stages. Generate menu, input orders and generate t
 
 6 tab interface? recipe database, menu tab where you have the menu and track orders, prep list, shopping list, stock list, profit review
 
-
 recipes will need category, dietary, ingredients, estimated cost, fields, ingredients should have an optional scaling factor for scaling recipes accurately
 
 ingredients will need amounts in stock, time since purchased, storage method, (last queried price?)
 
 when all data for stock and menu and orders have been finalized for the week, generate profit report, with option for adding extra incidental costs.
 
-Interface will be written as a web page, because I want to learn how to make an interactive web page, and I will be using go + htmx to do it.
-
 Run the program, and then visit localhost:42069 (or other configured value)
 
+styling/animation?
+
 recipe entry should have completion for existing items in ingredients dietary, category, etc but not for name or instructions or amounts or prices.
+
+shopping price search feature?
 
 ---
 
