@@ -15,12 +15,6 @@ const (
 script htmxAllowedCodes() {
 	document.addEventListener("DOMContentLoaded", (event) => {
 		document.body.addEventListener("htmx:beforeSwap", function(evt) {
-			// Check if the response contains a redirect status code (3xx)
-			if (evt.detail.xhr.status >= 307 && evt.detail.xhr.status <= 308) {
-				// Extract the redirect URL from the response headers
-				evt.detail.shouldSwap = false;
-				var redirectUrl = evt.detail.response.headers.get("Location");
-			}
 			if (evt.detail.xhr.status === 406) {
 				evt.detail.shouldSwap = true;
 				evt.detail.isError = false;
