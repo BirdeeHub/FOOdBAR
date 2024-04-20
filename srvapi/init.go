@@ -61,17 +61,17 @@ func Init(dbpath string, signingKey []byte) {
 	})
 
 	e.GET(fmt.Sprintf("%s/login", viewutils.PagePrefix), func(c echo.Context) error {
-		return HTML(c, http.StatusOK, loginPage.LoginPage("login"))
+		return HTML(c, http.StatusOK, loginPage.LoginPage("login", nil))
 	})
 
 	e.GET(fmt.Sprintf("%s/loginform/:formtype", viewutils.PagePrefix), func(c echo.Context) error {
 		formtype := c.Param("formtype")
 		if formtype == "login" {
-			return HTML(c, http.StatusOK, loginPage.LoginPageContents(loginPage.LoginType))
+			return HTML(c, http.StatusOK, loginPage.LoginPageContents(loginPage.LoginType, nil))
 		} else if formtype == "signup" {
-			return HTML(c, http.StatusOK, loginPage.LoginPageContents(loginPage.SignupType))
+			return HTML(c, http.StatusOK, loginPage.LoginPageContents(loginPage.SignupType, nil))
 		} else {
-			return echo.NewHTTPError(http.StatusUnprocessableEntity, errors.New("Invalid formtype"))
+			return HTML(c, http.StatusUnprocessableEntity, loginPage.LoginPageContents(loginPage.LoginType, errors.New("Invalid formtype")))
 		}
 	})
 
@@ -83,15 +83,15 @@ func Init(dbpath string, signingKey []byte) {
 		if err != nil {
 			WipeAuth(c)
 			c.Logger().Print(err)
-			// TODO: return visible error message if fail as hx oob swap
-			return echo.NewHTTPError(http.StatusNotAcceptable, err)
+			return HTML(c, http.StatusNotAcceptable, loginPage.LoginPage(loginPage.LoginType, err))
 		}
 		c.Logger().Print(userID)
 		cookie, err := GenerateJWTfromIDandKey(userID, signingKey)
 		if err != nil {
 			WipeAuth(c)
 			c.Logger().Print(err)
-			return echo.NewHTTPError(http.StatusTeapot, err)
+			echo.NewHTTPError(http.StatusTeapot, err)
+			return HTML(c, http.StatusUnprocessableEntity, loginPage.LoginPage(loginPage.LoginType, err))
 		}
 		c.SetCookie(cookie)
 		return c.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("%s", viewutils.PagePrefix))
@@ -105,22 +105,21 @@ func Init(dbpath string, signingKey []byte) {
 			WipeAuth(c)
 			err := errors.New("Passwords don't match")
 			c.Logger().Print(err)
-			// TODO: return visible error message if fail as hx oob swap
-			return echo.NewHTTPError(http.StatusNotAcceptable, err)
+			return HTML(c, http.StatusUnprocessableEntity, loginPage.LoginPage(loginPage.SignupType, err))
 		}
 		userID, err := db.CreateUser(username, password, dbpath)
 		if err != nil {
 			WipeAuth(c)
 			c.Logger().Print(err)
-			// TODO: return visible error message if fail as hx oob swap
-			return echo.NewHTTPError(http.StatusNotAcceptable, err)
+			return HTML(c, http.StatusUnprocessableEntity, loginPage.LoginPage(loginPage.SignupType, err))
 		}
 		c.Logger().Print(userID)
 		cookie, err := GenerateJWTfromIDandKey(userID, signingKey)
 		if err != nil {
 			WipeAuth(c)
 			c.Logger().Print(err)
-			return echo.NewHTTPError(http.StatusTeapot, err)
+			echo.NewHTTPError(http.StatusTeapot, err)
+			return HTML(c, http.StatusUnprocessableEntity, loginPage.LoginPage(loginPage.SignupType, err))
 		}
 		c.SetCookie(cookie)
 		return c.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("%s", viewutils.PagePrefix))
