@@ -78,6 +78,7 @@ type TabItem struct {
 	Ttype  TabType
 
 	Expanded bool
+	ItemType string
 }
 
 func (tbd *TabData) AddTabItem(ti *TabItem) {
