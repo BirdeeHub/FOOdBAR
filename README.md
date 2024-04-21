@@ -40,6 +40,8 @@ It's FU'd Beyond Any Recognition
 The FOOdBAR tracks the food in the FOOdb and tells you how much FOOd you have and sold and what it cost,
 and reminds you of recipes that fit those criteria best. Allowing you to cook more variety with less headache
 
+---
+
 ### Done so far:
 
 setup go, htmx, templ, echo project
@@ -53,6 +55,8 @@ set up authentication via JWT and auth database
 defined skeleton of runtime state type objects
 
 defined part of the skeleton for the tabs themselves
+
+---
 
 ### TODO AND IDEAS:
 database for tab items
