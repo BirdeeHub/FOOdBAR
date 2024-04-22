@@ -314,3 +314,40 @@ In SQL, including SQLite, there are various ways to sort data beyond just ascend
     ```
 
 These are some of the common sorting options available in SQL, but the specifics may vary depending on the database system you're using.
+
+
+---
+
+### caching
+
+To save JSON data in the browser's session storage, you can use JavaScript. Session storage provides a way to store key/value pairs locally within the user's browser session. Here's how you can save JSON data to session storage:
+
+```javascript
+// Example JSON data
+var jsonData = { "key": "value" };
+
+// Convert JSON data to a string
+var jsonString = JSON.stringify(jsonData);
+
+// Save the JSON string to session storage
+sessionStorage.setItem('jsonData', jsonString);
+```
+
+In this example, `JSON.stringify()` is used to convert the JSON object `jsonData` into a string. Then, `sessionStorage.setItem()` is used to store the JSON string in session storage under the key `'jsonData'`.
+
+Later, when you want to retrieve the JSON data from session storage:
+
+```javascript
+// Retrieve the JSON string from session storage
+var storedJsonString = sessionStorage.getItem('jsonData');
+
+// Convert the JSON string back to an object
+var storedJsonData = JSON.parse(storedJsonString);
+
+// Now you can use storedJsonData as a JavaScript object
+console.log(storedJsonData);
+```
+
+This code retrieves the JSON string from session storage using `sessionStorage.getItem()`, parses it back into a JavaScript object using `JSON.parse()`, and stores it in the variable `storedJsonData`.
+
+Remember that session storage is only available for the duration of the browser session. If you want to persist the data even after the session ends, you may consider using local storage instead, which persists data even after the browser is closed and reopened. You can use `localStorage` instead of `sessionStorage` in the above examples to achieve this.
