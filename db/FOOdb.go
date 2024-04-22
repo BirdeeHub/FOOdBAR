@@ -1,7 +1,7 @@
 package db
 
 import (
-	foodlib "FOOdBAR/lib"
+	foodlib "FOOdBAR/FOOlib"
 	"FOOdBAR/views/viewutils"
 	"database/sql"
 	"fmt"

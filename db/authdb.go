@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"strings"
 
-	foodlib "FOOdBAR/lib"
+	foodlib "FOOdBAR/FOOlib"
 
 	"github.com/google/uuid"
 	_ "github.com/mattn/go-sqlite3"

@@ -172,7 +172,7 @@ func Init(dbpath string, signingKey []byte, listenOn string) {
 		cssmiddleware.Path = fmt.Sprintf("%s/styles/templ.css", viewutils.PagePrefix)
 		return cssmiddleware
 	}))
-	r.Static("/images", "FdBimg")
+	r.Static("/images", "FOOimg")
 
 	err := SetupAPIroutes(r, dbpath)
 	if err != nil {
