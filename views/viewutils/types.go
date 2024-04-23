@@ -1,9 +1,9 @@
 package viewutils
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/google/uuid"
 )
@@ -30,6 +30,8 @@ const (
 	Light             = "light"
 )
 
+var colorschemes = [3]ColorScheme{Dark, Light, None}
+
 func GetTabTypes() [6]TabType {
 	return [...]TabType{Recipe, Pantry, Menu, Shopping, Preplist, Earnings}
 }
@@ -48,10 +50,9 @@ func String2TabType(str string) (*TabType, error) {
 }
 
 type PageData struct {
-	UserID     uuid.UUID
-	TabDatas   []*TabData
-	Palette    ColorScheme
-	LastActive time.Time
+	UserID   uuid.UUID
+	TabDatas []*TabData
+	Palette  ColorScheme
 }
 
 type SortMethod string
@@ -67,8 +68,9 @@ const (
 	// and then put Custom as the SortMethod
 )
 
+var sortmethods = [4]SortMethod{Descending, Ascending, Random, Custom}
+
 type TabData struct {
-	Parent  *PageData
 	Active  bool
 	Ttype   TabType
 	Items   map[uuid.UUID]*TabItem
@@ -76,7 +78,6 @@ type TabData struct {
 }
 
 type TabItem struct {
-	Parent *TabData
 	ItemID uuid.UUID
 	Ttype  TabType
 
@@ -85,8 +86,6 @@ type TabItem struct {
 }
 
 func (tbd *TabData) AddTabItem(ti *TabItem) {
-	tbd.Parent.LastActive = time.Now()
-	ti.Parent = tbd
 	ti.Ttype = tbd.Ttype
 
 	if ti.ItemID == uuid.Nil {
@@ -96,7 +95,6 @@ func (tbd *TabData) AddTabItem(ti *TabItem) {
 }
 
 func (tbd *TabData) GetTabItems() []*TabItem {
-	tbd.Parent.LastActive = time.Now()
 	var tis []*TabItem
 	for _, ti := range tbd.Items {
 		tis = append(tis, ti)
@@ -105,27 +103,22 @@ func (tbd *TabData) GetTabItems() []*TabItem {
 }
 
 func (tbd *TabData) String() string {
-	tbd.Parent.LastActive = time.Now()
 	return tbd.Ttype.String()
 }
 
 func (tbd *TabData) IsActive() bool {
-	tbd.Parent.LastActive = time.Now()
 	return (*tbd).Active
 }
 
 func (tbd *TabData) ToggleActive() {
-	tbd.Parent.LastActive = time.Now()
 	(*tbd).Active = !(*tbd).Active
 }
 
 func (tbd *TabData) SetActive(v bool) {
-	tbd.Parent.LastActive = time.Now()
 	(*tbd).Active = v
 }
 
 func (pgd *PageData) GetTabDataByType(tt TabType) (*TabData, error) {
-	pgd.LastActive = time.Now()
 	for _, t := range pgd.TabDatas {
 		if t.Ttype == tt {
 			return t, nil
@@ -136,8 +129,7 @@ func (pgd *PageData) GetTabDataByType(tt TabType) (*TabData, error) {
 
 func InitPageData(userID uuid.UUID) *PageData {
 	pd := &PageData{
-		UserID:     userID,
-		LastActive: time.Now(),
+		UserID: userID,
 		TabDatas: []*TabData{
 			{
 				Active: false,
@@ -171,9 +163,6 @@ func InitPageData(userID uuid.UUID) *PageData {
 			},
 		},
 	}
-	for _, td := range pd.TabDatas {
-		td.Parent = pd
-	}
 	return pd
 }
 
@@ -185,6 +174,148 @@ func GetPageData(userID uuid.UUID) *PageData {
 	if pageDatas[userID] == nil {
 		pageDatas[userID] = InitPageData(userID)
 	}
-	pageDatas[userID].LastActive = time.Now()
 	return pageDatas[userID]
+}
+
+func (ti *TabItem) MarshalJSON() ([]byte, error) {
+	configpre := struct {
+		ItemID   string
+		Ttype    string
+		ItemType string
+		Expanded bool
+	}{
+		ItemID:   ti.ItemID.String(),
+		Ttype:    ti.Ttype.String(),
+		ItemType: ti.ItemType,
+		Expanded: ti.Expanded,
+	}
+	marshalled, err := json.Marshal(configpre)
+	return marshalled, err
+}
+
+func (ti *TabItem) UnmarshalJSON(data []byte) error {
+	var irJson struct {
+		ItemID   string
+		Ttype    string
+		ItemType string
+		Expanded bool
+	}
+	err := json.Unmarshal(data, &irJson)
+	if err != nil {
+		return err
+	}
+	ti.Expanded = irJson.Expanded
+	ttype, err := String2TabType(irJson.Ttype)
+	if err != nil {
+		return err
+	}
+	ti.Ttype = *ttype
+	ti.ItemType = irJson.ItemType
+	ti.ItemID, err = uuid.Parse(irJson.ItemID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (tbd *TabData) MarshalJSON() ([]byte, error) {
+	itemsmap := make(map[string]TabItem)
+	for k, v := range tbd.Items {
+		itemsmap[k.String()] = *v
+	}
+	orderby := make(map[string]string)
+	for k, v := range tbd.OrderBy {
+		orderby[k] = string(v)
+	}
+	configpre := struct {
+		Active  bool
+		Ttype   string
+		Items   map[string]TabItem
+		OrderBy map[string]string
+	}{
+		Active:  tbd.Active,
+		Ttype:   tbd.Ttype.String(),
+		Items:   itemsmap,
+		OrderBy: orderby,
+	}
+	marshalled, err := json.Marshal(configpre)
+	return marshalled, err
+}
+
+func (tbd *TabData) UnmarshalJSON(data []byte) error {
+	var irJson struct {
+		Active  bool
+		Ttype   string
+		Items   map[string]TabItem
+		OrderBy map[string]string
+	}
+	err := json.Unmarshal(data, &irJson)
+	if err != nil {
+		return err
+	}
+	tbd.Active = irJson.Active
+	ttype, err := String2TabType(irJson.Ttype)
+	if err != nil {
+		return err
+	}
+	tbd.Ttype = *ttype
+	for k, v := range irJson.Items {
+		id, err := uuid.Parse(k)
+		if err != nil {
+			return err
+		}
+		tbd.Items[id] = &v
+	}
+	for k, v := range irJson.OrderBy {
+		for _, x := range sortmethods {
+			if v == string(x) {
+				tbd.OrderBy[k] = x
+			} else {
+				return errors.New("invalid sort method")
+			}
+		}
+	}
+	return nil
+}
+
+func (pd *PageData) MarshalJSON() ([]byte, error) {
+	configpre := struct {
+		UserID   string
+		TabDatas []*TabData
+		Palette  string
+	}{
+		UserID:   pd.UserID.String(),
+		TabDatas: pd.TabDatas,
+		Palette:  string(pd.Palette),
+	}
+	marshalled, err := json.Marshal(configpre)
+	return marshalled, err
+}
+
+func (pd *PageData) UnmarshalJSON(data []byte) error {
+	var irJson struct {
+		UserID   string
+		TabDatas []*TabData
+		Palette  string
+	}
+	err := json.Unmarshal(data, &irJson)
+	if err != nil {
+		return err
+	}
+	pd.TabDatas = irJson.TabDatas
+	pd.UserID, err = uuid.Parse(irJson.UserID)
+	if err != nil {
+		return err
+	}
+	err = errors.New("invalid color scheme")
+	for _, v := range colorschemes {
+		if irJson.Palette == string(v) {
+			pd.Palette = v
+			err = nil
+		}
+	}
+	if err != nil {
+		return err
+	}
+	return nil
 }
