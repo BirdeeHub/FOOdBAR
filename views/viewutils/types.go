@@ -1,11 +1,15 @@
 package viewutils
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	"github.com/labstack/echo/v4"
 )
 
 const PagePrefix = "/FOOdBAR"
@@ -133,6 +137,7 @@ func (pgd *PageData) GetTabDataByType(tt TabType) (*TabData, error) {
 func InitPageData(userID uuid.UUID) *PageData {
 	pd := &PageData{
 		UserID: userID,
+		Palette: None,
 		TabDatas: []*TabData{
 			{
 				Active: false,
@@ -169,15 +174,64 @@ func InitPageData(userID uuid.UUID) *PageData {
 	return pd
 }
 
-// TODO: figure out how to cache these client side instead
-var pageDatas = make(map[uuid.UUID]*PageData)
-
 // TODO: make this grab a PageData or something like that from echo context
-func GetPageData(userID uuid.UUID) *PageData {
-	if pageDatas[userID] == nil {
-		pageDatas[userID] = InitPageData(userID)
+func GetPageData(c echo.Context) (*PageData, error) {
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	switch stringID := claims["sub"].(type) {
+	case string:
+		userID, err := uuid.Parse(stringID)
+		if err != nil {
+			return nil, err
+		}
+		pdcookie, err := c.Cookie(userID.String())
+		if err != nil {
+			pd := InitPageData(userID)
+			return pd, nil
+		}
+		pd := &PageData{}
+		pdmarshalled, err := base64.StdEncoding.DecodeString(pdcookie.Value)
+		if err != nil {
+			return nil, err
+		}
+		err = json.Unmarshal(pdmarshalled, pd)
+		c.Logger().Print("GET DATA FUNC")
+		c.Logger().Print(pd)
+		for _, t := range pd.TabDatas {
+			c.Logger().Print(t)
+			c.Logger().Print(t.Active)
+			c.Logger().Print(t.Ttype)
+			c.Logger().Print(t.Items)
+			c.Logger().Print(t.OrderBy)
+		}
+		return pd, nil
+	default:
+		return nil, errors.New("invalid user id")
 	}
-	return pageDatas[userID]
+}
+
+func (pd *PageData) SavePageData(c echo.Context) error {
+	c.Logger().Print("SAVE DATA FUNC")
+	c.Logger().Print(pd)
+	for _, t := range pd.TabDatas {
+		c.Logger().Print(t)
+		c.Logger().Print(t.Active)
+		c.Logger().Print(t.Ttype)
+		c.Logger().Print(t.Items)
+		c.Logger().Print(t.OrderBy)
+	}
+	pdmarshalled, err := json.Marshal(pd)
+	if err != nil {
+		return err
+	}
+	cookie := &http.Cookie{
+		Name:     pd.UserID.String(),
+		Value:    base64.StdEncoding.EncodeToString(pdmarshalled),
+		Path:     fmt.Sprintf("%s", PagePrefix),
+		SameSite: http.SameSiteStrictMode,
+	}
+	c.SetCookie(cookie)
+	return nil
 }
 
 func (ti *TabItem) MarshalJSON() ([]byte, error) {

@@ -13,18 +13,6 @@ schema = 3
   [mod."github.com/google/uuid"]
     version = "v1.6.0"
     hash = "sha256-VWl9sqUzdOuhW0KzQlv0gwwUQClYkmZwSydHG2sALYw="
-  [mod."github.com/gorilla/context"]
-    version = "v1.1.2"
-    hash = "sha256-QE6nQ0a8dSg4DcoItzTUgHb1fQovAMUdt0dUopdr4qw="
-  [mod."github.com/gorilla/securecookie"]
-    version = "v1.1.2"
-    hash = "sha256-KeMHNM9emxX+N0WYiZsTii7n8sNsmjWwbnQ9SaJfTKE="
-  [mod."github.com/gorilla/sessions"]
-    version = "v1.2.2"
-    hash = "sha256-t7FPyM6YaU95xjL6z4VQPxJnk7wLfC07a0NKXlBKiLI="
-  [mod."github.com/labstack/echo-contrib"]
-    version = "v0.17.1"
-    hash = "sha256-OkO1gWz1xL8Rw2wy4RMJjsLGhABAqAsjpVkQ3b6G+L4="
   [mod."github.com/labstack/echo-jwt/v4"]
     version = "v4.2.0"
     hash = "sha256-E92MPiFVLqWGE6GKs5C6qftzPUPkPTSgwHfPFLbDZ5M="
@@ -43,6 +31,9 @@ schema = 3
   [mod."github.com/mattn/go-sqlite3"]
     version = "v1.14.22"
     hash = "sha256-CWF2Hjg43658NhaePWbGzS19gHJXjuTroG5c0W3hgYQ="
+  [mod."github.com/stretchr/testify"]
+    version = "v1.9.0"
+    hash = "sha256-uUp/On+1nK+lARkTVtb5RxlW15zxtw2kaAFuIASA+J0="
   [mod."github.com/valyala/bytebufferpool"]
     version = "v1.0.0"
     hash = "sha256-I9FPZ3kCNRB+o0dpMwBnwZ35Fj9+ThvITn8a3Jr8mAY="

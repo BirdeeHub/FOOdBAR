@@ -32,6 +32,7 @@ func TabDeactivateRenderer(c echo.Context, data *viewutils.PageData, td *viewuti
 				break
 			}
 		}
+		data.SavePageData(c)
 		return HTML(c, http.StatusOK, views.OOBtabButtonToggle(td))
 	}
 	return nil
@@ -40,6 +41,7 @@ func TabDeactivateRenderer(c echo.Context, data *viewutils.PageData, td *viewuti
 func TabActivateRenderer(c echo.Context, data *viewutils.PageData, td *viewutils.TabData) error {
 	if !td.IsActive() {
 		td.SetActive(true)
+		data.SavePageData(c)
 		HTML(c, http.StatusOK, views.OOBtabViewContainer(td))
 		return HTML(c, http.StatusOK, views.TabButton(td))
 	} else {
@@ -48,16 +50,21 @@ func TabActivateRenderer(c echo.Context, data *viewutils.PageData, td *viewutils
 }
 
 func TabMaximizeRenderer(c echo.Context, data *viewutils.PageData, td *viewutils.TabData) error {
-	for _, v := range data.TabDatas {
+	var toMin []int
+	for i, v := range data.TabDatas {
 		if (v.IsActive() && v.Ttype != td.Ttype) {
 			v.SetActive(false)
-			HTML(c, http.StatusOK, views.OOBtabButtonToggle(v))
+			toMin = append(toMin, i)
 		}
 	}
 	if !td.IsActive() {
 		td.SetActive(true)
-		HTML(c, http.StatusOK, views.OOBtabButtonToggle(td))
 	}
+	data.SavePageData(c)
+	for _, i := range toMin {
+		HTML(c, http.StatusOK, views.OOBtabButtonToggle(data.TabDatas[i]))
+	}
+	HTML(c, http.StatusOK, views.OOBtabButtonToggle(td))
 	return HTML(c, http.StatusOK, views.TabContainer(td))
 }
 

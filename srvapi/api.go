@@ -29,42 +29,40 @@ func GetUserFromToken(c echo.Context) (uuid.UUID, error) {
 func SetupAPIroutes(e *echo.Group, dbpath string) error {
 
 	e.GET("", func(c echo.Context) error {
-		userID, err := GetUserFromToken(c)
+		c.Logger().Print(c)
+		pd, err := viewutils.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
-		c.Logger().Print(c)
-		return HTML(c, http.StatusOK, views.Homepage(viewutils.GetPageData(userID)))
+		pd.SavePageData(c)
+		return HTML(c, http.StatusOK, views.Homepage(pd))
 	})
 
 	e.POST("", func(c echo.Context) error {
-		userID, err := GetUserFromToken(c)
+		c.Logger().Print(c)
+		pd, err := viewutils.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
-		c.Logger().Print(c)
-		return HTML(c, http.StatusOK, views.Homepage(viewutils.GetPageData(userID)))
+		pd.SavePageData(c)
+		return HTML(c, http.StatusOK, views.Homepage(pd))
 	})
 
 	e.POST("/api/mediaQuery", func(c echo.Context) error {
-		userID, err := GetUserFromToken(c)
+		pageData, err := viewutils.GetPageData(c)
 		if err != nil {
-			return c.NoContent(http.StatusOK)
+			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
-		pageData := viewutils.GetPageData(userID)
 		if c.FormValue("query") == "(prefers-color-scheme: dark)" && c.FormValue("value") == "dark" {
 			pageData.Palette = viewutils.Dark
 		} else {
 			pageData.Palette = viewutils.Light
 		}
+		pageData.SavePageData(c)
 		return c.NoContent(http.StatusOK)
 	})
 
 	e.DELETE("/api/tabButton/deactivate/:type", func(c echo.Context) error {
-		userID, err := GetUserFromToken(c)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, err)
-		}
 		c.Logger().Print(c)
 		tt, err := viewutils.String2TabType(c.Param("type"))
 		if err != nil {
@@ -73,16 +71,15 @@ func SetupAPIroutes(e *echo.Group, dbpath string) error {
 				errors.New("not a valid tab type"),
 			)
 		}
-		pageData := viewutils.GetPageData(userID)
+		pageData, err := viewutils.GetPageData(c)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, err)
+		}
 		tabdata, err := pageData.GetTabDataByType(*tt)
 		return RenderTab(TabDeactivateRenderer, c, pageData, tabdata)
 	})
 
 	e.GET("/api/tabButton/activate/:type", func(c echo.Context) error {
-		userID, err := GetUserFromToken(c)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, err)
-		}
 		c.Logger().Print(c)
 		tt, err := viewutils.String2TabType(c.Param("type"))
 		if err != nil {
@@ -94,16 +91,15 @@ func SetupAPIroutes(e *echo.Group, dbpath string) error {
 
 		// TODO: fetch appropriate TabData.Items from database
 		// based on sort. Implement infinite scroll for them.
-		pageData := viewutils.GetPageData(userID)
+		pageData, err := viewutils.GetPageData(c)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, err)
+		}
 		tabdata, err := pageData.GetTabDataByType(*tt)
 		return RenderTab(TabActivateRenderer, c, pageData, tabdata)
 	})
 
 	e.POST("/api/tabButton/maximize/:type", func(c echo.Context) error {
-		userID, err := GetUserFromToken(c)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, err)
-		}
 		c.Logger().Print(c)
 		tt, err := viewutils.String2TabType(c.Param("type"))
 		if err != nil {
@@ -115,7 +111,10 @@ func SetupAPIroutes(e *echo.Group, dbpath string) error {
 
 		// TODO: fetch appropriate TabData.Items from database
 		// based on sort. Implement infinite scroll for them.
-		pageData := viewutils.GetPageData(userID)
+		pageData, err := viewutils.GetPageData(c)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, err)
+		}
 		tabdata, err := pageData.GetTabDataByType(*tt)
 		return RenderTab(TabMaximizeRenderer, c, pageData, tabdata)
 	})
