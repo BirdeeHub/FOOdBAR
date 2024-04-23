@@ -30,7 +30,12 @@ const (
 	Light             = "light"
 )
 
-var colorschemes = [3]ColorScheme{Dark, Light, None}
+func GetColorSchemes() [3]ColorScheme {
+	return [...]ColorScheme{Dark, Light, None}
+}
+func GetSortMethods() [4]SortMethod {
+	return [...]SortMethod{Descending, Ascending, Random, Custom}
+}
 
 func GetTabTypes() [6]TabType {
 	return [...]TabType{Recipe, Pantry, Menu, Shopping, Preplist, Earnings}
@@ -67,8 +72,6 @@ const (
 	// when using this syntax, put the CASE WHEN... etc... into the OrderBy key
 	// and then put Custom as the SortMethod
 )
-
-var sortmethods = [4]SortMethod{Descending, Ascending, Random, Custom}
 
 type TabData struct {
 	Active  bool
@@ -267,7 +270,7 @@ func (tbd *TabData) UnmarshalJSON(data []byte) error {
 		tbd.Items[id] = &v
 	}
 	for k, v := range irJson.OrderBy {
-		for _, x := range sortmethods {
+		for _, x := range GetSortMethods() {
 			if v == string(x) {
 				tbd.OrderBy[k] = x
 			} else {
@@ -308,7 +311,7 @@ func (pd *PageData) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	err = errors.New("invalid color scheme")
-	for _, v := range colorschemes {
+	for _, v := range GetColorSchemes() {
 		if irJson.Palette == string(v) {
 			pd.Palette = v
 			err = nil
