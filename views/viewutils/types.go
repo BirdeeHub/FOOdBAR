@@ -169,8 +169,7 @@ func InitPageData(userID uuid.UUID) *PageData {
 	return pd
 }
 
-// TODO: Make it so that it clears old ones every so often
-// TODO: Implement client side caching of pageData in case it times out a still-valid login?
+// TODO: figure out how to cache these client side instead
 var pageDatas = make(map[uuid.UUID]*PageData)
 
 func GetPageData(userID uuid.UUID) *PageData {
