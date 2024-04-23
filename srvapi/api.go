@@ -6,7 +6,6 @@ import (
 	"FOOdBAR/views"
 	"FOOdBAR/views/viewutils"
 	"net/http"
-
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"

@@ -320,34 +320,228 @@ These are some of the common sorting options available in SQL, but the specifics
 
 ### caching
 
-To save JSON data in the browser's session storage, you can use JavaScript. Session storage provides a way to store key/value pairs locally within the user's browser session. Here's how you can save JSON data to session storage:
+> So, I have a PageData struct type, and i would like to create a new one for a user upon login, and send it to them to save in session storage. I would then like to get it from context on every request from the client. Is this possible if so how
+> 
+> ```go
+> 	e.GET("", func(c echo.Context) error {
+> 		userID, err := GetUserFromToken(c)
+> 		if err != nil {
+> 			return echo.NewHTTPError(http.StatusUnauthorized, err)
+> 		}
+> 		c.Logger().Print(c)
+> 		return HTML(c, http.StatusOK, views.Homepage(viewutils.GetPageData(userID)))
+> 	})
+> 
+> 	e.POST("", func(c echo.Context) error {
+> 		userID, err := GetUserFromToken(c)
+> 		if err != nil {
+> 			return echo.NewHTTPError(http.StatusUnauthorized, err)
+> 		}
+> 		c.Logger().Print(c)
+> 		return HTML(c, http.StatusOK, views.Homepage(viewutils.GetPageData(userID)))
+> 	})
+> 
+> 	e.POST("/api/mediaQuery", func(c echo.Context) error {
+> 		userID, err := GetUserFromToken(c)
+> 		if err != nil {
+> 			return c.NoContent(http.StatusOK)
+> 		}
+> 		pageData := viewutils.GetPageData(userID)
+> 		if c.FormValue("query") == "(prefers-color-scheme: dark)" && c.FormValue("value") == "dark" {
+> 			pageData.Palette = viewutils.Dark
+> 		} else {
+> 			pageData.Palette = viewutils.Light
+> 		}
+> 		return c.NoContent(http.StatusOK)
+> 	})
+> 
+> 	e.DELETE("/api/tabButton/deactivate/:type", func(c echo.Context) error {
+> 		userID, err := GetUserFromToken(c)
+> 		if err != nil {
+> 			return echo.NewHTTPError(http.StatusUnauthorized, err)
+> 		}
+> 		c.Logger().Print(c)
+> 		tt, err := viewutils.String2TabType(c.Param("type"))
+> 		if err != nil {
+> 			return echo.NewHTTPError(
+> 				http.StatusInternalServerError,
+> 				errors.New("not a valid tab type"),
+> 			)
+> 		}
+> 		pageData := viewutils.GetPageData(userID)
+> 		tabdata, err := pageData.GetTabDataByType(*tt)
+> 		return RenderTab(TabDeactivateRenderer, c, pageData, tabdata)
+> 	})
+> 
+> 	e.GET("/api/tabButton/activate/:type", func(c echo.Context) error {
+> 		userID, err := GetUserFromToken(c)
+> 		if err != nil {
+> 			return echo.NewHTTPError(http.StatusUnauthorized, err)
+> 		}
+> 		c.Logger().Print(c)
+> 		tt, err := viewutils.String2TabType(c.Param("type"))
+> 		if err != nil {
+> 			return echo.NewHTTPError(
+> 				http.StatusInternalServerError,
+> 				errors.New("not a valid tab type"),
+> 			)
+> 		}
+> 
+> 		// TODO: fetch appropriate TabData.Items from database
+> 		// based on sort. Implement infinite scroll for them.
+> 		pageData := viewutils.GetPageData(userID)
+> 		tabdata, err := pageData.GetTabDataByType(*tt)
+> 		return RenderTab(TabActivateRenderer, c, pageData, tabdata)
+> 	})
+> 
+> 	e.POST("/api/tabButton/maximize/:type", func(c echo.Context) error {
+> 		userID, err := GetUserFromToken(c)
+> 		if err != nil {
+> 			return echo.NewHTTPError(http.StatusUnauthorized, err)
+> 		}
+> 		c.Logger().Print(c)
+> 		tt, err := viewutils.String2TabType(c.Param("type"))
+> 		if err != nil {
+> 			return echo.NewHTTPError(
+> 				http.StatusInternalServerError,
+> 				errors.New("not a valid tab type"),
+> 			)
+> 		}
+> 
+> 		// TODO: fetch appropriate TabData.Items from database
+> 		// based on sort. Implement infinite scroll for them.
+> 		pageData := viewutils.GetPageData(userID)
+> 		tabdata, err := pageData.GetTabDataByType(*tt)
+> 		return RenderTab(TabMaximizeRenderer, c, pageData, tabdata)
+> 	})
+> 	return nil
+> }
+> ```
 
-```javascript
-// Example JSON data
-var jsonData = { "key": "value" };
+Yes, it is possible to create a new PageData struct for the user on login and send it to the client to save in sessionStorage. Here is one way to do it:
 
-// Convert JSON data to a string
-var jsonString = JSON.stringify(jsonData);
+1. When handling the login route, create the PageData:
 
-// Save the JSON string to session storage
-sessionStorage.setItem('jsonData', jsonString);
+```go
+func HandleLogin(c echo.Context) error {
+
+  // login logic
+
+  userID := // get user ID
+
+  pageData := viewutils.InitPageData(userID)
+
+  // save pageData in session
+  session := sessions.Default(c)
+  session.Set("pageData", pageData)
+  session.Save()
+
+  return c.JSON(http.StatusOK, pageData)
+}
 ```
 
-In this example, `JSON.stringify()` is used to convert the JSON object `jsonData` into a string. Then, `sessionStorage.setItem()` is used to store the JSON string in session storage under the key `'jsonData'`.
+2. The client saves the PageData in sessionStorage:
 
-Later, when you want to retrieve the JSON data from session storage:
-
-```javascript
-// Retrieve the JSON string from session storage
-var storedJsonString = sessionStorage.getItem('jsonData');
-
-// Convert the JSON string back to an object
-var storedJsonData = JSON.parse(storedJsonString);
-
-// Now you can use storedJsonData as a JavaScript object
-console.log(storedJsonData);
+```js
+// in login handler 
+fetch('/login', {
+  // login request 
+}).then(res => res.json())
+  .then(pageData => {
+    sessionStorage.setItem('pageData', JSON.stringify(pageData))
+  }) 
 ```
 
-This code retrieves the JSON string from session storage using `sessionStorage.getItem()`, parses it back into a JavaScript object using `JSON.parse()`, and stores it in the variable `storedJsonData`.
+3. On subsequent requests, get PageData from session and attach to context:
 
-Remember that session storage is only available for the duration of the browser session. If you want to persist the data even after the session ends, you may consider using local storage instead, which persists data even after the browser is closed and reopened. You can use `localStorage` instead of `sessionStorage` in the above examples to achieve this.
+```go
+func AttachPageData(next echo.HandlerFunc) echo.HandlerFunc {
+  return func(c echo.Context) error {
+
+    pageDataJSON := session.Get("pageData")
+    if pageDataJSON != nil {
+      var pageData PageData 
+      // decode pageDataJSON to pageData struct
+
+      c.Set("pageData", pageData)
+    }
+
+    return next(c)
+  }
+}
+
+// Usage
+e.Use(AttachPageData) 
+
+e.GET("/someRoute", func(c echo.Context) error {
+  pageData := c.Get("pageData").(*PageData)
+  
+  // use pageData
+})
+```
+
+So the PageData can be accessed from context on subsequent requests after login.
+
+> func HandleLogin(c echo.Context) error {
+> 
+>   // login logic
+> 
+>   userID := // get user ID
+> 
+>   pageData := viewutils.InitPageData(userID)
+> 
+>   // save pageData in session
+>   session := sessions.Default(c)
+>   session.Set("pageData", pageData)
+>   session.Save()
+> 
+>   return c.JSON(http.StatusOK, pageData)
+> }
+> ```
+> 
+> 2. The client saves the PageData in sessionStorage:
+> 
+> ```js
+> // in login handler 
+> fetch('/login', {
+>   // login request 
+> }).then(res => res.json())
+>   .then(pageData => {
+>     sessionStorage.setItem('pageData', JSON.stringify(pageData))
+>   }) 
+> 
+> 
+> 
+>   why do you need to do the save on the client if I instruct it to save via echo?
+
+Good catch! You are right, saving the PageData to the session on the server side with `session.Save()` is sufficient. 
+
+The client side sessionStorage saving is redundant in this case. The server-side session middleware will handle loading the PageData from session and attaching it to context on subsequent requests.
+
+So you can remove the client-side sessionStorage code. The server-side code should be enough:
+
+```go
+func HandleLogin(c echo.Context) error {
+
+  // login logic
+  
+  userID := // get user ID
+
+  pageData := viewutils.InitPageData(userID)
+
+  // save in session
+  session := sessions.Default(c) 
+  session.Set("pageData", pageData)
+  session.Save()
+
+  return c.NoContent(http.StatusOK) 
+}
+
+// AttachPageData middleware loads from session 
+
+e.Use(AttachPageData)
+```
+
+The AttachPageData middleware will load the PageData from session on each request and attach it to context.
+
+So the server-side session handling is sufficient, no need for the client to also save to sessionStorage. Good catch!

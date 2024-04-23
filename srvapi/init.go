@@ -1,6 +1,7 @@
 package srvapi
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -17,6 +18,9 @@ import (
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+
+	"github.com/gorilla/sessions"
+	"github.com/labstack/echo-contrib/session"
 )
 
 func GenerateJWTfromIDandKey(userID uuid.UUID, key []byte) (*http.Cookie, error) {
@@ -52,7 +56,7 @@ func WipeAuth(c echo.Context) {
 func Init(dbpath string, signingKey []byte, listenOn string) {
 	e := echo.New()
 	e.Use(middleware.Logger())
-
+	// e.Use(middleware.Recover())
 	// TODO: figure out how to HTTPS
 	// e.Pre(middleware.HTTPSRedirect())
 
@@ -129,6 +133,8 @@ func Init(dbpath string, signingKey []byte, listenOn string) {
 
 	r := e.Group(fmt.Sprintf("%s", viewutils.PagePrefix))
 
+	r.Use(session.Middleware(sessions.NewCookieStore(signingKey)))
+
 	jwtConfig := echojwt.Config{
 		ContextKey:  "user",
 		TokenLookup: "cookie:user",
@@ -155,6 +161,24 @@ func Init(dbpath string, signingKey []byte, listenOn string) {
 					return
 				}
 				c.SetCookie(cookie)
+			}
+			sess, err := session.Get("session", c)
+			if err != nil {
+				c.Logger().Print("unable to create session")
+				return
+			}
+			sess.Options = &sessions.Options{
+				Path:     fmt.Sprintf("%s", viewutils.PagePrefix),
+				MaxAge:   0,
+				HttpOnly: false,
+			}
+			if sess.Values[userID] == nil {
+				data, err := json.Marshal(viewutils.InitPageData(userID))
+				if err != nil {
+					return
+				}
+				sess.Values[userID] = data
+				sess.Save(c.Request(), c.Response())
 			}
 		},
 		ErrorHandler: func(c echo.Context, err error) error {
