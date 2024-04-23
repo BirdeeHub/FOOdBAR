@@ -5,7 +5,6 @@ import (
 	"FOOdBAR/views/viewutils"
 	"database/sql"
 	"fmt"
-	"time"
 
 	"github.com/google/uuid"
 	_ "github.com/mattn/go-sqlite3"
@@ -27,7 +26,6 @@ func FillXTabItems(userID uuid.UUID, dbpath string, tbd *viewutils.TabData, numb
 	if err != nil {
 		return err
 	}
-	tbd.Parent.LastActive = time.Now()
 
 	return nil
 }
