@@ -172,6 +172,7 @@ func InitPageData(userID uuid.UUID) *PageData {
 // TODO: figure out how to cache these client side instead
 var pageDatas = make(map[uuid.UUID]*PageData)
 
+// TODO: make this grab a PageData from echo context
 func GetPageData(userID uuid.UUID) *PageData {
 	if pageDatas[userID] == nil {
 		pageDatas[userID] = InitPageData(userID)
