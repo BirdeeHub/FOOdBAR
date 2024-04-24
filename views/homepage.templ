@@ -4,10 +4,9 @@ import (
 	"fmt"
 	"FOOdBAR/views/viewutils"
 	"FOOdBAR/views/tabviews"
-	foolib "FOOdBAR/FOOlib"
 )
 
-script htmxAllowedCodes(mediaQueryEndpoint string) {
+script getColorScheme(mediaQueryEndpoint string) {
 	document.addEventListener("DOMContentLoaded", (event) => {
 		// Function to send the media query value to the endpoint
 		function sendMediaQueryValue(querystring, value) {
@@ -48,7 +47,11 @@ script htmxAllowedCodes(mediaQueryEndpoint string) {
 		}
 
 		checkColorscheme()
+	})
+}
 
+script htmxAllowedCodes() {
+	document.addEventListener("DOMContentLoaded", (event) => {
 		document.body.addEventListener("htmx:beforeSwap", function(evt) {
 			if (evt.detail.xhr.status === 422) {
 				evt.detail.shouldSwap = true;
@@ -60,8 +63,6 @@ script htmxAllowedCodes(mediaQueryEndpoint string) {
 
 templ Homepage(pd *viewutils.PageData) {
 	<!DOCTYPE html>
-	@htmxAllowedCodes(fmt.Sprintf("%s/api/mediaQuery", viewutils.PagePrefix))
-	@colorsCSS()
 	<html lang="en">
 		<head>
 			<title>🍜 FOOd-BAR</title>
@@ -72,6 +73,9 @@ templ Homepage(pd *viewutils.PageData) {
 		</head>
 		<body class="bodycolors">
 			@BodyContents(pd)
+			@getColorScheme(fmt.Sprintf("%s/api/mediaQuery", viewutils.PagePrefix))
+			@htmxAllowedCodes()
+			@colorsCSS()
 		</body>
 	</html>
 }
@@ -82,10 +86,10 @@ templ BodyContents(pd *viewutils.PageData) {
 			Hello, chef! Welcome to 🍜 FOOd-BAR 🍜
 		</div>
 		<div id="tabButtonContainer" class={ TabButtonContainerCSS() }>
-			@viewutils.RenderPointerListWithComponent(pd.TabDatas, TabButton)
+			@viewutils.RenderListWithComponent(pd.GetTabButtonData(), TabButton)
 		</div>
 		<div id="tabViewContainer" class={ TabViewContainerCSS() }>
-			@viewutils.RenderPointerListWithComponent(foolib.FilterPointerSlice(func(t *viewutils.TabData) bool { return t.IsActive() }, pd.TabDatas), TabContainer)
+			@viewutils.RenderPointerListWithComponent(pd.TabDatas, TabContainer)
 		</div>
 	</div>
 }
@@ -96,32 +100,32 @@ templ OOBtabViewContainer(tbd *viewutils.TabData) {
 	</div>
 }
 
-templ OOBtabButtonToggle(tbd *viewutils.TabData) {
-	<div id={ fmt.Sprintf("tabButton_%s", tbd.String()) } hx-swap-oob="outerHTML">
+templ OOBtabButtonToggle(tbd viewutils.TabButtonData) {
+	<div id={ fmt.Sprintf("tabButton_%s", tbd.Ttype.String()) } hx-swap-oob="outerHTML">
 		@TabButton(tbd)
 	</div>
 }
 
 // TODO: make this have a loading animation
-templ TabButton(tbd *viewutils.TabData) {
-	if !tbd.IsActive() {
+templ TabButton(tbd viewutils.TabButtonData) {
+	if !tbd.Active {
 		<div
-			hx-get={ fmt.Sprintf("%s/api/tabButton/activate/%s", viewutils.PagePrefix, tbd.String()) }
+			hx-get={ fmt.Sprintf("%s/api/tabButton/activate/%s", viewutils.PagePrefix, tbd.Ttype.String()) }
 			hx-swap="outerHTML"
-			id={ fmt.Sprintf("tabButton_%s", tbd.String()) }
+			id={ fmt.Sprintf("tabButton_%s", tbd.Ttype.String()) }
 			class={ TabButtonItemCSS() }
 		>
-			{ fmt.Sprintf("🍜 %s",tbd.String()) }
+			{ fmt.Sprintf("🍜 %s",tbd.Ttype.String()) }
 		</div>
 	} else {
 		<div
-			hx-delete={ fmt.Sprintf("%s/api/tabButton/deactivate/%s", viewutils.PagePrefix, tbd.String()) }
-			hx-target={ fmt.Sprintf("#tabContainer_%s", tbd.String()) }
+			hx-delete={ fmt.Sprintf("%s/api/tabButton/deactivate/%s", viewutils.PagePrefix, tbd.Ttype.String()) }
+			hx-target={ fmt.Sprintf("#tabContainer_%s", tbd.Ttype.String()) }
 			hx-swap="outerHTML"
-			id={ fmt.Sprintf("tabButton_%s", tbd.String()) }
+			id={ fmt.Sprintf("tabButton_%s", tbd.Ttype.String()) }
 			class={ TabButtonItemCSS() }
 		>
-			{ fmt.Sprintf("%s 🍜",tbd.String()) }
+			{ fmt.Sprintf("%s 🍜",tbd.Ttype.String()) }
 		</div>
 	}
 }

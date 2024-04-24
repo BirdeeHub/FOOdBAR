@@ -50,6 +50,21 @@ func WipeAuth(c echo.Context) {
 	http.SetCookie(c.Response().Writer, &cookie)
 }
 
+func GetClaimFromToken(c echo.Context, claim string) interface{} {
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	return claims[claim]
+}
+
+func GetUserFromToken(c echo.Context) (uuid.UUID, error) {
+	switch userID := GetClaimFromToken(c, "sub").(type) {
+	case string:
+		return uuid.Parse(userID)
+	default:
+		return uuid.Nil, errors.New("invalid userID")
+	}
+}
+
 func Init(dbpath string, signingKey []byte, listenOn string) {
 	e := echo.New()
 	e.Use(middleware.Logger())
@@ -77,7 +92,6 @@ func Init(dbpath string, signingKey []byte, listenOn string) {
 	})
 
 	e.POST(fmt.Sprintf("%s/submitlogin", viewutils.PagePrefix), func(c echo.Context) error {
-		// TODO: return visible error message if fail
 		username := c.FormValue("username")
 		password := c.FormValue("password")
 		userID, err := db.AuthUser(username, password, dbpath)
@@ -86,7 +100,6 @@ func Init(dbpath string, signingKey []byte, listenOn string) {
 			c.Logger().Print(err)
 			return HTML(c, http.StatusNotAcceptable, loginPage.LoginPage(loginPage.LoginType, err))
 		}
-		c.Logger().Print(userID)
 		cookie, err := GenerateJWTfromIDandKey(userID, signingKey)
 		if err != nil {
 			WipeAuth(c)
@@ -114,7 +127,6 @@ func Init(dbpath string, signingKey []byte, listenOn string) {
 			c.Logger().Print(err)
 			return HTML(c, http.StatusUnprocessableEntity, loginPage.LoginPage(loginPage.SignupType, err))
 		}
-		c.Logger().Print(userID)
 		cookie, err := GenerateJWTfromIDandKey(userID, signingKey)
 		if err != nil {
 			WipeAuth(c)

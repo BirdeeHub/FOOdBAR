@@ -24,47 +24,41 @@ func RenderTab[TR TabRenderer](tr TR, c echo.Context, data *viewutils.PageData, 
 }
 
 func TabDeactivateRenderer(c echo.Context, data *viewutils.PageData, td *viewutils.TabData) error {
-	if td.IsActive() {
-		td.SetActive(false)
-		for i, v := range data.TabDatas {
-			if v.Ttype == td.Ttype {
-				data.TabDatas[i].SetActive(false)
-				break
-			}
-		}
-		data.SavePageData(c)
-		return HTML(c, http.StatusOK, views.OOBtabButtonToggle(td))
+	data.SetActive(td, false)
+	err := data.SavePageData(c)
+	if err != nil {
+		echo.NewHTTPError(http.StatusTeapot, "Cannot unmarshal page data")
 	}
-	return nil
+	return HTML(c, http.StatusOK, views.OOBtabButtonToggle(viewutils.TabButtonData{Ttype: td.Ttype, Active: false}))
 }
 
 func TabActivateRenderer(c echo.Context, data *viewutils.PageData, td *viewutils.TabData) error {
-	if !td.IsActive() {
-		td.SetActive(true)
-		data.SavePageData(c)
-		HTML(c, http.StatusOK, views.OOBtabViewContainer(td))
-		return HTML(c, http.StatusOK, views.TabButton(td))
-	} else {
-		return HTML(c, http.StatusOK, views.TabButton(td))
+	data.SetActive(td, true)
+	err := data.SavePageData(c)
+	if err != nil {
+		echo.NewHTTPError(http.StatusTeapot, "Cannot unmarshal page data")
 	}
+	HTML(c, http.StatusOK, views.OOBtabViewContainer(td))
+	return HTML(c, http.StatusOK, views.TabButton(viewutils.TabButtonData{Ttype: td.Ttype, Active: true}))
 }
 
 func TabMaximizeRenderer(c echo.Context, data *viewutils.PageData, td *viewutils.TabData) error {
-	var toMin []int
-	for i, v := range data.TabDatas {
-		if (v.IsActive() && v.Ttype != td.Ttype) {
-			v.SetActive(false)
-			toMin = append(toMin, i)
+	var toMin []viewutils.TabType
+	data.SetActive(td, true)
+	for _, v := range data.TabDatas {
+		if (v.Ttype != td.Ttype) {
+			data.SetActive(v, false)
+			toMin = append(toMin, v.Ttype)
 		}
 	}
-	if !td.IsActive() {
-		td.SetActive(true)
+	err := data.SavePageData(c)
+	if err != nil {
+		echo.NewHTTPError(http.StatusTeapot, "Cannot unmarshal page data")
 	}
-	data.SavePageData(c)
-	for _, i := range toMin {
-		HTML(c, http.StatusOK, views.OOBtabButtonToggle(data.TabDatas[i]))
+	for _, v := range toMin {
+		HTML(c, http.StatusOK, views.OOBtabButtonToggle(viewutils.TabButtonData{Ttype: v, Active: false}))
 	}
-	HTML(c, http.StatusOK, views.OOBtabButtonToggle(td))
+	HTML(c, http.StatusOK, views.OOBtabButtonToggle(viewutils.TabButtonData{Ttype: td.Ttype, Active: true}))
 	return HTML(c, http.StatusOK, views.TabContainer(td))
 }
 

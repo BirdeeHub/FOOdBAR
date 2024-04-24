@@ -545,3 +545,130 @@ e.Use(AttachPageData)
 The AttachPageData middleware will load the PageData from session on each request and attach it to context.
 
 So the server-side session handling is sufficient, no need for the client to also save to sessionStorage. Good catch!
+
+
+
+
+
+# Absolute bewilderment
+
+
+
+
+> when I open the tabs in the order in the first line of these, and then maximize the one named in the last line, as you can see in the second line, an extra one does not get removed from the list.
+> 
+> ```markdown
+> 
+> ```json
+> {"time":"2024-04-24T02:42:35.296028019-07:00","level":"-","prefix":"echo","file":"types.go","line":"201","message":"{\"user_id\":\"8a6d4aab-aff2-484d-967d-f56040c25a1d\",\"tab_datas\":[{\"tab_type\":\"Menu\",\"items\":{},\"order_by\":{}},{\"tab_type\":\"Pantry\",\"items\":{},\"order_by\":{}},{\"tab_type\":\"Recipe\",\"items\":{},\"order_by\":{}},{\"tab_type\":\"Preplist\",\"items\":{},\"order_by\":{}},{\"tab_type\":\"Shopping\",\"items\":{},\"order_by\":{}}],\"palette\":\"dark\"}"}
+> {"time":"2024-04-24T02:42:35.296150272-07:00","level":"-","prefix":"echo","file":"types.go","line":"217","message":"{\"user_id\":\"8a6d4aab-aff2-484d-967d-f56040c25a1d\",\"tab_datas\":[{\"tab_type\":\"Pantry\",\"items\":{},\"order_by\":{}},{\"tab_type\":\"Preplist\",\"items\":{},\"order_by\":{}}],\"palette\":\"dark\"}"}
+> {"time":"2024-04-24T02:42:35.296355367-07:00","id":"","remote_ip":"127.0.0.1","host":"localhost:42069","method":"POST","uri":"/FOOdBAR/api/tabButton/maximize/Pantry","user_agent":"Mozilla/5.0 (X11; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0","status":200,"error":"","latency":363616,"latency_human":"363.616µs","bytes_in":0,"bytes_out":2838}
+> ```
+> 
+> 
+> ```json
+> {"time":"2024-04-24T02:56:24.905488188-07:00","level":"-","prefix":"echo","file":"types.go","line":"201","message":"{\"user_id\":\"8a6d4aab-aff2-484d-967d-f56040c25a1d\",\"tab_datas\":[{\"tab_type\":\"Preplist\",\"items\":{},\"order_by\":{}},{\"tab_type\":\"Earnings\",\"items\":{},\"order_by\":{}},{\"tab_type\":\"Shopping\",\"items\":{},\"order_by\":{}},{\"tab_type\":\"Pantry\",\"items\":{},\"order_by\":{}},{\"tab_type\":\"Recipe\",\"items\":{},\"order_by\":{}}],\"palette\":\"dark\"}"}
+> {"time":"2024-04-24T02:56:24.905591738-07:00","level":"-","prefix":"echo","file":"types.go","line":"217","message":"{\"user_id\":\"8a6d4aab-aff2-484d-967d-f56040c25a1d\",\"tab_datas\":[{\"tab_type\":\"Preplist\",\"items\":{},\"order_by\":{}},{\"tab_type\":\"Shopping\",\"items\":{},\"order_by\":{}}],\"palette\":\"dark\"}"}
+> {"time":"2024-04-24T02:56:24.90569925-07:00","id":"","remote_ip":"127.0.0.1","host":"localhost:42069","method":"POST","uri":"/FOOdBAR/api/tabButton/maximize/Preplist","user_agent":"Mozilla/5.0 (X11; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0","status":200,"error":"","latency":232139,"latency_human":"232.139µs","bytes_in":0,"bytes_out":2653}
+> ```
+> ```
+
+Based on the logs you provided, it looks like there may be an issue with the tab maximization logic not properly removing tabs when maximizing. A few things to check:
+
+- In the TabMaximizeRenderer function, it is looping through all tabs and setting them to inactive except the one being maximized. Verify this logic is working as expected.
+
+- When a tab is set to inactive, check that it is properly being removed from the tab data list. It may still be in the list but just set as inactive.
+
+- Double check that when rendering the tab buttons, it is only rendering the active tabs in the list. An inactive tab could still be rendered if the logic checks are not correct.
+
+- Add some additional debugging logs or breakpoints to trace the flow and see where a tab that should be removed is still persisting.
+
+- Review the tab data structure and maximize logic end-to-end to see if anything is missed.
+
+The key things to verify are 1) inactive tabs are properly removed from the main list, and 2) only active tabs are rendered. The issue likely lies in one of those areas. Let me know if any of those suggestions help uncover the problem!
+
+> the inactive tab is not being properly removed from the list, but the extra ones are not rendered still
+> 
+> It only happens in particular orders of the tabs being opened and only the maximise function triggers it, but in those particular orders it is consistent in its misbehavior
+
+Thanks for the additional details. Since the inactive tabs are not being properly removed from the list, that is likely the core issue. 
+
+A few things to check on that:
+
+- When setting a tab inactive, verify it is removed from the main tab data list in addition to just setting the active flag to false.
+
+- Make sure the logic that removes inactive tabs from the list is called unconditionally whenever a tab is maximized.
+
+- Double check the logic for how the main tab data list is filtered/copied when getting the list of active tabs to render. It may be preserving inactive ones in some cases.
+
+- Add logging to trace the full lifecycle of the tab data structure during maximize and see where inactive tabs are still persisting.
+
+- Consider changing the tab data structure to store active and inactive tabs separately to avoid mixups.
+
+Overall it sounds like the root cause is the inactive tabs not being fully removed from the main list when they should be. Focus debugging efforts on where that removal logic is failing or not being called properly during maximize. Let me know if any other info would help narrow down the issue!
+
+> I do not save the inactive ones at all. This is the maximise function. I cant find the problem.
+> 
+> func TabMaximizeRenderer(c echo.Context, data *viewutils.PageData, td *viewutils.TabData) error {
+>     var toMin []viewutils.TabType
+>     data.SetActive(td, true)
+>     for _, v := range data.TabDatas {
+>         if (v.Ttype != td.Ttype) {
+>             data.SetActive(v, false)
+>             toMin = append(toMin, v.Ttype)
+>         }
+>     }
+>     err := data.SavePageData(c)
+>     if err != nil {
+>         echo.NewHTTPError(http.StatusTeapot, "Cannot unmarshal page data")
+>     }
+>     for _, v := range toMin {
+>         HTML(c, http.StatusOK, views.OOBtabButtonToggle(viewutils.TabButtonData{Ttype: v, Active: false}))
+>     }
+>     HTML(c, http.StatusOK, views.OOBtabButtonToggle(viewutils.TabButtonData{Ttype: td.Ttype, Active: true}))
+>     return HTML(c, http.StatusOK, views.TabContainer(td))
+> }
+> 
+>
+
+Looking at the TabMaximizeRenderer code, a few things stand out:
+
+- It is correctly setting inactive tabs and collecting them into the toMin list.
+
+- It is saving the updated page data after setting tabs inactive.
+
+- It is rendering the toggle for the newly inactive tabs.
+
+So the issue seems to be happening somewhere else in the lifecycle. A few things I would try:
+
+- Add logging in PageData.SetActive() to trace when a tab is set inactive. Verify it is being removed from the main list there.
+
+- Log the full PageData.TabDatas list before and after maximize to see if inactive tabs persist.
+
+- Double check PageData.SavePageData() - verify it is saving the updated list properly.
+
+- Check where the initial PageData is loaded from - could inactive tabs be reconstituted from a cache or prior data?
+
+- Trace the active tab list generation logic - could that be preserving inactive tabs?
+
+My suspicion is the root cause is either in SetActive() not fully removing tabs, or cached data reintroducing inactive tabs. Tracing the full lifecycle around those areas may reveal where the problem is introduced.
+
+Let me know if any other ideas come to mind on how to track this down! The key is tracing the inactive tab handling thoroughly.
+
+> It seems like it is some pointer bs because I dont save anything anywhere, I get the pageData from the cookie and I send it back and then I get it again at every request. At first I thought it was a race condition but it seems to depend on the order of the tabs and not the speed at which I press buttons.
+
+You're right, since the page data is loaded from the cookie on each request, it does sound like some kind of pointer/reference issue where inactive tabs are persisting in memory incorrectly.
+
+A few suggestions on tracking this down:
+
+- Add logging/breakpoints in PageData.SetActive() and trace what is happening to the tab data when a tab is set inactive. Verify the slice itself is modified.
+
+- You could try cloning the tab data when loading from the cookie rather than using the slice directly. This may break any problematic references.
+
+- Iterate through the tab data and print memory addresses before and after SetActive() - see if you notice any strange pointer behaviors.
+
+- Consider changing the data structure to use a map rather than a slice, where you delete entries on deactivate. May avoid pointer issues.
+
+- Add stress testing with rapid tab switches - may help uncover race conditions.
+
+This does seem like a tricky one to pin down. The key will be tracing the memory addresses and references to try to catch where inactive tabs are persisting. A data structure change could help as well. Let me know if any other ideas come to mind!

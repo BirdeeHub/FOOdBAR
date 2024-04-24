@@ -1,6 +1,7 @@
 package viewutils
 
 import (
+	// "encoding/base64"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
@@ -58,12 +59,6 @@ func String2TabType(str string) (*TabType, error) {
 	return nil, errors.New("invalid TabType")
 }
 
-type PageData struct {
-	UserID   uuid.UUID
-	TabDatas []*TabData
-	Palette  ColorScheme
-}
-
 type SortMethod string
 
 const (
@@ -77,28 +72,39 @@ const (
 	// and then put Custom as the SortMethod
 )
 
+type TabButtonData struct {
+	Ttype  TabType `json:"tab_type"`
+	Active bool    `json:"active"`
+}
+
+type PageData struct {
+	UserID   uuid.UUID   `json:"user_id"`
+	TabDatas []*TabData  `json:"tab_datas"`
+	Palette  ColorScheme `json:"palette"`
+}
+
 type TabData struct {
-	Active  bool
-	Ttype   TabType
-	Items   map[uuid.UUID]*TabItem
-	OrderBy map[string]SortMethod
+	Ttype   TabType                `json:"tab_type"`
+	Items   map[uuid.UUID]*TabItem `json:"items"`
+	OrderBy map[string]SortMethod  `json:"order_by"`
 }
 
 type TabItem struct {
-	ItemID uuid.UUID
-	Ttype  TabType
+	ItemID uuid.UUID `json:"item_id"`
+	Ttype  TabType   `json:"tab_type"`
 
-	Expanded bool
-	ItemType string
+	Expanded bool   `json:"expanded"`
+	ItemType string `json:"item_type"`
 }
 
-func (tbd *TabData) AddTabItem(ti *TabItem) {
+func (tbd *TabData) AddTabItem(ti *TabItem) *TabItem {
 	ti.Ttype = tbd.Ttype
 
 	if ti.ItemID == uuid.Nil {
 		ti.ItemID = uuid.New()
 	}
 	tbd.Items[ti.ItemID] = ti
+	return ti
 }
 
 func (tbd *TabData) GetTabItems() []*TabItem {
@@ -109,69 +115,66 @@ func (tbd *TabData) GetTabItems() []*TabItem {
 	return tis
 }
 
-func (tbd *TabData) String() string {
-	return tbd.Ttype.String()
-}
-
-func (tbd *TabData) IsActive() bool {
-	return (*tbd).Active
-}
-
-func (tbd *TabData) ToggleActive() {
-	(*tbd).Active = !(*tbd).Active
-}
-
-func (tbd *TabData) SetActive(v bool) {
-	(*tbd).Active = v
-}
-
-func (pgd *PageData) GetTabDataByType(tt TabType) (*TabData, error) {
-	for _, t := range pgd.TabDatas {
+func (pd *PageData) IsActive(tt TabType) bool {
+	for _, t := range pd.TabDatas {
 		if t.Ttype == tt {
-			return t, nil
+			return true
 		}
 	}
-	return nil, errors.New(fmt.Sprintf("no %s tab", tt))
+	return false
+}
+
+func (pd *PageData) SetActive(td *TabData, v bool) {
+	for i, t := range pd.TabDatas {
+		if t.Ttype == td.Ttype {
+			if v {
+				return
+			} else {
+				pd.TabDatas = append(pd.TabDatas[:i], pd.TabDatas[i+1:]...)
+			}
+		}
+	}
+	if v {
+		pd.TabDatas = append(pd.TabDatas, td)
+	}
+}
+
+func (pgd *PageData) GetTabDataByType(tt TabType) *TabData {
+	for _, t := range pgd.TabDatas {
+		if t.Ttype == tt {
+			return t
+		}
+	}
+	td := &TabData{
+		Ttype:   tt,
+		Items:   make(map[uuid.UUID]*TabItem),
+		OrderBy: make(map[string]SortMethod),
+	}
+	pgd.TabDatas = append(pgd.TabDatas, td)
+	return td
 }
 
 func InitPageData(userID uuid.UUID) *PageData {
 	pd := &PageData{
-		UserID: userID,
-		Palette: None,
-		TabDatas: []*TabData{
-			{
-				Active: false,
-				Ttype:  Recipe,
-				Items:  make(map[uuid.UUID]*TabItem),
-			},
-			{
-				Active: false,
-				Ttype:  Pantry,
-				Items:  make(map[uuid.UUID]*TabItem),
-			},
-			{
-				Active: false,
-				Ttype:  Menu,
-				Items:  make(map[uuid.UUID]*TabItem),
-			},
-			{
-				Active: false,
-				Ttype:  Preplist,
-				Items:  make(map[uuid.UUID]*TabItem),
-			},
-			{
-				Active: false,
-				Ttype:  Shopping,
-				Items:  make(map[uuid.UUID]*TabItem),
-			},
-			{
-				Active: false,
-				Ttype:  Earnings,
-				Items:  make(map[uuid.UUID]*TabItem),
-			},
-		},
+		UserID:   userID,
+		Palette:  None,
+		TabDatas: []*TabData{},
 	}
 	return pd
+}
+
+func (pd *PageData) GetTabButtonData() []TabButtonData {
+	var retval []TabButtonData
+	for _, tt := range GetTabTypes() {
+		active := false
+		for _, tbd := range pd.TabDatas {
+			if tbd.Ttype == tt {
+				active = true
+			}
+		}
+		retval = append(retval, TabButtonData{Ttype: tt, Active: active})
+	}
+	return retval
 }
 
 // TODO: make this grab a PageData or something like that from echo context
@@ -187,6 +190,7 @@ func GetPageData(c echo.Context) (*PageData, error) {
 		pdcookie, err := c.Cookie(userID.String())
 		if err != nil {
 			pd := InitPageData(userID)
+			c.Logger().Print("New Page Data")
 			return pd, nil
 		}
 		pd := &PageData{}
@@ -194,15 +198,10 @@ func GetPageData(c echo.Context) (*PageData, error) {
 		if err != nil {
 			return nil, err
 		}
+		c.Logger().Print(string(pdmarshalled))
 		err = json.Unmarshal(pdmarshalled, pd)
-		c.Logger().Print("GET DATA FUNC")
-		c.Logger().Print(pd)
-		for _, t := range pd.TabDatas {
-			c.Logger().Print(t)
-			c.Logger().Print(t.Active)
-			c.Logger().Print(t.Ttype)
-			c.Logger().Print(t.Items)
-			c.Logger().Print(t.OrderBy)
+		if err != nil {
+			return nil, err
 		}
 		return pd, nil
 	default:
@@ -211,19 +210,11 @@ func GetPageData(c echo.Context) (*PageData, error) {
 }
 
 func (pd *PageData) SavePageData(c echo.Context) error {
-	c.Logger().Print("SAVE DATA FUNC")
-	c.Logger().Print(pd)
-	for _, t := range pd.TabDatas {
-		c.Logger().Print(t)
-		c.Logger().Print(t.Active)
-		c.Logger().Print(t.Ttype)
-		c.Logger().Print(t.Items)
-		c.Logger().Print(t.OrderBy)
-	}
 	pdmarshalled, err := json.Marshal(pd)
 	if err != nil {
 		return err
 	}
+	c.Logger().Print(string(pdmarshalled))
 	cookie := &http.Cookie{
 		Name:     pd.UserID.String(),
 		Value:    base64.StdEncoding.EncodeToString(pdmarshalled),
@@ -236,10 +227,10 @@ func (pd *PageData) SavePageData(c echo.Context) error {
 
 func (ti *TabItem) MarshalJSON() ([]byte, error) {
 	configpre := struct {
-		ItemID   string
-		Ttype    string
-		ItemType string
-		Expanded bool
+		ItemID   string `json:"item_id"`
+		Ttype    string `json:"tab_type"`
+		ItemType string `json:"item_type"`
+		Expanded bool   `json:"expanded"`
 	}{
 		ItemID:   ti.ItemID.String(),
 		Ttype:    ti.Ttype.String(),
@@ -252,10 +243,10 @@ func (ti *TabItem) MarshalJSON() ([]byte, error) {
 
 func (ti *TabItem) UnmarshalJSON(data []byte) error {
 	var irJson struct {
-		ItemID   string
-		Ttype    string
-		ItemType string
-		Expanded bool
+		ItemID   string `json:"item_id"`
+		Ttype    string `json:"tab_type"`
+		ItemType string `json:"item_type"`
+		Expanded bool   `json:"expanded"`
 	}
 	err := json.Unmarshal(data, &irJson)
 	if err != nil {
@@ -285,12 +276,10 @@ func (tbd *TabData) MarshalJSON() ([]byte, error) {
 		orderby[k] = string(v)
 	}
 	configpre := struct {
-		Active  bool
-		Ttype   string
-		Items   map[string]TabItem
-		OrderBy map[string]string
+		Ttype   string             `json:"tab_type"`
+		Items   map[string]TabItem `json:"items"`
+		OrderBy map[string]string  `json:"order_by"`
 	}{
-		Active:  tbd.Active,
 		Ttype:   tbd.Ttype.String(),
 		Items:   itemsmap,
 		OrderBy: orderby,
@@ -301,16 +290,14 @@ func (tbd *TabData) MarshalJSON() ([]byte, error) {
 
 func (tbd *TabData) UnmarshalJSON(data []byte) error {
 	var irJson struct {
-		Active  bool
-		Ttype   string
-		Items   map[string]TabItem
-		OrderBy map[string]string
+		Ttype   string             `json:"tab_type"`
+		Items   map[string]TabItem `json:"items"`
+		OrderBy map[string]string  `json:"order_by"`
 	}
 	err := json.Unmarshal(data, &irJson)
 	if err != nil {
 		return err
 	}
-	tbd.Active = irJson.Active
 	ttype, err := String2TabType(irJson.Ttype)
 	if err != nil {
 		return err
@@ -337,9 +324,9 @@ func (tbd *TabData) UnmarshalJSON(data []byte) error {
 
 func (pd *PageData) MarshalJSON() ([]byte, error) {
 	configpre := struct {
-		UserID   string
-		TabDatas []*TabData
-		Palette  string
+		UserID   string     `json:"user_id"`
+		TabDatas []*TabData `json:"tab_datas"`
+		Palette  string     `json:"palette"`
 	}{
 		UserID:   pd.UserID.String(),
 		TabDatas: pd.TabDatas,
@@ -351,9 +338,9 @@ func (pd *PageData) MarshalJSON() ([]byte, error) {
 
 func (pd *PageData) UnmarshalJSON(data []byte) error {
 	var irJson struct {
-		UserID   string
-		TabDatas []*TabData
-		Palette  string
+		UserID   string     `json:"user_id"`
+		TabDatas []*TabData `json:"tab_datas"`
+		Palette  string     `json:"palette"`
 	}
 	err := json.Unmarshal(data, &irJson)
 	if err != nil {

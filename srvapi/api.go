@@ -6,30 +6,12 @@ import (
 	"FOOdBAR/views"
 	"FOOdBAR/views/viewutils"
 	"net/http"
-	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
-
-func GetClaimFromToken(c echo.Context, claim string) interface{} {
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
-	return claims[claim]
-}
-
-func GetUserFromToken(c echo.Context) (uuid.UUID, error) {
-	switch userID := GetClaimFromToken(c, "sub").(type) {
-	case string:
-		return uuid.Parse(userID)
-	default:
-		return uuid.Nil, errors.New("invalid userID")
-	}
-}
 
 func SetupAPIroutes(e *echo.Group, dbpath string) error {
 
 	e.GET("", func(c echo.Context) error {
-		c.Logger().Print(c)
 		pd, err := viewutils.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
@@ -39,7 +21,6 @@ func SetupAPIroutes(e *echo.Group, dbpath string) error {
 	})
 
 	e.POST("", func(c echo.Context) error {
-		c.Logger().Print(c)
 		pd, err := viewutils.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
@@ -63,7 +44,6 @@ func SetupAPIroutes(e *echo.Group, dbpath string) error {
 	})
 
 	e.DELETE("/api/tabButton/deactivate/:type", func(c echo.Context) error {
-		c.Logger().Print(c)
 		tt, err := viewutils.String2TabType(c.Param("type"))
 		if err != nil {
 			return echo.NewHTTPError(
@@ -75,12 +55,10 @@ func SetupAPIroutes(e *echo.Group, dbpath string) error {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
-		tabdata, err := pageData.GetTabDataByType(*tt)
-		return RenderTab(TabDeactivateRenderer, c, pageData, tabdata)
+		return RenderTab(TabDeactivateRenderer, c, pageData, pageData.GetTabDataByType(*tt))
 	})
 
 	e.GET("/api/tabButton/activate/:type", func(c echo.Context) error {
-		c.Logger().Print(c)
 		tt, err := viewutils.String2TabType(c.Param("type"))
 		if err != nil {
 			return echo.NewHTTPError(
@@ -95,12 +73,10 @@ func SetupAPIroutes(e *echo.Group, dbpath string) error {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
-		tabdata, err := pageData.GetTabDataByType(*tt)
-		return RenderTab(TabActivateRenderer, c, pageData, tabdata)
+		return RenderTab(TabActivateRenderer, c, pageData, pageData.GetTabDataByType(*tt))
 	})
 
 	e.POST("/api/tabButton/maximize/:type", func(c echo.Context) error {
-		c.Logger().Print(c)
 		tt, err := viewutils.String2TabType(c.Param("type"))
 		if err != nil {
 			return echo.NewHTTPError(
@@ -115,8 +91,7 @@ func SetupAPIroutes(e *echo.Group, dbpath string) error {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
-		tabdata, err := pageData.GetTabDataByType(*tt)
-		return RenderTab(TabMaximizeRenderer, c, pageData, tabdata)
+		return RenderTab(TabMaximizeRenderer, c, pageData, pageData.GetTabDataByType(*tt))
 	})
 	return nil
 }
