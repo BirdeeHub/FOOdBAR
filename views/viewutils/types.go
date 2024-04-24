@@ -1,7 +1,6 @@
 package viewutils
 
 import (
-	// "encoding/base64"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
@@ -177,7 +176,6 @@ func (pd *PageData) GetTabButtonData() []TabButtonData {
 	return retval
 }
 
-// TODO: make this grab a PageData or something like that from echo context
 func GetPageData(c echo.Context) (*PageData, error) {
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)

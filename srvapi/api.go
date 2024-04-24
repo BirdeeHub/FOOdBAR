@@ -36,10 +36,11 @@ func SetupAPIroutes(e *echo.Group, dbpath string) error {
 		}
 		if c.FormValue("query") == "(prefers-color-scheme: dark)" && c.FormValue("value") == "dark" {
 			pageData.Palette = viewutils.Dark
+			pageData.SavePageData(c)
 		} else {
 			pageData.Palette = viewutils.Light
+			pageData.SavePageData(c)
 		}
-		pageData.SavePageData(c)
 		return c.NoContent(http.StatusOK)
 	})
 
