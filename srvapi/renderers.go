@@ -43,20 +43,22 @@ func TabActivateRenderer(c echo.Context, data *viewutils.PageData, td *viewutils
 }
 
 func TabMaximizeRenderer(c echo.Context, data *viewutils.PageData, td *viewutils.TabData) error {
-	var toMin []viewutils.TabType
+	var toMin []*viewutils.TabData
 	data.SetActive(td, true)
 	for _, v := range data.TabDatas {
 		if (v.Ttype != td.Ttype) {
-			data.SetActive(v, false)
-			toMin = append(toMin, v.Ttype)
+			toMin = append(toMin, v)
 		}
+	}
+	for _, v := range toMin {
+		data.SetActive(v, false)
 	}
 	err := data.SavePageData(c)
 	if err != nil {
 		echo.NewHTTPError(http.StatusTeapot, "Cannot unmarshal page data")
 	}
 	for _, v := range toMin {
-		HTML(c, http.StatusOK, views.OOBtabButtonToggle(viewutils.TabButtonData{Ttype: v, Active: false}))
+		HTML(c, http.StatusOK, views.OOBtabButtonToggle(viewutils.TabButtonData{Ttype: v.Ttype, Active: false}))
 	}
 	HTML(c, http.StatusOK, views.OOBtabButtonToggle(viewutils.TabButtonData{Ttype: td.Ttype, Active: true}))
 	return HTML(c, http.StatusOK, views.TabContainer(td))

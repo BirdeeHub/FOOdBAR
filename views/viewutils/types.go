@@ -198,7 +198,6 @@ func GetPageData(c echo.Context) (*PageData, error) {
 		if err != nil {
 			return nil, err
 		}
-		c.Logger().Print(string(pdmarshalled))
 		err = json.Unmarshal(pdmarshalled, pd)
 		if err != nil {
 			return nil, err
@@ -214,7 +213,6 @@ func (pd *PageData) SavePageData(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	c.Logger().Print(string(pdmarshalled))
 	cookie := &http.Cookie{
 		Name:     pd.UserID.String(),
 		Value:    base64.StdEncoding.EncodeToString(pdmarshalled),
