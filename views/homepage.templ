@@ -160,8 +160,9 @@ css TabButtonItemCSS() {
 	flex-direction: row;
 	padding: 10px;
 	border-bottom: 1px solid;
-	border-right: 1px solid;
+	border-top: 1px solid;
 	cursor: pointer;
+	border-radius: 10px;
 }
 
 // TODO: make this have a loading animation
@@ -224,7 +225,7 @@ css Resizebar() {
 	flex-direction: row;
 	flex: 0;
 	cursor: ew-resize;
-	border: 1px solid;
+	border-left: 2px dashed;
 }
 
 templ TabContainer(td *viewutils.TabData) {
