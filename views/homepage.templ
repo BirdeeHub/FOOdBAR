@@ -159,6 +159,8 @@ css TabButtonItemCSS() {
 	display: flex;
 	flex-direction: row;
 	padding: 10px;
+	border-bottom: 1px solid;
+	border-right: 1px solid;
 	cursor: pointer;
 }
 
@@ -168,6 +170,7 @@ templ TabButton(tbd viewutils.TabButtonData) {
 		<div
 			hx-get={ fmt.Sprintf("%s/api/tabButton/activate/%s", viewutils.PagePrefix, tbd.Ttype.String()) }
 			hx-swap="outerHTML"
+			hx-indicator={ fmt.Sprintf("#loadingTabButton_%s", tbd.Ttype.String()) }
 			id={ fmt.Sprintf("tabButton_%s", tbd.Ttype.String()) }
 			class={ TabButtonItemCSS() }
 		>
@@ -178,6 +181,7 @@ templ TabButton(tbd viewutils.TabButtonData) {
 			hx-delete={ fmt.Sprintf("%s/api/tabButton/deactivate/%s", viewutils.PagePrefix, tbd.Ttype.String()) }
 			hx-target={ fmt.Sprintf("#tabContainer_%s", tbd.Ttype.String()) }
 			hx-swap="outerHTML"
+			hx-indicator={ fmt.Sprintf("#loadingTabButton_%s", tbd.Ttype.String()) }
 			id={ fmt.Sprintf("tabButton_%s", tbd.Ttype.String()) }
 			class={ TabButtonItemCSS() }
 		>
@@ -212,21 +216,27 @@ css TabContainerCSS() {
 	display: flex;
 	align-self: stretch;
 	flex-direction: column;
-	flex: 1;
+	flex: 1 1;
 }
 
 css Resizebar() {
 	display: flex;
+	flex-direction: row;
+	flex: 0;
 	cursor: ew-resize;
 	border: 1px solid;
 }
 
 templ TabContainer(td *viewutils.TabData) {
-	<div id={ fmt.Sprintf("tabContainer_%s", td.Ttype) } style="display: flex; flex-direction: row;">
+	<div id={ fmt.Sprintf("tabContainer_%s", td.Ttype) } style="display: flex; flex-direction: row; flex: 1;">
 		<div class={ TabContainerCSS() }>
 			@RenderTabContents(td)
 		</div>
-		<div id={ fmt.Sprintf("resizebar_%s", td.Ttype) } class={ Resizebar() } onmousedown={ resizeTab(td.Ttype.String()) }></div>
+		<div
+			id={ fmt.Sprintf("resizebar_%s", td.Ttype) }
+			class={ Resizebar() }
+			onmousedown={ resizeTab(td.Ttype.String()) }
+		></div>
 	</div>
 }
 

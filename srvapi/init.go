@@ -186,6 +186,7 @@ func Init(dbpath string, signingKey []byte, listenOn string) {
 	// 	return cssmiddleware
 	// }))
 	r.Static("/images", "FOOimg")
+	r.Static("/layout", "FOOstatic")
 
 	err := SetupAPIroutes(r, dbpath)
 	if err != nil {
