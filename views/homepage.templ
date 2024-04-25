@@ -131,8 +131,11 @@ templ TabButton(tbd viewutils.TabButtonData) {
 	}
 }
 
+// TODO: make the TabContainer resizeable via mouse dragging
+// This function should implement the action for TabContainer's
+// resizebar_TabType element, which resizes the tabContainer_TabType element
 script resizeTab() {
-	// Set up the dragging event handlers
+	// This is not functional code yet
 	let dragStartWidth;
 	dragBar.addEventListener('mousedown', e => {
 	  dragStartWidth = div1.offsetWidth;
