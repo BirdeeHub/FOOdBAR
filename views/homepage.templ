@@ -134,21 +134,20 @@ templ TabButton(tbd viewutils.TabButtonData) {
 // TODO: make the TabContainer resizeable via mouse dragging
 // This function should implement the action for TabContainer's
 // resizebar_TabType element, which resizes the tabContainer_TabType element
-script resizeTab() {
+script resizeTab(tabtarget string) {
+	let dragBar = document.getElementById("resizebar_"+tabtarget)
+	let div1 = document.getElementById("tabContainer_"+tabtarget)
 	// This is not functional code yet
-	let dragStartWidth;
-	dragBar.addEventListener('mousedown', e => {
-	  dragStartWidth = div1.offsetWidth;
-	  window.addEventListener('mousemove', resize);
-	});
+	dragStartWidth = div1.offsetWidth;
+	window.addEventListener('mousemove', resize);
 
 	window.addEventListener('mouseup', () => {
-	  window.removeEventListener('mousemove', resize); 
+		window.removeEventListener('mousemove', resize); 
 	});
 
 	function resize(e) {
-	  const widthDiff = e.clientX - dragBar.offsetLeft; 
-	  div1.style.width = `${dragStartWidth + widthDiff}px`;
+		const widthDiff = e.clientX - dragBar.offsetLeft; 
+		div1.style.width = `${dragStartWidth + widthDiff}px`;
 	}
 }
 
@@ -157,7 +156,7 @@ templ TabContainer(td *viewutils.TabData) {
 		<div class={ TabContainerCSS() }>
 			@RenderTabContents(td)
 		</div>
-		<div id={ fmt.Sprintf("resizebar_%s", td.Ttype) } style="cursor: ew-resize;">
+		<div id={ fmt.Sprintf("resizebar_%s", td.Ttype) } style="cursor: ew-resize;" onmousedown={ resizeTab(td.Ttype.String()) }>
 			|
 		</div>
 	</div>
