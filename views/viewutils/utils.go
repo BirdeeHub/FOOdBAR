@@ -31,7 +31,3 @@ func RenderListWithComponent[T any](list []T, component func(T) templ.Component)
 		return nil
 	})
 }
-
-func HXurl(urlpath string) templ.SafeURL {
-	return templ.URL(urlpath)
-}

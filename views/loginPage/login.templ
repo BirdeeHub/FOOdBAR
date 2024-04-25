@@ -78,7 +78,7 @@ templ FormTypeButton(formtype LoginFormType) {
 templ LoginForm(formtype LoginFormType, e error) {
 	if formtype == LoginType {
 		<form
-			action={ viewutils.HXurl(fmt.Sprintf("%s/submitlogin", viewutils.PagePrefix)) }
+			action={ templ.URL(fmt.Sprintf("%s/submitlogin", viewutils.PagePrefix)) }
 			method="POST"
 			enctype="application/x-www-form-urlencoded"
 			class={ displayFlex("column") }
@@ -89,7 +89,7 @@ templ LoginForm(formtype LoginFormType, e error) {
 		</form>
 	} else {
 		<form
-			action={ viewutils.HXurl(fmt.Sprintf("%s/submitsignup", viewutils.PagePrefix)) }
+			action={ templ.URL(fmt.Sprintf("%s/submitsignup", viewutils.PagePrefix)) }
 			method="POST"
 			enctype="application/x-www-form-urlencoded"
 			class={ displayFlex("column") }
