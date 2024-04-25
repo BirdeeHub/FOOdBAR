@@ -61,6 +61,27 @@ script htmxAllowedCodes() {
 	})
 }
 
+templ colorsCSS() {
+	<style type="text/css">
+		@media (prefers-color-scheme: dark) {
+			.bodycolors {
+				background-color: #1e1e1f;
+				color: white;
+				fill: white;
+				stroke: white;
+			}
+		}
+		@media (not (prefers-color-scheme: dark)) {
+			.bodycolors {
+				background-color: lightgray;
+				color: black;
+				fill: black;
+				stroke: black;
+			}
+		}
+	</style>
+}
+
 templ Homepage(pd *viewutils.PageData) {
 	<!DOCTYPE html>
 	<html lang="en">
@@ -79,6 +100,31 @@ templ Homepage(pd *viewutils.PageData) {
 			@colorsCSS()
 		</body>
 	</html>
+}
+
+css PageContainerCSS() {
+	display: flex;
+	flex-direction: column;
+}
+
+css PageHeaderContainerCSS() {
+	display: flex;
+	flex-direction: row;
+	padding: 10px;
+	justify-content: center;
+	align-items: center;
+}
+
+css TabViewContainerCSS() {
+	display: flex;
+	flex-direction: row;
+	align-items: flex-start;
+}
+
+css TabButtonContainerCSS() {
+	display: flex;
+	flex-direction: row;
+	cursor: pointer;
 }
 
 templ BodyContents(pd *viewutils.PageData) {
@@ -105,6 +151,13 @@ templ OOBtabButtonToggle(tbd viewutils.TabButtonData) {
 	<div id={ fmt.Sprintf("tabButton_%s", tbd.Ttype.String()) } hx-swap-oob="outerHTML">
 		@TabButton(tbd)
 	</div>
+}
+
+css TabButtonItemCSS() {
+	display: flex;
+	flex-direction: row;
+	padding: 10px;
+	cursor: pointer;
 }
 
 // TODO: make this have a loading animation
@@ -149,6 +202,13 @@ script resizeTab(tabtarget string) {
 		const widthDiff = e.clientX - dragBar.offsetLeft; 
 		div1.style.flex = `0 0 ${dragStartWidth + widthDiff}px`;
 	}
+}
+
+css TabContainerCSS() {
+	display: flex;
+	align-self: stretch;
+	flex-direction: column;
+	flex: 1;
 }
 
 templ TabContainer(td *viewutils.TabData) {
