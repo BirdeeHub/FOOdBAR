@@ -84,7 +84,7 @@ templ Homepage(pd *viewutils.PageData) {
 templ BodyContents(pd *viewutils.PageData) {
 	<div class={ PageContainerCSS() }>
 		<div id="pageHeader" class={ PageHeaderContainerCSS() }>
-			Hello, chef! Welcome to 🍜 FOOd-BAR 🍜
+			Hello, chef! Welcome to FOOdBAR!
 		</div>
 		<div id="tabButtonContainer" class={ TabButtonContainerCSS() }>
 			@viewutils.RenderListWithComponent(pd.GetTabButtonData(), TabButton)
