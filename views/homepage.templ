@@ -147,7 +147,7 @@ script resizeTab(tabtarget string) {
 
 	function resize(e) {
 		const widthDiff = e.clientX - dragBar.offsetLeft; 
-		div1.style.width = `${dragStartWidth + widthDiff}px`;
+		div1.style.flex = `0 0 ${dragStartWidth + widthDiff}px`;
 	}
 }
 
