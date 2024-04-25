@@ -7,11 +7,11 @@ import (
 	"time"
 
 	"FOOdBAR/db"
-	"FOOdBAR/views"
+	// "FOOdBAR/views"
 	"FOOdBAR/views/loginPage"
 	"FOOdBAR/views/viewutils"
 
-	"github.com/a-h/templ"
+	// "github.com/a-h/templ"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	echojwt "github.com/labstack/echo-jwt/v4"
@@ -180,11 +180,11 @@ func Init(dbpath string, signingKey []byte, listenOn string) {
 	r.Use(echojwt.WithConfig(jwtConfig))
 
 	r.Use(middleware.Logger())
-	r.Use(echo.WrapMiddleware(func(hndl http.Handler) http.Handler {
-		cssmiddleware := templ.NewCSSMiddleware(hndl, views.StaticStyles...)
-		cssmiddleware.Path = fmt.Sprintf("%s/styles/templ.css", viewutils.PagePrefix)
-		return cssmiddleware
-	}))
+	// r.Use(echo.WrapMiddleware(func(hndl http.Handler) http.Handler {
+	// 	cssmiddleware := templ.NewCSSMiddleware(hndl, views.StaticStyles...)
+	// 	cssmiddleware.Path = fmt.Sprintf("%s/styles/templ.css", viewutils.PagePrefix)
+	// 	return cssmiddleware
+	// }))
 	r.Static("/images", "FOOimg")
 
 	err := SetupAPIroutes(r, dbpath)
