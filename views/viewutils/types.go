@@ -188,7 +188,6 @@ func GetPageData(c echo.Context) (*PageData, error) {
 		pdcookie, err := c.Cookie(userID.String())
 		if err != nil {
 			pd := InitPageData(userID)
-			c.Logger().Print("New Page Data")
 			return pd, nil
 		}
 		pd := &PageData{}
