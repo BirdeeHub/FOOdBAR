@@ -65,11 +65,12 @@ templ Homepage(pd *viewutils.PageData) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
-			<title>🍜 FOOd-BAR</title>
+			<title>FOOd-BAR</title>
 			<meta charset="utf-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
 			<script src="https://unpkg.com/htmx.org/dist/htmx.min.js"></script>
 			<link rel="stylesheet" href={ fmt.Sprintf("%s/styles/templ.css", viewutils.PagePrefix) }/>
+			<link rel="icon" type="image/x-icon" href={ fmt.Sprintf("%s/images/foodbarfavicon.svg", viewutils.PagePrefix) }></link>
 		</head>
 		<body class="bodycolors">
 			@BodyContents(pd)
@@ -130,9 +131,29 @@ templ TabButton(tbd viewutils.TabButtonData) {
 	}
 }
 
+script resizeTab() {
+	// Set up the dragging event handlers
+	let dragStartWidth;
+	dragBar.addEventListener('mousedown', e => {
+	  dragStartWidth = div1.offsetWidth;
+	  window.addEventListener('mousemove', resize);
+	});
+
+	window.addEventListener('mouseup', () => {
+	  window.removeEventListener('mousemove', resize); 
+	});
+
+	function resize(e) {
+	  const widthDiff = e.clientX - dragBar.offsetLeft; 
+	  div1.style.width = `${dragStartWidth + widthDiff}px`;
+	}
+}
+
 templ TabContainer(td *viewutils.TabData) {
 	<div id={ fmt.Sprintf("tabContainer_%s", td.Ttype) } class={ TabContainerCSS() }>
 		@RenderTabContents(td)
+	</div>
+	<div id={ fmt.Sprintf("resizebar_%s", td.Ttype) } >
 	</div>
 }
 
