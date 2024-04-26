@@ -171,7 +171,6 @@ templ TabButton(tbd viewutils.TabButtonData) {
 		<div
 			hx-get={ fmt.Sprintf("%s/api/tabButton/activate/%s", viewutils.PagePrefix, tbd.Ttype.String()) }
 			hx-swap="outerHTML"
-			hx-indicator={ fmt.Sprintf("#loadingTabButton_%s", tbd.Ttype.String()) }
 			id={ fmt.Sprintf("tabButton_%s", tbd.Ttype.String()) }
 			class={ TabButtonItemCSS() }
 		>
@@ -182,7 +181,6 @@ templ TabButton(tbd viewutils.TabButtonData) {
 			hx-delete={ fmt.Sprintf("%s/api/tabButton/deactivate/%s", viewutils.PagePrefix, tbd.Ttype.String()) }
 			hx-target={ fmt.Sprintf("#tabContainer_%s", tbd.Ttype.String()) }
 			hx-swap="outerHTML"
-			hx-indicator={ fmt.Sprintf("#loadingTabButton_%s", tbd.Ttype.String()) }
 			id={ fmt.Sprintf("tabButton_%s", tbd.Ttype.String()) }
 			class={ TabButtonItemCSS() }
 		>
