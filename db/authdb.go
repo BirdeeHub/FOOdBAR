@@ -100,7 +100,7 @@ func CreateUser(username string, password string, dbpath string) (uuid.UUID, err
 
 	_, err = db.Exec("INSERT INTO user_auth_table (username, password, userID) VALUES (?, ?, ?)", username, hashedPassword[:], userID.String())
 	if err != nil {
-		// Check if the error is due to a constraint violation (duplicate username)
+		// make sure the uuid is unique (just in case)
 		if strings.Contains(err.Error(), "userID") && strings.Contains(err.Error(), "UNIQUE constraint failed") {
 			for err != nil && strings.Contains(err.Error(), "UNIQUE constraint failed") && strings.Contains(err.Error(), "userID") {
 				userID = uuid.New()
