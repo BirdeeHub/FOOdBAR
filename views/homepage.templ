@@ -189,11 +189,7 @@ templ TabButton(tbd viewutils.TabButtonData) {
 	}
 }
 
-// TODO: make the original size still equal stretch,
-// make this post the size back at the end so it can persist,
-// then make it wipe back to equal stretch when you add/remove tabs.
-// also make the resize match the mouse better.
-
+// TODO: make the resize match the mouse better
 script resizeTab(tabtarget string) {
 	let dragBar = document.getElementById("resizebar_"+tabtarget)
 	let div1 = document.getElementById("tabContainer_"+tabtarget)
