@@ -95,13 +95,13 @@ func Init(dbpath string, signingKey []byte, listenOn string) {
 	r.Use(GetJWTmiddlewareWithConfig(signingKey))
 
 	r.Use(middleware.Logger())
+	r.Static("/images", "FOOimg")
+	r.Static("/layout", "FOOstatic")
 	// r.Use(echo.WrapMiddleware(func(hndl http.Handler) http.Handler {
 	// 	cssmiddleware := templ.NewCSSMiddleware(hndl, views.StaticStyles...)
 	// 	cssmiddleware.Path = fmt.Sprintf("%s/styles/templ.css", viewutils.PagePrefix)
 	// 	return cssmiddleware
 	// }))
-	r.Static("/images", "FOOimg")
-	r.Static("/layout", "FOOstatic")
 
 	err := SetupAPIroutes(r, dbpath)
 	if err != nil {
