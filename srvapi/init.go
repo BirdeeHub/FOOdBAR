@@ -7,11 +7,9 @@ import (
 	"time"
 
 	"FOOdBAR/db"
-	// "FOOdBAR/views"
 	"FOOdBAR/views/loginPage"
 	"FOOdBAR/views/viewutils"
 
-	// "github.com/a-h/templ"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	echojwt "github.com/labstack/echo-jwt/v4"
@@ -77,6 +75,7 @@ func Init(dbpath string, signingKey []byte, listenOn string) {
 	})
 
 	e.GET(fmt.Sprintf("%s/login", viewutils.PagePrefix), func(c echo.Context) error {
+		WipeAuth(c)
 		return HTML(c, http.StatusOK, loginPage.LoginPage("login", nil))
 	})
 

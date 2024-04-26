@@ -89,7 +89,7 @@ func CreateUser(username string, password string, dbpath string) (uuid.UUID, err
 	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS user_auth_table (
 						username TEXT PRIMARY KEY,
 						password BLOB,
-						userID TEXT
+						userID TEXT UNIQUE
 					)`)
 	if err != nil {
 		return uuid.Nil, err
@@ -101,8 +101,16 @@ func CreateUser(username string, password string, dbpath string) (uuid.UUID, err
 	_, err = db.Exec("INSERT INTO user_auth_table (username, password, userID) VALUES (?, ?, ?)", username, hashedPassword[:], userID.String())
 	if err != nil {
 		// Check if the error is due to a constraint violation (duplicate username)
-		if strings.Contains(err.Error(), "UNIQUE constraint failed") {
-			return uuid.Nil, errors.New("username already exists")
+		if strings.Contains(err.Error(), "userID") && strings.Contains(err.Error(), "UNIQUE constraint failed") {
+			for err != nil && strings.Contains(err.Error(), "UNIQUE constraint failed") && strings.Contains(err.Error(), "userID") {
+				userID = uuid.New()
+				_, err = db.Exec("INSERT INTO user_auth_table (username, password, userID) VALUES (?, ?, ?)", username, hashedPassword[:], userID.String())
+			}
+			if err != nil {
+				return uuid.Nil, err
+			}
+		} else {
+			return uuid.Nil, err
 		}
 		return uuid.Nil, err
 	}
