@@ -62,7 +62,6 @@ type TabItem struct {
 	ItemID uuid.UUID `json:"item_id"`
 	Ttype  TabType   `json:"tab_type"`
 	Expanded bool   `json:"expanded"`
-	ItemType string `json:"item_type"`
 }
 	NOTE:
 type SortMethod string
@@ -85,6 +84,7 @@ func FillXTabItems(userID uuid.UUID, dbpath string, tbd *viewutils.TabData, numb
 		return err
 	}
 	// TODO: fill tbd.Items with X number of items based on tbd.OrderBy: map[string]SortMethod
+	// where string is a column name or other sql identifier that can be sorted by
 
 
 	return nil
