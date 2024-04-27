@@ -27,5 +27,32 @@ func FillXTabItems(userID uuid.UUID, dbpath string, tbd *viewutils.TabData, numb
 		return err
 	}
 
+	switch tbd.Ttype {
+		case viewutils.Recipe:
+			_, err = db.Exec(fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s_%s (
+				id TEXT PRIMARY KEY,
+				)`, userID, tbd.Ttype.String()))
+		case viewutils.Menu:
+			_, err = db.Exec(fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s_%s (
+				id TEXT PRIMARY KEY,
+				)`, userID, tbd.Ttype.String()))
+		case viewutils.Pantry:
+			_, err = db.Exec(fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s_%s (
+				id TEXT PRIMARY KEY,
+				)`, userID, tbd.Ttype.String()))
+		case viewutils.Preplist:
+			_, err = db.Exec(fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s_%s (
+				id TEXT PRIMARY KEY,
+				)`, userID, tbd.Ttype.String()))
+		case viewutils.Shopping:
+			_, err = db.Exec(fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s_%s (
+				id TEXT PRIMARY KEY,
+				)`, userID, tbd.Ttype.String()))
+		case viewutils.Earnings:
+			_, err = db.Exec(fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s_%s (
+				id TEXT PRIMARY KEY,
+				)`, userID, tbd.Ttype.String()))
+	}
+
 	return nil
 }

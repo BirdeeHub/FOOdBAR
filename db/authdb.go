@@ -108,11 +108,12 @@ func CreateUser(username string, password string, dbpath string) (uuid.UUID, err
 			}
 			if err != nil {
 				return uuid.Nil, err
+			} else {
+				return userID, nil
 			}
 		} else {
 			return uuid.Nil, err
 		}
-		return uuid.Nil, err
 	}
 
 	return userID, nil
