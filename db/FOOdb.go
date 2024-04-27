@@ -27,6 +27,9 @@ func CreateTabTableIfNotExists(userID uuid.UUID, dbpath string, tt viewutils.Tab
 		case viewutils.Recipe:
 			_, err = db.Exec(fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s_%s (
 				id TEXT PRIMARY KEY,
+				category TEXT,
+				dietary TEXT,
+				ingredients TEXT,
 				)`, userID, tt.String()))
 		case viewutils.Menu:
 			_, err = db.Exec(fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s_%s (
@@ -84,7 +87,7 @@ func FillXTabItems(userID uuid.UUID, dbpath string, tbd *viewutils.TabData, numb
 		return err
 	}
 	// TODO: fill tbd.Items with X number of items based on tbd.OrderBy: map[string]SortMethod
-	// where string is a column name or other sql identifier that can be sorted by
+	// where the key string is a column name
 
 
 	return nil
