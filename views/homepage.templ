@@ -249,5 +249,9 @@ templ RenderTabContents(td *viewutils.TabData) {
 			@tabviews.RenderPreplistTab(td)
 		case viewutils.Earnings:
 			@tabviews.RenderEarningsTab(td)
+		case viewutils.Customer:
+			@tabviews.RenderCustomerTab(td)
+		case viewutils.Events:
+			@tabviews.RenderEventsTab(td)
 	}
 }

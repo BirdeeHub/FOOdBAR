@@ -1,0 +1,33 @@
+package tabviews
+
+import (
+	"fmt"
+	"FOOdBAR/views/viewutils"
+)
+
+templ CustomerTabContents(td *viewutils.TabData) {
+	@viewutils.RenderPointerListWithComponent(td.GetTabItems(), CustomerItemContainer)
+}
+
+templ CustomerItemContainer(item *viewutils.TabItem) {
+	<div id={ fmt.Sprintf("%s", item.ItemID.String()) } class={ TabListItemCSS() }>
+		<div class={ ListItemElementCSS() }>
+			{ item.ItemID.String() }
+		</div>
+		<div class={ ListItemElementCSS() }>
+			@viewutils.Trashcan()
+		</div>
+	</div>
+}
+
+templ RenderCustomerTab(td *viewutils.TabData) {
+	<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>
+		<div class={ TabHeaderTitleCSS() }>
+			Customers!
+		</div>
+		@MaximizeTabButton(td.Ttype)
+	</div>
+	<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
+		@CustomerTabContents(td)
+	</div>
+}

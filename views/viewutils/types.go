@@ -21,6 +21,8 @@ const (
 	Recipe           = "Recipe"
 	Pantry           = "Pantry"
 	Menu             = "Menu"
+	Customer         = "Customer"
+	Events           = "Events"
 	Shopping         = "Shopping"
 	Preplist         = "Preplist"
 	Earnings         = "Earnings"
@@ -41,8 +43,8 @@ func GetSortMethods() [4]SortMethod {
 	return [...]SortMethod{Descending, Ascending, Random, Custom}
 }
 
-func GetTabTypes() [6]TabType {
-	return [...]TabType{Recipe, Pantry, Menu, Shopping, Preplist, Earnings}
+func GetTabTypes() [8]TabType {
+	return [...]TabType{Recipe, Pantry, Menu, Shopping, Preplist, Earnings, Customer, Events}
 }
 
 func (t *TabType) String() string {
@@ -92,7 +94,7 @@ type TabItem struct {
 	ItemID uuid.UUID `json:"item_id"`
 	Ttype  TabType   `json:"tab_type"`
 
-	Expanded bool   `json:"expanded"`
+	Expanded bool `json:"expanded"`
 }
 
 func (tbd *TabData) AddTabItem(ti *TabItem) *TabItem {

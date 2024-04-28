@@ -27,29 +27,62 @@ func CreateTabTableIfNotExists(userID uuid.UUID, dbpath string, tt viewutils.Tab
 		case viewutils.Recipe:
 			_, err = db.Exec(fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s_%s (
 				id TEXT PRIMARY KEY,
+				name TEXT UNIQUE,
 				category TEXT,
 				dietary TEXT,
 				ingredients TEXT,
+				instructions TEXT,
 				)`, userID, tt.String()))
 		case viewutils.Menu:
 			_, err = db.Exec(fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s_%s (
 				id TEXT PRIMARY KEY,
+				menu_id TEXT,
+				recipe TEXT,
+				number INTEGER,
 				)`, userID, tt.String()))
 		case viewutils.Pantry:
 			_, err = db.Exec(fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s_%s (
 				id TEXT PRIMARY KEY,
+				name TEXT UNIQUE,
+				dietary TEXT,
+				amount TEXT,
+				)`, userID, tt.String()))
+		case viewutils.Customer:
+			_, err = db.Exec(fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s_%s (
+				id TEXT PRIMARY KEY,
+				email TEXT UNIQUE,
+				phone TEXT UNIQUE,
+				name TEXT,
+				dietary TEXT,
+				)`, userID, tt.String()))
+		case viewutils.Events:
+			_, err = db.Exec(fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s_%s (
+				id TEXT PRIMARY KEY,
+				menu_id TEXT,
+				date TEXT,
+				location TEXT,
+				customer TEXT,
 				)`, userID, tt.String()))
 		case viewutils.Preplist:
 			_, err = db.Exec(fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s_%s (
 				id TEXT PRIMARY KEY,
+				event_id TEXT,
+				menu_id TEXT,
 				)`, userID, tt.String()))
 		case viewutils.Shopping:
 			_, err = db.Exec(fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s_%s (
 				id TEXT PRIMARY KEY,
+				event_id TEXT,
+				menu_id TEXT,
+				ingredient TEXT,
+				amount TEXT,
+				units TEXT,
 				)`, userID, tt.String()))
 		case viewutils.Earnings:
 			_, err = db.Exec(fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s_%s (
 				id TEXT PRIMARY KEY,
+				event_id TEXT,
+				menu_id TEXT,
 				)`, userID, tt.String()))
 	}
 	if err != nil {
