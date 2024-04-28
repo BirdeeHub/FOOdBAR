@@ -10,8 +10,7 @@ templ MaximizeTabButton(tt viewutils.TabType) {
 		hx-post={ fmt.Sprintf("%s/api/tabButton/maximize/%s", viewutils.PagePrefix, tt) }
 		hx-target="#tabViewContainer"
 		id={ fmt.Sprintf("tabButton_%s", tt) }
-		class={ TabHeaderItemCSS("0") }
-		style="cursor: pointer;"
+		class={ TabHeaderButtonCSS("0 0 1.5rem") }
 	>
 		@viewutils.Maximize()
 	</div>
