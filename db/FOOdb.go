@@ -4,6 +4,7 @@ import (
 	foodlib "FOOdBAR/FOOlib"
 	"FOOdBAR/views/viewutils"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/google/uuid"
@@ -84,6 +85,8 @@ func CreateTabTableIfNotExists(userID uuid.UUID, dbpath string, tt viewutils.Tab
 				event_id TEXT,
 				menu_id TEXT,
 				)`, userID, tt.String()))
+		default:
+			return nil, errors.New("invalid tab type")
 	}
 	if err != nil {
 		return nil, err

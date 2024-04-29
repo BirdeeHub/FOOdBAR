@@ -28,6 +28,24 @@ const (
 	Earnings         = "Earnings"
 )
 
+func GetTabTypes() [8]TabType {
+	return [...]TabType{Recipe, Pantry, Menu, Shopping, Preplist, Earnings, Customer, Events}
+}
+
+func (t *TabType) String() string {
+	return string(*t)
+}
+
+// will return viewutils.Invalid if no match
+func String2TabType(str string) TabType {
+	for _, t := range GetTabTypes() {
+		if t.String() == str {
+			return t
+		}
+	}
+	return Invalid
+}
+
 type ColorScheme string
 
 const (
@@ -38,26 +56,6 @@ const (
 
 func GetColorSchemes() [3]ColorScheme {
 	return [...]ColorScheme{Dark, Light, None}
-}
-func GetSortMethods() [4]SortMethod {
-	return [...]SortMethod{Descending, Ascending, Random, Custom}
-}
-
-func GetTabTypes() [8]TabType {
-	return [...]TabType{Recipe, Pantry, Menu, Shopping, Preplist, Earnings, Customer, Events}
-}
-
-func (t *TabType) String() string {
-	return string(*t)
-}
-
-func String2TabType(str string) (*TabType, error) {
-	for _, t := range GetTabTypes() {
-		if t.String() == str {
-			return &t, nil
-		}
-	}
-	return nil, errors.New("invalid TabType")
 }
 
 type SortMethod string
@@ -72,6 +70,15 @@ const (
 	// when using this syntax, put the CASE WHEN... etc... into the OrderBy key
 	// and then put Custom as the SortMethod
 )
+
+func GetSortMethods() [4]SortMethod {
+	return [...]SortMethod{Descending, Ascending, Random, Custom}
+}
+
+
+// PageData and its children
+
+
 
 type TabButtonData struct {
 	Ttype  TabType `json:"tab_type"`
@@ -125,6 +132,9 @@ func (pd *PageData) IsActive(tt TabType) bool {
 }
 
 func (pd *PageData) SetActive(td *TabData, v bool) {
+	if td == nil {
+		return
+	}
 	for i, t := range pd.TabDatas {
 		if t.Ttype == td.Ttype {
 			if v {
@@ -140,6 +150,9 @@ func (pd *PageData) SetActive(td *TabData, v bool) {
 }
 
 func (pgd *PageData) GetTabDataByType(tt TabType) *TabData {
+	if tt == Invalid {
+		return nil
+	}
 	for _, t := range pgd.TabDatas {
 		if t.Ttype == tt {
 			return t
@@ -246,11 +259,7 @@ func (ti *TabItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	ti.Expanded = irJson.Expanded
-	ttype, err := String2TabType(irJson.Ttype)
-	if err != nil {
-		return err
-	}
-	ti.Ttype = *ttype
+	ti.Ttype = String2TabType(irJson.Ttype)
 	ti.ItemID, err = uuid.Parse(irJson.ItemID)
 	if err != nil {
 		return err
@@ -290,11 +299,7 @@ func (tbd *TabData) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	ttype, err := String2TabType(irJson.Ttype)
-	if err != nil {
-		return err
-	}
-	tbd.Ttype = *ttype
+	tbd.Ttype = String2TabType(irJson.Ttype)
 	for k, v := range irJson.Items {
 		id, err := uuid.Parse(k)
 		if err != nil {

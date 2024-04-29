@@ -144,15 +144,19 @@ templ BodyContents(pd *viewutils.PageData) {
 }
 
 templ OOBtabViewContainer(tbd *viewutils.TabData) {
-	<div id="tabViewContainer" hx-swap-oob="beforeend">
-		@TabContainer(tbd)
-	</div>
+	if tbd != nil && tbd.Ttype != viewutils.Invalid {
+		<div id="tabViewContainer" hx-swap-oob="beforeend">
+			@TabContainer(tbd)
+		</div>
+	}
 }
 
 templ OOBtabButtonToggle(tbd viewutils.TabButtonData) {
-	<div id={ fmt.Sprintf("tabButton_%s", tbd.Ttype.String()) } hx-swap-oob="outerHTML">
-		@TabButton(tbd)
-	</div>
+	if tbd.Ttype != viewutils.Invalid {
+		<div id={ fmt.Sprintf("tabButton_%s", tbd.Ttype.String()) } hx-swap-oob="outerHTML">
+			@TabButton(tbd)
+		</div>
+	}
 }
 
 css TabButtonItemCSS() {
@@ -167,29 +171,32 @@ css TabButtonItemCSS() {
 
 // TODO: make this have a loading animation
 templ TabButton(tbd viewutils.TabButtonData) {
-	if !tbd.Active {
-		<div
-			hx-get={ fmt.Sprintf("%s/api/tabButton/activate/%s", viewutils.PagePrefix, tbd.Ttype.String()) }
-			hx-swap="outerHTML"
-			id={ fmt.Sprintf("tabButton_%s", tbd.Ttype.String()) }
-			class={ TabButtonItemCSS() }
-		>
-			{ fmt.Sprintf("🍜 %s",tbd.Ttype.String()) }
-		</div>
-	} else {
-		<div
-			hx-delete={ fmt.Sprintf("%s/api/tabButton/deactivate/%s", viewutils.PagePrefix, tbd.Ttype.String()) }
-			hx-target={ fmt.Sprintf("#tabContainer_%s", tbd.Ttype.String()) }
-			hx-swap="outerHTML"
-			id={ fmt.Sprintf("tabButton_%s", tbd.Ttype.String()) }
-			class={ TabButtonItemCSS() }
-		>
-			{ fmt.Sprintf("%s 🍜",tbd.Ttype.String()) }
-		</div>
+	if tbd.Ttype != viewutils.Invalid {
+		if !tbd.Active {
+			<div
+				hx-get={ fmt.Sprintf("%s/api/tabButton/activate/%s", viewutils.PagePrefix, tbd.Ttype.String()) }
+				hx-swap="outerHTML"
+				id={ fmt.Sprintf("tabButton_%s", tbd.Ttype.String()) }
+				class={ TabButtonItemCSS() }
+			>
+				{ fmt.Sprintf("🍜 %s",tbd.Ttype.String()) }
+			</div>
+		} else {
+			<div
+				hx-delete={ fmt.Sprintf("%s/api/tabButton/deactivate/%s", viewutils.PagePrefix, tbd.Ttype.String()) }
+				hx-target={ fmt.Sprintf("#tabContainer_%s", tbd.Ttype.String()) }
+				hx-swap="outerHTML"
+				id={ fmt.Sprintf("tabButton_%s", tbd.Ttype.String()) }
+				class={ TabButtonItemCSS() }
+			>
+				{ fmt.Sprintf("%s 🍜",tbd.Ttype.String()) }
+			</div>
+		}
 	}
 }
 
 // TODO: make the resize match the mouse better
+
 script resizeTab(tabtarget string) {
 	let dragBar = document.getElementById("resizebar_"+tabtarget)
 	let div1 = document.getElementById("tabContainer_"+tabtarget)
@@ -223,16 +230,18 @@ css Resizebar() {
 }
 
 templ TabContainer(td *viewutils.TabData) {
-	<div id={ fmt.Sprintf("tabContainer_%s", td.Ttype) } style="display: flex; flex-direction: row; flex: 1;">
-		<div class={ TabContainerCSS() }>
-			@RenderTabContents(td)
+	if td != nil && td.Ttype != viewutils.Invalid {
+		<div id={ fmt.Sprintf("tabContainer_%s", td.Ttype) } style="display: flex; flex-direction: row; flex: 1;">
+			<div class={ TabContainerCSS() }>
+				@RenderTabContents(td)
+			</div>
+			<div
+				id={ fmt.Sprintf("resizebar_%s", td.Ttype) }
+				class={ Resizebar() }
+				onmousedown={ resizeTab(td.Ttype.String()) }
+			></div>
 		</div>
-		<div
-			id={ fmt.Sprintf("resizebar_%s", td.Ttype) }
-			class={ Resizebar() }
-			onmousedown={ resizeTab(td.Ttype.String()) }
-		></div>
-	</div>
+	}
 }
 
 templ RenderTabContents(td *viewutils.TabData) {

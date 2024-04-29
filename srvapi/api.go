@@ -1,7 +1,6 @@
 package srvapi
 
 import (
-	"errors"
 	// "FOOdBAR/db"
 	"FOOdBAR/views"
 	"FOOdBAR/views/viewutils"
@@ -45,54 +44,31 @@ func SetupAPIroutes(e *echo.Group, dbpath string) error {
 	})
 
 	e.DELETE("/api/tabButton/deactivate/:type", func(c echo.Context) error {
-		tt, err := viewutils.String2TabType(c.Param("type"))
-		if err != nil {
-			return echo.NewHTTPError(
-				http.StatusInternalServerError,
-				errors.New("not a valid tab type"),
-			)
-		}
 		pageData, err := viewutils.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
-		return RenderTab(TabDeactivateRenderer, c, pageData, pageData.GetTabDataByType(*tt))
+		return RenderTab(TabDeactivateRenderer, c, pageData, pageData.GetTabDataByType(viewutils.String2TabType(c.Param("type"))))
 	})
 
 	e.GET("/api/tabButton/activate/:type", func(c echo.Context) error {
-		tt, err := viewutils.String2TabType(c.Param("type"))
-		if err != nil {
-			return echo.NewHTTPError(
-				http.StatusInternalServerError,
-				errors.New("not a valid tab type"),
-			)
-		}
-
 		// TODO: fetch appropriate TabData.Items from database
 		// based on sort. Implement infinite scroll for them.
 		pageData, err := viewutils.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
-		return RenderTab(TabActivateRenderer, c, pageData, pageData.GetTabDataByType(*tt))
+		return RenderTab(TabActivateRenderer, c, pageData, pageData.GetTabDataByType(viewutils.String2TabType(c.Param("type"))))
 	})
 
 	e.POST("/api/tabButton/maximize/:type", func(c echo.Context) error {
-		tt, err := viewutils.String2TabType(c.Param("type"))
-		if err != nil {
-			return echo.NewHTTPError(
-				http.StatusInternalServerError,
-				errors.New("not a valid tab type"),
-			)
-		}
-
 		// TODO: fetch appropriate TabData.Items from database
 		// based on sort. Implement infinite scroll for them.
 		pageData, err := viewutils.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
-		return RenderTab(TabMaximizeRenderer, c, pageData, pageData.GetTabDataByType(*tt))
+		return RenderTab(TabMaximizeRenderer, c, pageData, pageData.GetTabDataByType(viewutils.String2TabType(c.Param("type"))))
 	})
 	return nil
 }

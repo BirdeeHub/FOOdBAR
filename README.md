@@ -316,233 +316,46 @@ In SQL, including SQLite, there are various ways to sort data beyond just ascend
 These are some of the common sorting options available in SQL, but the specifics may vary depending on the database system you're using.
 
 
----
+>>> In SQLite, you can create triggers for various events that occur on tables. Here are some of the most common ones:1. **INSERT**: Triggered when a new row is inserted into the table.2. **UPDATE**: Triggered whe
+... n an existing row is updated in the table (like I showed you earlier).3. **DELETE**: Triggered when a row is deleted from the table. Can I get the row that these were triggered for, and put the row into the au
+... dit table witht he extra info?
+In SQLite, you can access the affected rows using the `NEW` table in UPDATE and DELETE triggers, and the `INSERTED` table in INSERT triggers.
 
-### caching
-
-> So, I have a PageData struct type, and i would like to create a new one for a user upon login, and send it to them to save in session storage. I would then like to get it from context on every request from the client. Is this possible if so how
-> 
-> ```go
-> 	e.GET("", func(c echo.Context) error {
-> 		userID, err := GetUserFromToken(c)
-> 		if err != nil {
-> 			return echo.NewHTTPError(http.StatusUnauthorized, err)
-> 		}
-> 		c.Logger().Print(c)
-> 		return HTML(c, http.StatusOK, views.Homepage(viewutils.GetPageData(userID)))
-> 	})
-> 
-> 	e.POST("", func(c echo.Context) error {
-> 		userID, err := GetUserFromToken(c)
-> 		if err != nil {
-> 			return echo.NewHTTPError(http.StatusUnauthorized, err)
-> 		}
-> 		c.Logger().Print(c)
-> 		return HTML(c, http.StatusOK, views.Homepage(viewutils.GetPageData(userID)))
-> 	})
-> 
-> 	e.POST("/api/mediaQuery", func(c echo.Context) error {
-> 		userID, err := GetUserFromToken(c)
-> 		if err != nil {
-> 			return c.NoContent(http.StatusOK)
-> 		}
-> 		pageData := viewutils.GetPageData(userID)
-> 		if c.FormValue("query") == "(prefers-color-scheme: dark)" && c.FormValue("value") == "dark" {
-> 			pageData.Palette = viewutils.Dark
-> 		} else {
-> 			pageData.Palette = viewutils.Light
-> 		}
-> 		return c.NoContent(http.StatusOK)
-> 	})
-> 
-> 	e.DELETE("/api/tabButton/deactivate/:type", func(c echo.Context) error {
-> 		userID, err := GetUserFromToken(c)
-> 		if err != nil {
-> 			return echo.NewHTTPError(http.StatusUnauthorized, err)
-> 		}
-> 		c.Logger().Print(c)
-> 		tt, err := viewutils.String2TabType(c.Param("type"))
-> 		if err != nil {
-> 			return echo.NewHTTPError(
-> 				http.StatusInternalServerError,
-> 				errors.New("not a valid tab type"),
-> 			)
-> 		}
-> 		pageData := viewutils.GetPageData(userID)
-> 		tabdata, err := pageData.GetTabDataByType(*tt)
-> 		return RenderTab(TabDeactivateRenderer, c, pageData, tabdata)
-> 	})
-> 
-> 	e.GET("/api/tabButton/activate/:type", func(c echo.Context) error {
-> 		userID, err := GetUserFromToken(c)
-> 		if err != nil {
-> 			return echo.NewHTTPError(http.StatusUnauthorized, err)
-> 		}
-> 		c.Logger().Print(c)
-> 		tt, err := viewutils.String2TabType(c.Param("type"))
-> 		if err != nil {
-> 			return echo.NewHTTPError(
-> 				http.StatusInternalServerError,
-> 				errors.New("not a valid tab type"),
-> 			)
-> 		}
-> 
-> 		// TODO: fetch appropriate TabData.Items from database
-> 		// based on sort. Implement infinite scroll for them.
-> 		pageData := viewutils.GetPageData(userID)
-> 		tabdata, err := pageData.GetTabDataByType(*tt)
-> 		return RenderTab(TabActivateRenderer, c, pageData, tabdata)
-> 	})
-> 
-> 	e.POST("/api/tabButton/maximize/:type", func(c echo.Context) error {
-> 		userID, err := GetUserFromToken(c)
-> 		if err != nil {
-> 			return echo.NewHTTPError(http.StatusUnauthorized, err)
-> 		}
-> 		c.Logger().Print(c)
-> 		tt, err := viewutils.String2TabType(c.Param("type"))
-> 		if err != nil {
-> 			return echo.NewHTTPError(
-> 				http.StatusInternalServerError,
-> 				errors.New("not a valid tab type"),
-> 			)
-> 		}
-> 
-> 		// TODO: fetch appropriate TabData.Items from database
-> 		// based on sort. Implement infinite scroll for them.
-> 		pageData := viewutils.GetPageData(userID)
-> 		tabdata, err := pageData.GetTabDataByType(*tt)
-> 		return RenderTab(TabMaximizeRenderer, c, pageData, tabdata)
-> 	})
-> 	return nil
-> }
-> ```
-
-Yes, it is possible to create a new PageData struct for the user on login and send it to the client to save in sessionStorage. Here is one way to do it:
-
-1. When handling the login route, create the PageData:
-
-```go
-func HandleLogin(c echo.Context) error {
-
-  // login logic
-
-  userID := // get user ID
-
-  pageData := viewutils.InitPageData(userID)
-
-  // save pageData in session
-  session := sessions.Default(c)
-  session.Set("pageData", pageData)
-  session.Save()
-
-  return c.JSON(http.StatusOK, pageData)
-}
+Here's how you can modify your trigger to include the affected row in the audit table:
+```sql
+CREATE TRIGGER update_item_audits
+AFTER UPDATE OF itemID ON items
+BEGIN
+    INSERT INTO audits (userID, itemID, updated_at)
+    VALUES (NEW.userID, NEW.itemID, datetime('now'));
+END;
 ```
+In this trigger:
 
-2. The client saves the PageData in sessionStorage:
+* `NEW` refers to the row that was updated. You can access its columns using the syntax `NEW.column_name`, such as `NEW.userID`.
+* The values from the `NEW` row are used to populate the audit table with the updated data.
 
-```js
-// in login handler 
-fetch('/login', {
-  // login request 
-}).then(res => res.json())
-  .then(pageData => {
-    sessionStorage.setItem('pageData', JSON.stringify(pageData))
-  }) 
+For INSERT and DELETE triggers, you would use the `INSERTED` or `DELETED` tables, respectively:
+```sql
+CREATE TRIGGER insert_item_audits
+AFTER INSERT ON items
+BEGIN
+    INSERT INTO audits (userID, itemID, created_at)
+    VALUES (NEW.userID, NEW.itemID, datetime('now'));
+END;
+
+CREATE TRIGGER delete_item_audits
+AFTER DELETE ON items
+BEGIN
+    INSERT INTO audits (userID, itemID, deleted_at)
+    VALUES (OLD.userID, OLD.itemID, datetime('now'));
+END;
 ```
+In these triggers:
 
-3. On subsequent requests, get PageData from session and attach to context:
+* `NEW` refers to the row that was inserted. You can access its columns using the syntax `NEW.column_name`, such as `NEW.userID`.
+* `OLD` refers to the row that was deleted. You can access its columns using the syntax `OLD.column_name`, such as `OLD.userID`.
 
-```go
-func AttachPageData(next echo.HandlerFunc) echo.HandlerFunc {
-  return func(c echo.Context) error {
+Remember to replace `datetime('now')` with your preferred timestamp format.
 
-    pageDataJSON := session.Get("pageData")
-    if pageDataJSON != nil {
-      var pageData PageData 
-      // decode pageDataJSON to pageData struct
-
-      c.Set("pageData", pageData)
-    }
-
-    return next(c)
-  }
-}
-
-// Usage
-e.Use(AttachPageData) 
-
-e.GET("/someRoute", func(c echo.Context) error {
-  pageData := c.Get("pageData").(*PageData)
-  
-  // use pageData
-})
-```
-
-So the PageData can be accessed from context on subsequent requests after login.
-
-> func HandleLogin(c echo.Context) error {
-> 
->   // login logic
-> 
->   userID := // get user ID
-> 
->   pageData := viewutils.InitPageData(userID)
-> 
->   // save pageData in session
->   session := sessions.Default(c)
->   session.Set("pageData", pageData)
->   session.Save()
-> 
->   return c.JSON(http.StatusOK, pageData)
-> }
-> ```
-> 
-> 2. The client saves the PageData in sessionStorage:
-> 
-> ```js
-> // in login handler 
-> fetch('/login', {
->   // login request 
-> }).then(res => res.json())
->   .then(pageData => {
->     sessionStorage.setItem('pageData', JSON.stringify(pageData))
->   }) 
-> 
-> 
-> 
->   why do you need to do the save on the client if I instruct it to save via echo?
-
-Good catch! You are right, saving the PageData to the session on the server side with `session.Save()` is sufficient. 
-
-The client side sessionStorage saving is redundant in this case. The server-side session middleware will handle loading the PageData from session and attaching it to context on subsequent requests.
-
-So you can remove the client-side sessionStorage code. The server-side code should be enough:
-
-```go
-func HandleLogin(c echo.Context) error {
-
-  // login logic
-  
-  userID := // get user ID
-
-  pageData := viewutils.InitPageData(userID)
-
-  // save in session
-  session := sessions.Default(c) 
-  session.Set("pageData", pageData)
-  session.Save()
-
-  return c.NoContent(http.StatusOK) 
-}
-
-// AttachPageData middleware loads from session 
-
-e.Use(AttachPageData)
-```
-
-The AttachPageData middleware will load the PageData from session on each request and attach it to context.
-
-So the server-side session handling is sufficient, no need for the client to also save to sessionStorage. Good catch!
-
+These triggers will populate the audit table with the updated, inserted, or deleted data, along with the relevant timestamps and user IDs.
