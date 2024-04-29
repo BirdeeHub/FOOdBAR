@@ -26,7 +26,8 @@ buildGoApplication {
     templ generate
   '';
   postFixup = ''
-    wrapProgram $out/bin/FOOdBAR \
+    mv $out/bin/cmd $out/bin/.cmd
+    makeWrapper $out/bin/.cmd $out/bin/FOOdBAR \
       --set FOOdBAR_STATE ${dbpath}
   '';
   buildInputs = [ pkgs.sqlite ];
