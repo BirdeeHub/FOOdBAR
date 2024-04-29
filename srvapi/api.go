@@ -33,7 +33,7 @@ func SetupAPIroutes(e *echo.Group, dbpath string) error {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
-		if c.FormValue("query") == "(prefers-color-scheme: dark)" && c.FormValue("value") != "dark" {
+		if c.FormValue("query") == "(prefers-color-scheme: dark)" && c.FormValue("value") == "light" {
 			pageData.Palette = viewutils.Light
 			pageData.SavePageData(c)
 		} else {
