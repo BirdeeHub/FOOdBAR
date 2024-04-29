@@ -138,7 +138,7 @@ templ BodyContents(pd *viewutils.PageData) {
 			@viewutils.RenderListWithComponent(pd.GetTabButtonData(), TabButton)
 		</div>
 		<div id="tabViewContainer" class={ TabViewContainerCSS() }>
-			@viewutils.RenderPointerListWithComponent(pd.TabDatas, TabContainer)
+			@viewutils.RenderListWithComponent(pd.TabDatas, TabContainer)
 		</div>
 	</div>
 }

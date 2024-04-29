@@ -6,7 +6,7 @@ import (
 )
 
 templ EarningsTabContents(td *viewutils.TabData) {
-	@viewutils.RenderPointerListWithComponent(td.GetTabItems(), EarningsItemContainer)
+	@viewutils.RenderListWithComponent(td.GetTabItems(), EarningsItemContainer)
 }
 
 templ EarningsItemContainer(item *viewutils.TabItem) {

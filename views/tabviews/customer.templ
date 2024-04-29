@@ -6,7 +6,7 @@ import (
 )
 
 templ CustomerTabContents(td *viewutils.TabData) {
-	@viewutils.RenderPointerListWithComponent(td.GetTabItems(), CustomerItemContainer)
+	@viewutils.RenderListWithComponent(td.GetTabItems(), CustomerItemContainer)
 }
 
 templ CustomerItemContainer(item *viewutils.TabItem) {

@@ -6,7 +6,7 @@ import (
 )
 
 templ EventsTabContents(td *viewutils.TabData) {
-	@viewutils.RenderPointerListWithComponent(td.GetTabItems(), EventsItemContainer)
+	@viewutils.RenderListWithComponent(td.GetTabItems(), EventsItemContainer)
 }
 
 templ EventsItemContainer(item *viewutils.TabItem) {
