@@ -17,7 +17,7 @@ import (
 func Init(dbpath string, signingKey []byte, listenOn string) {
 	e := echo.New()
 	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
+	// e.Use(middleware.Recover())
 	// TODO: figure out how to HTTPS
 	// e.Pre(middleware.HTTPSRedirect())
 

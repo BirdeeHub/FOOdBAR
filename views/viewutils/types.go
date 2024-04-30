@@ -110,6 +110,9 @@ func (tbd *TabData) AddTabItem(ti *TabItem) *TabItem {
 	if ti.ItemID == uuid.Nil {
 		ti.ItemID = uuid.New()
 	}
+	if tbd.Items == nil {
+		tbd.Items = make(map[uuid.UUID]*TabItem)
+	}
 	tbd.Items[ti.ItemID] = ti
 	return ti
 }

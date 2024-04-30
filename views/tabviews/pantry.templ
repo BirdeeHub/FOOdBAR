@@ -40,3 +40,11 @@ templ RenderPantryTab(td *viewutils.TabData) {
 		@PantryTabContents(td)
 	</div>
 }
+
+templ ModalPantryContent(item *viewutils.TabItem) {
+	if item != nil {
+		<div>
+			Hello
+		</div>
+	}
+}
