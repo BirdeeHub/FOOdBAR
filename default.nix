@@ -21,9 +21,11 @@ buildGoApplication {
   pwd = ./.;
   src = ./.;
   modules = ./gomod2nix.toml;
-  nativeBuildInputs = with pkgs; [ templ makeWrapper ];
+  nativeBuildInputs = [ templ pkgs.makeWrapper pkgs.tailwindcss ];
   preBuild = ''
     templ generate
+    mkdir -p $out/FOOstatic
+    tailwindcss build -o $out/FOOstatic/tailwind.css
   '';
   postFixup = ''
     mkdir -p $out/dist

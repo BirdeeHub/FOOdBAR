@@ -17,7 +17,7 @@
 let
   templ = inputs.templ.packages.${pkgs.system}.templ;
   air = pkgs.writeShellScriptBin "air" ''
-    export PATH=${pkgs.lib.makeBinPath [ templ gomod2nix goEnv ]}:$PATH
+    export PATH=${pkgs.lib.makeBinPath [ templ gomod2nix goEnv pkgs.tailwindcss ]}:$PATH
     ${pkgs.air}/bin/air -c ${pkgs.writeText "air-toml" (builtins.readFile ./.air.toml)}
   '';
   goEnv = mkGoEnv { pwd = ./.; };
@@ -29,6 +29,7 @@ pkgs.mkShell {
     gomod2nix
     air
     templ
+    pkgs.tailwindcss
   ];
   FOOdBAR_STATE = "/home/birdee/.local/share";
   shellHook = ''
