@@ -6,46 +6,25 @@ import (
 	"FOOdBAR/views/tabviews"
 )
 
-script getColorScheme(mediaQueryEndpoint string) {
-	// Function to send the media query value to the endpoint
-	function sendMediaQueryValue(querystring, value) {
-		// Define the endpoint URL
-		const endpoint = mediaQueryEndpoint;
-		const data = new URLSearchParams();
-		data.append('query', querystring);
-		data.append('value', value);
-		const options = {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded' // Specify the content type as JSON
-			},
-			body: data // Convert the data object to a JSON string
-		}
-		// Send a GET request to the endpoint
-		fetch(endpoint, options)
-			.then(response => {
-				if (response.ok) {
-					console.log('Media query value sent successfully');
-				} else {
-					console.error('Failed to send media query value');
-				}
-			})
-			.catch(error => {
-				console.error('Error occurred while sending media query value:', error);
-			});
-	}
-	function checkColorscheme() {
-		// Define your media query here
-		const querystring = '(prefers-color-scheme: dark)';
-		const mediaQuery = window.matchMedia(querystring);
-		if (mediaQuery.matches) {
-			sendMediaQueryValue(querystring, 'dark');
-		} else {
-			sendMediaQueryValue(querystring, 'light');
-		}
-	}
-
-	checkColorscheme()
+templ Homepage(pd *viewutils.PageData) {
+	<!DOCTYPE html>
+	<html lang="en">
+		@getColorScheme(fmt.Sprintf("%s/api/mediaQuery", viewutils.PagePrefix))
+		@htmxAllowedCodes()
+		@colorsCSS()
+		<head>
+			<title>FOOd-BAR</title>
+			<meta charset="utf-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1"/>
+			<script src="https://unpkg.com/htmx.org/dist/htmx.min.js"></script>
+			<script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
+			//<link rel="stylesheet" href={ fmt.Sprintf("%s/styles/templ.css", viewutils.PagePrefix) }/>
+			<link rel="icon" type="image/x-icon" href={ fmt.Sprintf("%s/images/foodbarfavicon.svg", viewutils.PagePrefix) }/>
+		</head>
+		<body class="bodycolors">
+			@BodyContents(pd)
+		</body>
+	</html>
 }
 
 script htmxAllowedCodes() {
@@ -80,27 +59,6 @@ templ colorsCSS() {
 			}
 		}
 	</style>
-}
-
-templ Homepage(pd *viewutils.PageData) {
-	<!DOCTYPE html>
-	<html lang="en">
-		@getColorScheme(fmt.Sprintf("%s/api/mediaQuery", viewutils.PagePrefix))
-		@htmxAllowedCodes()
-		@colorsCSS()
-		<head>
-			<title>FOOd-BAR</title>
-			<meta charset="utf-8"/>
-			<meta name="viewport" content="width=device-width, initial-scale=1"/>
-			<script src="https://unpkg.com/htmx.org/dist/htmx.min.js"></script>
-			<script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
-			//<link rel="stylesheet" href={ fmt.Sprintf("%s/styles/templ.css", viewutils.PagePrefix) }/>
-			<link rel="icon" type="image/x-icon" href={ fmt.Sprintf("%s/images/foodbarfavicon.svg", viewutils.PagePrefix) }/>
-		</head>
-		<body class="bodycolors">
-			@BodyContents(pd)
-		</body>
-	</html>
 }
 
 css PageContainerCSS() {
@@ -262,4 +220,46 @@ templ RenderTabContents(td *viewutils.TabData) {
 		case viewutils.Events:
 			@tabviews.RenderEventsTab(td)
 	}
+}
+
+script getColorScheme(mediaQueryEndpoint string) {
+	// Function to send the media query value to the endpoint
+	function sendMediaQueryValue(querystring, value) {
+		// Define the endpoint URL
+		const endpoint = mediaQueryEndpoint;
+		const data = new URLSearchParams();
+		data.append('query', querystring);
+		data.append('value', value);
+		const options = {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded' // Specify the content type as JSON
+			},
+			body: data // Convert the data object to a JSON string
+		}
+		// Send a GET request to the endpoint
+		fetch(endpoint, options)
+			.then(response => {
+				if (response.ok) {
+					console.log('Media query value sent successfully');
+				} else {
+					console.error('Failed to send media query value');
+				}
+			})
+			.catch(error => {
+				console.error('Error occurred while sending media query value:', error);
+			});
+	}
+	function checkColorscheme() {
+		// Define your media query here
+		const querystring = '(prefers-color-scheme: dark)';
+		const mediaQuery = window.matchMedia(querystring);
+		if (mediaQuery.matches) {
+			sendMediaQueryValue(querystring, 'dark');
+		} else {
+			sendMediaQueryValue(querystring, 'light');
+		}
+	}
+
+	checkColorscheme()
 }
