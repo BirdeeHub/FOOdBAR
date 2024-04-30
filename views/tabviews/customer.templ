@@ -44,7 +44,7 @@ templ RenderCustomerTab(td *viewutils.TabData) {
 templ ModalCustomerContent(item *viewutils.TabItem) {
 	if item != nil {
 		<div style="display: flex; flex-direction: column; flex: 0 1;">
-			Hello
+			Hello from { item.Ttype.String() }
 		</div>
 		<button _="on click trigger closeModal">Close</button>
 	}
