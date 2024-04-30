@@ -86,6 +86,8 @@ templ Homepage(pd *viewutils.PageData) {
 	<!DOCTYPE html>
 	<html lang="en">
 		@getColorScheme(fmt.Sprintf("%s/api/mediaQuery", viewutils.PagePrefix))
+		@htmxAllowedCodes()
+		@colorsCSS()
 		<head>
 			<title>FOOd-BAR</title>
 			<meta charset="utf-8"/>
@@ -97,8 +99,6 @@ templ Homepage(pd *viewutils.PageData) {
 		</head>
 		<body class="bodycolors">
 			@BodyContents(pd)
-			@htmxAllowedCodes()
-			@colorsCSS()
 		</body>
 	</html>
 }
