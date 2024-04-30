@@ -86,6 +86,7 @@ func SetupAPIroutes(e *echo.Group, dbpath string) error {
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, errors.New("Item with that ID not found in this tab"))
 		}
+		// TODO: Make this ModalContent component a general one with a switch statement on tab type instead of only pantry
 		return HTML(c, http.StatusOK, tabviews.ItemEditModal(tabviews.ModalPantryContent(item)))
 	})
 
@@ -100,6 +101,7 @@ func SetupAPIroutes(e *echo.Group, dbpath string) error {
 		}
 		td := pageData.GetTabDataByType(tt)
 		item := td.AddTabItem(&viewutils.TabItem{Expanded: false})
+		// TODO: Make this ModalContent component a general one with a switch statement on tab type instead of only pantry
 		return HTML(c, http.StatusOK, tabviews.ItemEditModal(tabviews.ModalPantryContent(item)))
 	})
 
