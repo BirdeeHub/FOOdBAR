@@ -4,7 +4,9 @@ import (
 	// "FOOdBAR/db"
 	"FOOdBAR/views"
 	"FOOdBAR/views/viewutils"
+	"FOOdBAR/views/tabviews"
 	"net/http"
+
 	"github.com/labstack/echo/v4"
 )
 
@@ -59,6 +61,14 @@ func SetupAPIroutes(e *echo.Group, dbpath string) error {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
 		return RenderTab(TabActivateRenderer, c, pageData, pageData.GetTabDataByType(viewutils.String2TabType(c.Param("type"))))
+	})
+
+	e.POST("/api/itemEditModal/:type", func(c echo.Context) error {
+		pageData, err := viewutils.GetPageData(c)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, err)
+		}
+		return HTML(c, http.StatusOK, tabviews.ItemEditModal(pageData, viewutils.String2TabType(c.Param("type"))))
 	})
 
 	e.POST("/api/tabButton/maximize/:type", func(c echo.Context) error {

@@ -25,7 +25,13 @@ templ RenderPantryTab(td *viewutils.TabData) {
 		<div class={ TabHeaderTitleCSS() }>
 			Pantry!
 		</div>
-		<div id={ fmt.Sprintf("tabItemAdd_%s", td.Ttype) } class={ TabHeaderButtonCSS("0 0 1.5rem") }>
+		<div
+			id={ fmt.Sprintf("tabItemAdd_%s", td.Ttype) }
+			hx-post={ fmt.Sprintf("%s/api/itemEditModal/%s", viewutils.PagePrefix, td.Ttype.String()) }
+			hx-swap="beforeend"
+			hx-target="body"
+			class={ TabHeaderButtonCSS("0 0 1.5rem") }
+		>
 			@viewutils.AddCircle()
 		</div>
 		@MaximizeTabButton(td.Ttype)
