@@ -152,9 +152,23 @@ templ TabButton(tbd viewutils.TabButtonData) {
 	}
 }
 
-// TODO: make the resize match the mouse better
+templ TabContainer(td *viewutils.TabData) {
+	if td != nil && td.Ttype != viewutils.Invalid {
+		<div id={ fmt.Sprintf("tabContainer_%s", td.Ttype) } style="display: flex; flex-direction: row; flex: 1;">
+			<div class={ TabContainerCSS() }>
+				@RenderTabContents(td)
+			</div>
+			<div
+				id={ fmt.Sprintf("resizebar_%s", td.Ttype) }
+				class={ Resizebar() }
+				onmousedown={ resizeTab(td.Ttype.String()) }
+			></div>
+		</div>
+	}
+}
 
 script resizeTab(tabtarget string) {
+	// TODO: make better
 	let dragBar = document.getElementById("resizebar_"+tabtarget)
 	let div1 = document.getElementById("tabContainer_"+tabtarget)
 	// This is not functional code yet
@@ -184,21 +198,6 @@ css Resizebar() {
 	flex: 0;
 	cursor: ew-resize;
 	border-left: 2px dashed;
-}
-
-templ TabContainer(td *viewutils.TabData) {
-	if td != nil && td.Ttype != viewutils.Invalid {
-		<div id={ fmt.Sprintf("tabContainer_%s", td.Ttype) } style="display: flex; flex-direction: row; flex: 1;">
-			<div class={ TabContainerCSS() }>
-				@RenderTabContents(td)
-			</div>
-			<div
-				id={ fmt.Sprintf("resizebar_%s", td.Ttype) }
-				class={ Resizebar() }
-				onmousedown={ resizeTab(td.Ttype.String()) }
-			></div>
-		</div>
-	}
 }
 
 templ RenderTabContents(td *viewutils.TabData) {
