@@ -3,8 +3,8 @@ package srvapi
 import (
 	// "FOOdBAR/db"
 	"FOOdBAR/views"
-	"FOOdBAR/views/viewutils"
 	"FOOdBAR/views/tabviews"
+	"FOOdBAR/views/viewutils"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -63,12 +63,24 @@ func SetupAPIroutes(e *echo.Group, dbpath string) error {
 		return RenderTab(TabActivateRenderer, c, pageData, pageData.GetTabDataByType(viewutils.String2TabType(c.Param("type"))))
 	})
 
-	e.POST("/api/itemEditModal/:type", func(c echo.Context) error {
-		pageData, err := viewutils.GetPageData(c)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, err)
-		}
-		return HTML(c, http.StatusOK, tabviews.ItemEditModal(pageData.GetTabDataByType(viewutils.String2TabType(c.Param("type")))))
+	e.POST("/api/itemEditModal/:type/:itemID", func(c echo.Context) error {
+		// pageData, err := viewutils.GetPageData(c)
+		// if err != nil {
+		// 	return echo.NewHTTPError(http.StatusUnauthorized, err)
+		// }
+		// itemID, err := uuid.Parse(c.Param("itemID"))
+		// if err != nil {
+		// 	return echo.NewHTTPError(http.StatusUnauthorized, err)
+		// }
+		return HTML(c, http.StatusOK, tabviews.ItemEditModal(views.TabButton(viewutils.TabButtonData{Ttype: viewutils.String2TabType(c.Param("type"))})))
+	})
+
+	e.POST("/api/itemCreateModal/:type", func(c echo.Context) error {
+		// pageData, err := viewutils.GetPageData(c)
+		// if err != nil {
+		// 	return echo.NewHTTPError(http.StatusUnauthorized, err)
+		// }
+		return HTML(c, http.StatusOK, tabviews.ItemEditModal(views.TabButton(viewutils.TabButtonData{Ttype: viewutils.String2TabType(c.Param("type"))})))
 	})
 
 	e.POST("/api/tabButton/maximize/:type", func(c echo.Context) error {

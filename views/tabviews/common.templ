@@ -16,7 +16,7 @@ templ MaximizeTabButton(tt viewutils.TabType) {
 	</div>
 }
 
-templ ItemEditModal(td *viewutils.TabData) {
+templ ItemEditModal(component templ.Component) {
 	<style type="text/css">
 		/***** MODAL DIALOG ****/
 		#modal {
@@ -26,7 +26,6 @@ templ ItemEditModal(td *viewutils.TabData) {
 			bottom: 0px;
 			left:0px;
 			right:0px;
-			background-color:rgba(0,0,0,0.5);
 			z-index:1000;
 
 			/* Flexbox centers the .modal-content vertically and horizontally */
@@ -43,6 +42,7 @@ templ ItemEditModal(td *viewutils.TabData) {
 		#modal > .modal-underlay {
 			/* underlay takes up the entire viewport. This is only
 			required if you want to click to dismiss the popup */
+			background-color:rgba(0,0,0,0.5);
 			position: absolute;
 			z-index: -1;
 			top:0px;
@@ -60,10 +60,9 @@ templ ItemEditModal(td *viewutils.TabData) {
 			max-width:600px;
 
 			/* Display properties for visible dialog*/
-			border:solid 1px #999;
+			border:solid 1px;
 			border-radius:8px;
 			box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.3);
-			background-color:white;
 			padding:20px;
 
 			/* Animate when opening */
@@ -109,11 +108,7 @@ templ ItemEditModal(td *viewutils.TabData) {
 	<div id="modal" _="on closeModal add .closing then wait for animationend then remove me">
 		<div class="modal-underlay" _="on click trigger closeModal"></div>
 		<div class="modal-content bodycolors">
-			<h1>Modal Dialog</h1>
-			This is the modal content.
-			You can put anything here, like text, or a form, or an image.
-			<br/>
-			<br/>
+			@component
 			<button _="on click trigger closeModal">Close</button>
 		</div>
 	</div>
