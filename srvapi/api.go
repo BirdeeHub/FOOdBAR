@@ -68,7 +68,7 @@ func SetupAPIroutes(e *echo.Group, dbpath string) error {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
-		return HTML(c, http.StatusOK, tabviews.ItemEditModal(pageData, viewutils.String2TabType(c.Param("type"))))
+		return HTML(c, http.StatusOK, tabviews.ItemEditModal(pageData.GetTabDataByType(viewutils.String2TabType(c.Param("type")))))
 	})
 
 	e.POST("/api/tabButton/maximize/:type", func(c echo.Context) error {
