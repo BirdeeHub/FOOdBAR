@@ -24,8 +24,7 @@ buildGoApplication {
   nativeBuildInputs = [ templ pkgs.makeWrapper pkgs.tailwindcss ];
   preBuild = ''
     templ generate
-    mkdir -p $out/FOOstatic
-    tailwindcss build -o $out/FOOstatic/tailwind.css
+    tailwindcss build -o ./FOOstatic/tailwind.css
   '';
   postFixup = ''
     mkdir -p $out/dist
