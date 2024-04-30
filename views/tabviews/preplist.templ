@@ -31,3 +31,12 @@ templ RenderPreplistTab(td *viewutils.TabData) {
 		@PreplistTabContents(td)
 	</div>
 }
+
+templ ModalPreplistContent(item *viewutils.TabItem) {
+	if item != nil {
+		<div style="display: flex; flex-direction: column; flex: 0 1;">
+			Hello
+		</div>
+		<button _="on click trigger closeModal">Close</button>
+	}
+}

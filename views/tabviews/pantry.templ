@@ -27,7 +27,7 @@ templ RenderPantryTab(td *viewutils.TabData) {
 		</div>
 		<div
 			id={ fmt.Sprintf("tabItemAdd_%s", td.Ttype) }
-			hx-post={ fmt.Sprintf("%s/api/itemCreateModal/%s", viewutils.PagePrefix, td.Ttype.String()) }
+			hx-post={ fmt.Sprintf("%s/api/itemCreateModal/open/%s", viewutils.PagePrefix, td.Ttype.String()) }
 			hx-swap="beforeend"
 			hx-target="body"
 			class={ TabHeaderButtonCSS("0 0 1.5rem") }

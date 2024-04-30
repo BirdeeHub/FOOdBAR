@@ -16,6 +16,27 @@ templ MaximizeTabButton(tt viewutils.TabType) {
 	</div>
 }
 
+templ RenderModalContent(item *viewutils.TabItem) {
+	switch item.Ttype {
+		case viewutils.Recipe:
+			@ModalRecipeContent(item)
+		case viewutils.Pantry:
+			@ModalPantryContent(item)
+		case viewutils.Menu:
+			@ModalMenuContent(item)
+		case viewutils.Shopping:
+			@ModalShoppingContent(item)
+		case viewutils.Preplist:
+			@ModalPreplistContent(item)
+		case viewutils.Earnings:
+			@ModalEarningsContent(item)
+		case viewutils.Customer:
+			@ModalCustomerContent(item)
+		case viewutils.Events:
+			@ModalEventsContent(item)
+	}
+}
+
 templ ItemEditModal(component templ.Component) {
 	<style type="text/css">
 		/***** MODAL DIALOG ****/

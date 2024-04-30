@@ -65,7 +65,7 @@ func SetupAPIroutes(e *echo.Group, dbpath string) error {
 		return RenderTab(TabActivateRenderer, c, pageData, pageData.GetTabDataByType(viewutils.String2TabType(c.Param("type"))))
 	})
 
-	e.POST("/api/itemEditModal/:type/:itemID", func(c echo.Context) error {
+	e.POST("/api/itemEditModal/open/:type/:itemID", func(c echo.Context) error {
 		pageData, err := viewutils.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
@@ -86,11 +86,10 @@ func SetupAPIroutes(e *echo.Group, dbpath string) error {
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, errors.New("Item with that ID not found in this tab"))
 		}
-		// TODO: Make this ModalContent component a general one with a switch statement on tab type instead of only pantry
-		return HTML(c, http.StatusOK, tabviews.ItemEditModal(tabviews.ModalPantryContent(item)))
+		return HTML(c, http.StatusOK, tabviews.ItemEditModal(tabviews.RenderModalContent(item)))
 	})
 
-	e.POST("/api/itemCreateModal/:type", func(c echo.Context) error {
+	e.POST("/api/itemCreateModal/open/:type", func(c echo.Context) error {
 		pageData, err := viewutils.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
@@ -101,8 +100,7 @@ func SetupAPIroutes(e *echo.Group, dbpath string) error {
 		}
 		td := pageData.GetTabDataByType(tt)
 		item := td.AddTabItem(&viewutils.TabItem{Expanded: false})
-		// TODO: Make this ModalContent component a general one with a switch statement on tab type instead of only pantry
-		return HTML(c, http.StatusOK, tabviews.ItemEditModal(tabviews.ModalPantryContent(item)))
+		return HTML(c, http.StatusOK, tabviews.ItemEditModal(tabviews.RenderModalContent(item)))
 	})
 
 	e.POST("/api/tabButton/maximize/:type", func(c echo.Context) error {

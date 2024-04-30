@@ -31,3 +31,12 @@ templ RenderRecipeTab(td *viewutils.TabData) {
 		@RecipeTabContents(td)
 	</div>
 }
+
+templ ModalRecipeContent(item *viewutils.TabItem) {
+	if item != nil {
+		<div style="display: flex; flex-direction: column; flex: 0 1;">
+			Hello
+		</div>
+		<button _="on click trigger closeModal">Close</button>
+	}
+}

@@ -31,3 +31,12 @@ templ RenderEventsTab(td *viewutils.TabData) {
 		@EventsTabContents(td)
 	</div>
 }
+
+templ ModalEventsContent(item *viewutils.TabItem) {
+	if item != nil {
+		<div style="display: flex; flex-direction: column; flex: 0 1;">
+			Hello
+		</div>
+		<button _="on click trigger closeModal">Close</button>
+	}
+}
