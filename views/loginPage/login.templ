@@ -101,6 +101,14 @@ templ LoginForm(formtype LoginFormType, e error) {
 	}
 }
 
+css hidden() {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
 templ LoginFormContents(formtype LoginFormType, e error) {
 	if formtype == LoginType {
 		<input value="" type="text" name="username"/>
@@ -116,6 +124,7 @@ templ LoginFormContents(formtype LoginFormType, e error) {
 		<input value="" type="password" name="password"/>
 		Confirm password:
 		<input value="" type="password" name="confirmpassword"/>
+		<input class={ hidden() } value="" type="text" name="beepboop"/>
 		if e != nil {
 			{ e.Error() }
 		}

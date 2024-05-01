@@ -65,6 +65,13 @@ func Init(dbpath string, signingKey []byte, listenOn string) {
 		username := c.FormValue("username")
 		password := c.FormValue("password")
 		confirmpassword := c.FormValue("confirmpassword")
+		beepboop := c.FormValue("beepboop")
+		if beepboop != "" {
+			WipeAuth(c)
+			err := errors.New("Scraper no scraping!")
+			c.Logger().Print(err)
+			return HTML(c, http.StatusUnprocessableEntity, loginPage.LoginPage(loginPage.SignupType, err))
+		}
 		if password != confirmpassword {
 			WipeAuth(c)
 			err := errors.New("Passwords don't match")
