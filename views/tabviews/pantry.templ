@@ -2,25 +2,25 @@ package tabviews
 
 import (
 	"fmt"
-	"FOOdBAR/views/viewutils"
+	foodlib "FOOdBAR/FOOlib"
 )
 
-templ PantryTabContents(td *viewutils.TabData) {
-	@viewutils.RenderListWithComponent(td.GetTabItems(), PantryItemContainer)
+templ PantryTabContents(td *foodlib.TabData) {
+	@foodlib.RenderListWithComponent(td.GetTabItems(), PantryItemContainer)
 }
 
-templ PantryItemContainer(item *viewutils.TabItem) {
+templ PantryItemContainer(item *foodlib.TabItem) {
 	<div id={ fmt.Sprintf("%s", item.ItemID.String()) } class={ TabListItemCSS() }>
 		<div class={ ListItemElementCSS() }>
 			{ item.ItemID.String() }
 		</div>
 		<div class={ ListItemElementCSS() }>
-			@viewutils.Trashcan()
+			@Trashcan()
 		</div>
 	</div>
 }
 
-templ RenderPantryTab(td *viewutils.TabData) {
+templ RenderPantryTab(td *foodlib.TabData) {
 	<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>
 		<div class={ TabHeaderTitleCSS() }>
 			Pantry!
@@ -33,7 +33,7 @@ templ RenderPantryTab(td *viewutils.TabData) {
 	</div>
 }
 
-templ ModalPantryContent(item *viewutils.TabItem) {
+templ ModalPantryContent(item *foodlib.TabItem) {
 	if item != nil {
 		<div style="display: flex; flex-direction: column; flex: 0 1;">
 			Hello from { item.Ttype.String() }

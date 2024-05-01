@@ -2,15 +2,15 @@ package views
 
 import (
 	"fmt"
-	"FOOdBAR/views/viewutils"
+	foodlib "FOOdBAR/FOOlib"
 	"FOOdBAR/views/tabviews"
 )
 
-templ Homepage(pd *viewutils.PageData) {
+templ Homepage(pd *foodlib.PageData) {
 	<!DOCTYPE html>
 	<html lang="en">
-		@getColorScheme(fmt.Sprintf("%s/api/mediaQuery", viewutils.PagePrefix))
-		@viewutils.ColorsCSS()
+		@getColorScheme(fmt.Sprintf("%s/api/mediaQuery", foodlib.PagePrefix))
+		@tabviews.ColorsCSS()
 		@htmxAllowedCodes()
 		@tabviews.ModalCSS()
 		<head>
@@ -19,9 +19,9 @@ templ Homepage(pd *viewutils.PageData) {
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
 			<script src="https://unpkg.com/htmx.org/dist/htmx.min.js"></script>
 			<script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
-			<link rel="stylesheet" href={ fmt.Sprintf("%s/static/tailwind.css", viewutils.PagePrefix) }/>
-			<link rel="icon" type="image/x-icon" href={ fmt.Sprintf("%s/static/foodbarfavicon.svg", viewutils.PagePrefix) }/>
-			//<link rel="stylesheet" href={ fmt.Sprintf("%s/styles/templ.css", viewutils.PagePrefix) }/>
+			<link rel="stylesheet" href="/static/tailwind.css"/>
+			<link rel="icon" type="image/x-icon" href={ fmt.Sprintf("%s/static/foodbarfavicon.svg", foodlib.PagePrefix) }/>
+			//<link rel="stylesheet" href={ fmt.Sprintf("%s/styles/templ.css", foodlib.PagePrefix) }/>
 		</head>
 		<body class="bodycolors">
 			@BodyContents(pd)
@@ -65,30 +65,30 @@ css TabButtonContainerCSS() {
 	cursor: pointer;
 }
 
-templ BodyContents(pd *viewutils.PageData) {
+templ BodyContents(pd *foodlib.PageData) {
 	<div class={ PageContainerCSS() }>
 		<div id="pageHeader" class={ PageHeaderContainerCSS() }>
 			Hello, chef! Welcome to FOOdBAR!
 		</div>
 		<div id="tabButtonContainer" class={ TabButtonContainerCSS() }>
-			@viewutils.RenderListWithComponent(pd.GetTabButtonData(), TabButton)
+			@foodlib.RenderListWithComponent(pd.GetTabButtonData(), TabButton)
 		</div>
 		<div id="tabViewContainer" class={ TabViewContainerCSS() }>
-			@viewutils.RenderListWithComponent(pd.TabDatas, TabContainer)
+			@foodlib.RenderListWithComponent(pd.TabDatas, TabContainer)
 		</div>
 	</div>
 }
 
-templ OOBtabViewContainer(tbd *viewutils.TabData) {
-	if tbd != nil && tbd.Ttype != viewutils.Invalid {
+templ OOBtabViewContainer(tbd *foodlib.TabData) {
+	if tbd != nil && tbd.Ttype != foodlib.Invalid {
 		<div id="tabViewContainer" hx-swap-oob="beforeend">
 			@TabContainer(tbd)
 		</div>
 	}
 }
 
-templ OOBtabButtonToggle(tbd viewutils.TabButtonData) {
-	if tbd.Ttype != viewutils.Invalid {
+templ OOBtabButtonToggle(tbd foodlib.TabButtonData) {
+	if tbd.Ttype != foodlib.Invalid {
 		<div id={ fmt.Sprintf("tabButton_%s", tbd.Ttype.String()) } hx-swap-oob="outerHTML">
 			@TabButton(tbd)
 		</div>
@@ -107,11 +107,11 @@ css TabButtonItemCSS() {
 
 // TODO: make this have a loading animation
 
-templ TabButton(tbd viewutils.TabButtonData) {
-	if tbd.Ttype != viewutils.Invalid {
+templ TabButton(tbd foodlib.TabButtonData) {
+	if tbd.Ttype != foodlib.Invalid {
 		if !tbd.Active {
 			<div
-				hx-get={ fmt.Sprintf("%s/api/tabButton/activate/%s", viewutils.PagePrefix, tbd.Ttype.String()) }
+				hx-get={ fmt.Sprintf("%s/api/tabButton/activate/%s", foodlib.PagePrefix, tbd.Ttype.String()) }
 				hx-swap="outerHTML"
 				id={ fmt.Sprintf("tabButton_%s", tbd.Ttype.String()) }
 				class={ TabButtonItemCSS() }
@@ -120,7 +120,7 @@ templ TabButton(tbd viewutils.TabButtonData) {
 			</div>
 		} else {
 			<div
-				hx-delete={ fmt.Sprintf("%s/api/tabButton/deactivate/%s", viewutils.PagePrefix, tbd.Ttype.String()) }
+				hx-delete={ fmt.Sprintf("%s/api/tabButton/deactivate/%s", foodlib.PagePrefix, tbd.Ttype.String()) }
 				hx-target={ fmt.Sprintf("#tabContainer_%s", tbd.Ttype.String()) }
 				hx-swap="outerHTML"
 				id={ fmt.Sprintf("tabButton_%s", tbd.Ttype.String()) }
@@ -132,8 +132,8 @@ templ TabButton(tbd viewutils.TabButtonData) {
 	}
 }
 
-templ TabContainer(td *viewutils.TabData) {
-	if td != nil && td.Ttype != viewutils.Invalid {
+templ TabContainer(td *foodlib.TabData) {
+	if td != nil && td.Ttype != foodlib.Invalid {
 		<div id={ fmt.Sprintf("tabContainer_%s", td.Ttype) } style="display: flex; flex-direction: row; flex: 1;">
 			<div class={ TabContainerCSS() }>
 				@RenderTabContents(td)
@@ -179,23 +179,23 @@ css Resizebar() {
 	border-left: 2px dashed;
 }
 
-templ RenderTabContents(td *viewutils.TabData) {
+templ RenderTabContents(td *foodlib.TabData) {
 	switch td.Ttype {
-		case viewutils.Recipe:
+		case foodlib.Recipe:
 			@tabviews.RenderRecipeTab(td)
-		case viewutils.Pantry:
+		case foodlib.Pantry:
 			@tabviews.RenderPantryTab(td)
-		case viewutils.Menu:
+		case foodlib.Menu:
 			@tabviews.RenderMenuTab(td)
-		case viewutils.Shopping:
+		case foodlib.Shopping:
 			@tabviews.RenderShoppingTab(td)
-		case viewutils.Preplist:
+		case foodlib.Preplist:
 			@tabviews.RenderPreplistTab(td)
-		case viewutils.Earnings:
+		case foodlib.Earnings:
 			@tabviews.RenderEarningsTab(td)
-		case viewutils.Customer:
+		case foodlib.Customer:
 			@tabviews.RenderCustomerTab(td)
-		case viewutils.Events:
+		case foodlib.Events:
 			@tabviews.RenderEventsTab(td)
 	}
 }

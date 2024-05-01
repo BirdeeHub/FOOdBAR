@@ -1,4 +1,4 @@
-package FOOlib
+package foodlib
 
 import (
 	"os"

@@ -2,50 +2,50 @@ package tabviews
 
 import (
 	"fmt"
-	"FOOdBAR/views/viewutils"
+	foodlib "FOOdBAR/FOOlib"
 )
 
-templ MaximizeTabButton(tt viewutils.TabType) {
+templ MaximizeTabButton(tt foodlib.TabType) {
 	<div
-		hx-post={ fmt.Sprintf("%s/api/tabButton/maximize/%s", viewutils.PagePrefix, tt) }
+		hx-post={ fmt.Sprintf("%s/api/tabButton/maximize/%s", foodlib.PagePrefix, tt) }
 		hx-target="#tabViewContainer"
 		id={ fmt.Sprintf("tabButton_%s", tt) }
 		class={ TabHeaderButtonCSS("0 0 1.5rem") }
 	>
-		@viewutils.Maximize()
+		@Maximize()
 	</div>
 }
 
-templ AddTabItemButton(tt viewutils.TabType) {
+templ AddTabItemButton(tt foodlib.TabType) {
 	<div
 		id={ fmt.Sprintf("tabItemAdd_%s", tt.String()) }
-		hx-post={ fmt.Sprintf("%s/api/itemCreateModal/open/%s", viewutils.PagePrefix, tt.String()) }
+		hx-post={ fmt.Sprintf("%s/api/itemCreateModal/open/%s", foodlib.PagePrefix, tt.String()) }
 		hx-swap="beforeend"
 		hx-target="body"
 		class={ TabHeaderButtonCSS("0 0 1.5rem") }
 	>
-		@viewutils.AddCircle()
+		@AddCircle()
 	</div>
 }
 
 
-templ RenderModalContent(item *viewutils.TabItem) {
+templ RenderModalContent(item *foodlib.TabItem) {
 	switch item.Ttype {
-		case viewutils.Recipe:
+		case foodlib.Recipe:
 			@ModalRecipeContent(item)
-		case viewutils.Pantry:
+		case foodlib.Pantry:
 			@ModalPantryContent(item)
-		case viewutils.Menu:
+		case foodlib.Menu:
 			@ModalMenuContent(item)
-		case viewutils.Shopping:
+		case foodlib.Shopping:
 			@ModalShoppingContent(item)
-		case viewutils.Preplist:
+		case foodlib.Preplist:
 			@ModalPreplistContent(item)
-		case viewutils.Earnings:
+		case foodlib.Earnings:
 			@ModalEarningsContent(item)
-		case viewutils.Customer:
+		case foodlib.Customer:
 			@ModalCustomerContent(item)
-		case viewutils.Events:
+		case foodlib.Events:
 			@ModalEventsContent(item)
 	}
 }

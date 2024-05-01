@@ -1,4 +1,4 @@
-package viewutils
+package foodlib
 
 import (
 	"encoding/base64"

@@ -2,25 +2,25 @@ package tabviews
 
 import (
 	"fmt"
-	"FOOdBAR/views/viewutils"
+	foodlib "FOOdBAR/FOOlib"
 )
 
-templ EventsTabContents(td *viewutils.TabData) {
-	@viewutils.RenderListWithComponent(td.GetTabItems(), EventsItemContainer)
+templ EventsTabContents(td *foodlib.TabData) {
+	@foodlib.RenderListWithComponent(td.GetTabItems(), EventsItemContainer)
 }
 
-templ EventsItemContainer(item *viewutils.TabItem) {
+templ EventsItemContainer(item *foodlib.TabItem) {
 	<div id={ fmt.Sprintf("%s", item.ItemID.String()) } class={ TabListItemCSS() }>
 		<div class={ ListItemElementCSS() }>
 			{ item.ItemID.String() }
 		</div>
 		<div class={ ListItemElementCSS() }>
-			@viewutils.Trashcan()
+			@Trashcan()
 		</div>
 	</div>
 }
 
-templ RenderEventsTab(td *viewutils.TabData) {
+templ RenderEventsTab(td *foodlib.TabData) {
 	<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>
 		<div class={ TabHeaderTitleCSS() }>
 			Events!
@@ -33,7 +33,7 @@ templ RenderEventsTab(td *viewutils.TabData) {
 	</div>
 }
 
-templ ModalEventsContent(item *viewutils.TabItem) {
+templ ModalEventsContent(item *foodlib.TabItem) {
 	if item != nil {
 		<div style="display: flex; flex-direction: column; flex: 0 1;">
 			Hello from { item.Ttype.String() }

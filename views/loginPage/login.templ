@@ -2,7 +2,8 @@ package loginPage
 
 import (
 	"fmt"
-	"FOOdBAR/views/viewutils"
+	"FOOdBAR/views/tabviews"
+	foodlib "FOOdBAR/FOOlib"
 )
 
 type LoginFormType string
@@ -29,34 +30,7 @@ script htmxAllowedCodes() {
 
 templ LoginPage(formtype LoginFormType, e error) {
 	<!DOCTYPE html>
-	@viewutils.ColorsCSS()
-	<style type="text/css">
-		/* Reset default button styles */
-		button {
-			padding: 10px;
-			border-bottom: 1px solid;
-			border-top: 1px solid;
-			cursor: pointer;
-			border-radius: 10px;
-			transition: border-color 0.3s ease;
-		}
-
-		/* Hover effect */
-		button:hover {
-			border-color: orange; /* Darker green */
-		}
-
-		/* Focus effect */
-		button:focus {
-			box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.2); /* Example focus outline */
-		}
-
-		/* Disabled state */
-		button:disabled {
-			opacity: 0.5;
-			cursor: not-allowed;
-		}
-	</style>
+	@tabviews.ColorsCSS()
 
 	<html lang="en">
 		<head>
@@ -64,6 +38,8 @@ templ LoginPage(formtype LoginFormType, e error) {
 			<meta charset="utf-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
 			<script src="https://unpkg.com/htmx.org/dist/htmx.min.js"></script>
+			<link rel="icon" type="image/x-icon" href="/static/foodbarloginfavicon.svg"/>
+			<link rel="stylesheet" href="/static/tailwind.css"/>
 		</head>
 		<body class="bodycolors">
 			@LoginPageContents(formtype, e)
@@ -94,7 +70,7 @@ templ FormTypeButton(formtype LoginFormType) {
 	if formtype != "login" {
 		<div style="display: flex; flex: row;">
 			<div
-				hx-get={ fmt.Sprintf("%s/loginform/%s", viewutils.PagePrefix, "login") }
+				hx-get={ fmt.Sprintf("%s/loginform/%s", foodlib.PagePrefix, "login") }
 				hx-swap="outerHTML"
 				hx-target="#loginpage"
 				id="loginbutton"
@@ -106,7 +82,7 @@ templ FormTypeButton(formtype LoginFormType) {
 	} else {
 		<div style="display: flex; flex: row;">
 			<div
-				hx-get={ fmt.Sprintf("%s/loginform/%s", viewutils.PagePrefix, "signup") }
+				hx-get={ fmt.Sprintf("%s/loginform/%s", foodlib.PagePrefix, "signup") }
 				hx-swap="outerHTML"
 				hx-target="#loginpage"
 				id="signupbutton"
@@ -121,7 +97,7 @@ templ FormTypeButton(formtype LoginFormType) {
 templ LoginForm(formtype LoginFormType, e error) {
 	if formtype == LoginType {
 		<form
-			action={ templ.URL(fmt.Sprintf("%s/submitlogin", viewutils.PagePrefix)) }
+			action={ templ.URL(fmt.Sprintf("%s/submitlogin", foodlib.PagePrefix)) }
 			method="POST"
 			enctype="application/x-www-form-urlencoded"
 			class={ displayFlex("column") }
@@ -134,7 +110,7 @@ templ LoginForm(formtype LoginFormType, e error) {
 		</form>
 	} else {
 		<form
-			action={ templ.URL(fmt.Sprintf("%s/submitsignup", viewutils.PagePrefix)) }
+			action={ templ.URL(fmt.Sprintf("%s/submitsignup", foodlib.PagePrefix)) }
 			method="POST"
 			enctype="application/x-www-form-urlencoded"
 			class={ displayFlex("column") }
@@ -160,26 +136,26 @@ templ LoginFormContents(formtype LoginFormType, e error) {
 	<div class={ displayFlex("column") }>
 		if formtype == LoginType {
 			Username:
-			<input value="" type="text" name="username"/>
+			<input class="text-black" value="" type="text" name="username"/>
 			Password:
-			<input value="" type="password" name="password"/>
+			<input class="text-black" value="" type="password" name="password"/>
 			<input class={ hidden() } value="" type="text" name="beepboop"/>
 			if e != nil {
 				{ e.Error() }
 			}
-			<button style="margin-top: 5px" type="submit">log in</button>
+			<button class={ modeButtonItemCSS() } style="margin-top: 5px" type="submit">log in</button>
 		} else {
 			Username:
-			<input value="" type="text" name="username"/>
+			<input class="text-black" value="" type="text" name="username"/>
 			Password:
-			<input value="" type="password" name="password"/>
+			<input class="text-black" value="" type="password" name="password"/>
 			Confirm password:
-			<input value="" type="password" name="confirmpassword"/>
+			<input class="text-black" value="" type="password" name="confirmpassword"/>
 			<input class={ hidden() } value="" type="text" name="beepboop"/>
 			if e != nil {
 				{ e.Error() }
 			}
-			<button style="margin-top: 5px" type="submit">sign up</button>
+			<button class={ modeButtonItemCSS() } style="margin-top: 5px" type="submit">sign up</button>
 		}
 	</div>
 }

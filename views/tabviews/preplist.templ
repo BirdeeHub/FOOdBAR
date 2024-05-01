@@ -2,25 +2,25 @@ package tabviews
 
 import (
 	"fmt"
-	"FOOdBAR/views/viewutils"
+	foodlib "FOOdBAR/FOOlib"
 )
 
-templ PreplistTabContents(td *viewutils.TabData) {
-	@viewutils.RenderListWithComponent(td.GetTabItems(), PreplistItemContainer)
+templ PreplistTabContents(td *foodlib.TabData) {
+	@foodlib.RenderListWithComponent(td.GetTabItems(), PreplistItemContainer)
 }
 
-templ PreplistItemContainer(item *viewutils.TabItem) {
+templ PreplistItemContainer(item *foodlib.TabItem) {
 	<div id={ fmt.Sprintf("%s", item.ItemID.String()) } class={ TabListItemCSS() }>
 		<div class={ ListItemElementCSS() }>
 			{ item.ItemID.String() }
 		</div>
 		<div class={ ListItemElementCSS() }>
-			@viewutils.Trashcan()
+			@Trashcan()
 		</div>
 	</div>
 }
 
-templ RenderPreplistTab(td *viewutils.TabData) {
+templ RenderPreplistTab(td *foodlib.TabData) {
 	<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>
 		<div class={ TabHeaderTitleCSS() }>
 			Preplist!
@@ -33,7 +33,7 @@ templ RenderPreplistTab(td *viewutils.TabData) {
 	</div>
 }
 
-templ ModalPreplistContent(item *viewutils.TabItem) {
+templ ModalPreplistContent(item *foodlib.TabItem) {
 	if item != nil {
 		<div style="display: flex; flex-direction: column; flex: 0 1;">
 			Hello from { item.Ttype.String() }

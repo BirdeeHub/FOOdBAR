@@ -2,7 +2,7 @@ package srvapi
 
 import (
 	"FOOdBAR/views"
-	"FOOdBAR/views/viewutils"
+	foodlib "FOOdBAR/FOOlib"
 	"net/http"
 
 	"github.com/a-h/templ"
@@ -16,46 +16,46 @@ func HTML(c echo.Context, code int, cmp templ.Component) error {
 }
 
 type TabRenderer interface {
-	func(echo.Context, *viewutils.PageData, *viewutils.TabData) error
+	func(echo.Context, *foodlib.PageData, *foodlib.TabData) error
 }
 
-func RenderTab[TR TabRenderer](tr TR, c echo.Context, data *viewutils.PageData, td *viewutils.TabData) error {
+func RenderTab[TR TabRenderer](tr TR, c echo.Context, data *foodlib.PageData, td *foodlib.TabData) error {
 	return tr(c, data, td)
 }
 
-func TabDeactivateRenderer(c echo.Context, data *viewutils.PageData, td *viewutils.TabData) error {
+func TabDeactivateRenderer(c echo.Context, data *foodlib.PageData, td *foodlib.TabData) error {
 	data.SetActive(td, false)
 	err := data.SavePageData(c)
 	if err != nil {
 		echo.NewHTTPError(http.StatusTeapot, "Cannot unmarshal page data")
 	}
-	var tt viewutils.TabType
+	var tt foodlib.TabType
 	if td == nil {
-		tt = viewutils.Invalid
+		tt = foodlib.Invalid
 	} else {
 		tt = td.Ttype
 	}
-	return HTML(c, http.StatusOK, views.OOBtabButtonToggle(viewutils.TabButtonData{Ttype: tt, Active: false}))
+	return HTML(c, http.StatusOK, views.OOBtabButtonToggle(foodlib.TabButtonData{Ttype: tt, Active: false}))
 }
 
-func TabActivateRenderer(c echo.Context, data *viewutils.PageData, td *viewutils.TabData) error {
+func TabActivateRenderer(c echo.Context, data *foodlib.PageData, td *foodlib.TabData) error {
 	data.SetActive(td, true)
 	err := data.SavePageData(c)
 	if err != nil {
 		echo.NewHTTPError(http.StatusTeapot, "Cannot unmarshal page data")
 	}
 	HTML(c, http.StatusOK, views.OOBtabViewContainer(td))
-	var tt viewutils.TabType
+	var tt foodlib.TabType
 	if td == nil {
-		tt = viewutils.Invalid
+		tt = foodlib.Invalid
 	} else {
 		tt = td.Ttype
 	}
-	return HTML(c, http.StatusOK, views.TabButton(viewutils.TabButtonData{Ttype: tt, Active: true}))
+	return HTML(c, http.StatusOK, views.TabButton(foodlib.TabButtonData{Ttype: tt, Active: true}))
 }
 
-func TabMaximizeRenderer(c echo.Context, data *viewutils.PageData, td *viewutils.TabData) error {
-	var toMin []*viewutils.TabData
+func TabMaximizeRenderer(c echo.Context, data *foodlib.PageData, td *foodlib.TabData) error {
+	var toMin []*foodlib.TabData
 	data.SetActive(td, true)
 	if td != nil {
 		for _, v := range data.TabDatas {
@@ -72,14 +72,14 @@ func TabMaximizeRenderer(c echo.Context, data *viewutils.PageData, td *viewutils
 		echo.NewHTTPError(http.StatusTeapot, "Cannot unmarshal page data")
 	}
 	for _, v := range toMin {
-		HTML(c, http.StatusOK, views.OOBtabButtonToggle(viewutils.TabButtonData{Ttype: v.Ttype, Active: false}))
+		HTML(c, http.StatusOK, views.OOBtabButtonToggle(foodlib.TabButtonData{Ttype: v.Ttype, Active: false}))
 	}
-	var tt viewutils.TabType
+	var tt foodlib.TabType
 	if td == nil {
-		tt = viewutils.Invalid
+		tt = foodlib.Invalid
 	} else {
 		tt = td.Ttype
 	}
-	HTML(c, http.StatusOK, views.OOBtabButtonToggle(viewutils.TabButtonData{Ttype: tt, Active: true}))
+	HTML(c, http.StatusOK, views.OOBtabButtonToggle(foodlib.TabButtonData{Ttype: tt, Active: true}))
 	return HTML(c, http.StatusOK, views.TabContainer(td))
 }

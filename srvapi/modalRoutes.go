@@ -2,7 +2,7 @@ package srvapi
 
 import (
 	"FOOdBAR/views/tabviews"
-	"FOOdBAR/views/viewutils"
+	foodlib "FOOdBAR/FOOlib"
 	"errors"
 	"net/http"
 
@@ -13,7 +13,7 @@ import (
 func SetupModalAPIroutes(e *echo.Group, dbpath string) error {
 
 	e.POST("/api/itemEditModal/open/:type/:itemID", func(c echo.Context) error {
-		pageData, err := viewutils.GetPageData(c)
+		pageData, err := foodlib.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
@@ -21,8 +21,8 @@ func SetupModalAPIroutes(e *echo.Group, dbpath string) error {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
-		tt := viewutils.String2TabType(c.Param("type"))
-		if tt == viewutils.Invalid {
+		tt := foodlib.String2TabType(c.Param("type"))
+		if tt == foodlib.Invalid {
 			return echo.NewHTTPError(http.StatusUnauthorized, errors.New("Invalid tab type"))
 		}
 		td := pageData.GetTabDataByType(tt)
@@ -37,16 +37,16 @@ func SetupModalAPIroutes(e *echo.Group, dbpath string) error {
 	})
 
 	e.POST("/api/itemCreateModal/open/:type", func(c echo.Context) error {
-		pageData, err := viewutils.GetPageData(c)
+		pageData, err := foodlib.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
-		tt := viewutils.String2TabType(c.Param("type"))
-		if tt == viewutils.Invalid {
+		tt := foodlib.String2TabType(c.Param("type"))
+		if tt == foodlib.Invalid {
 			return echo.NewHTTPError(http.StatusUnauthorized, errors.New("Invalid tab type"))
 		}
 		td := pageData.GetTabDataByType(tt)
-		item := td.AddTabItem(&viewutils.TabItem{Expanded: false})
+		item := td.AddTabItem(&foodlib.TabItem{Expanded: false})
 		return HTML(c, http.StatusOK, tabviews.ItemEditModal(tabviews.RenderModalContent(item)))
 	})
 

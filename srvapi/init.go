@@ -7,7 +7,7 @@ import (
 
 	"FOOdBAR/db"
 	"FOOdBAR/views/loginPage"
-	"FOOdBAR/views/viewutils"
+	foodlib "FOOdBAR/FOOlib"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -21,16 +21,18 @@ func Init(dbpath string, signingKey []byte, listenOn string) {
 	// TODO: figure out how to HTTPS
 	// e.Pre(middleware.HTTPSRedirect())
 
+	e.Static("/static", "static")
+
 	e.GET("/", func(c echo.Context) error {
-		return c.Redirect(http.StatusPermanentRedirect, fmt.Sprintf("%s", viewutils.PagePrefix))
+		return c.Redirect(http.StatusPermanentRedirect, fmt.Sprintf("%s", foodlib.PagePrefix))
 	})
 
-	e.GET(fmt.Sprintf("%s/login", viewutils.PagePrefix), func(c echo.Context) error {
+	e.GET(fmt.Sprintf("%s/login", foodlib.PagePrefix), func(c echo.Context) error {
 		WipeAuth(c)
 		return HTML(c, http.StatusOK, loginPage.LoginPage("login", nil))
 	})
 
-	e.GET(fmt.Sprintf("%s/loginform/:formtype", viewutils.PagePrefix), func(c echo.Context) error {
+	e.GET(fmt.Sprintf("%s/loginform/:formtype", foodlib.PagePrefix), func(c echo.Context) error {
 		formtype := c.Param("formtype")
 		if formtype == "login" {
 			return HTML(c, http.StatusOK, loginPage.LoginPageContents(loginPage.LoginType, nil))
@@ -42,7 +44,7 @@ func Init(dbpath string, signingKey []byte, listenOn string) {
 	})
 
 	// TODO: implement timeout
-	e.POST(fmt.Sprintf("%s/submitlogin", viewutils.PagePrefix), func(c echo.Context) error {
+	e.POST(fmt.Sprintf("%s/submitlogin", foodlib.PagePrefix), func(c echo.Context) error {
 		username := c.FormValue("username")
 		password := c.FormValue("password")
 		beepboop := c.FormValue("beepboop")
@@ -66,10 +68,10 @@ func Init(dbpath string, signingKey []byte, listenOn string) {
 			return HTML(c, http.StatusUnprocessableEntity, loginPage.LoginPage(loginPage.LoginType, err))
 		}
 		c.SetCookie(cookie)
-		return c.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("%s", viewutils.PagePrefix))
+		return c.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("%s", foodlib.PagePrefix))
 	})
 
-	e.POST(fmt.Sprintf("%s/submitsignup", viewutils.PagePrefix), func(c echo.Context) error {
+	e.POST(fmt.Sprintf("%s/submitsignup", foodlib.PagePrefix), func(c echo.Context) error {
 		username := c.FormValue("username")
 		password := c.FormValue("password")
 		confirmpassword := c.FormValue("confirmpassword")
@@ -100,12 +102,12 @@ func Init(dbpath string, signingKey []byte, listenOn string) {
 			return HTML(c, http.StatusUnprocessableEntity, loginPage.LoginPage(loginPage.SignupType, err))
 		}
 		c.SetCookie(cookie)
-		return c.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("%s", viewutils.PagePrefix))
+		return c.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("%s", foodlib.PagePrefix))
 	})
 
 	// NOTE: Authenticated routes below
 
-	r := e.Group(fmt.Sprintf("%s", viewutils.PagePrefix))
+	r := e.Group(fmt.Sprintf("%s", foodlib.PagePrefix))
 
 	r.Use(GetJWTmiddlewareWithConfig(signingKey))
 

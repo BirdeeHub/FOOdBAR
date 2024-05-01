@@ -3,7 +3,7 @@ package srvapi
 import (
 	// "FOOdBAR/db"
 	"FOOdBAR/views"
-	"FOOdBAR/views/viewutils"
+	foodlib "FOOdBAR/FOOlib"
 	"errors"
 	"net/http"
 
@@ -13,7 +13,7 @@ import (
 func SetupAPIroutes(e *echo.Group, dbpath string) error {
 
 	e.GET("", func(c echo.Context) error {
-		pd, err := viewutils.GetPageData(c)
+		pd, err := foodlib.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
@@ -22,7 +22,7 @@ func SetupAPIroutes(e *echo.Group, dbpath string) error {
 	})
 
 	e.POST("", func(c echo.Context) error {
-		pd, err := viewutils.GetPageData(c)
+		pd, err := foodlib.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
@@ -31,43 +31,43 @@ func SetupAPIroutes(e *echo.Group, dbpath string) error {
 	})
 
 	e.DELETE("/api/tabButton/deactivate/:type", func(c echo.Context) error {
-		pageData, err := viewutils.GetPageData(c)
+		pageData, err := foodlib.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
-		return RenderTab(TabDeactivateRenderer, c, pageData, pageData.GetTabDataByType(viewutils.String2TabType(c.Param("type"))))
+		return RenderTab(TabDeactivateRenderer, c, pageData, pageData.GetTabDataByType(foodlib.String2TabType(c.Param("type"))))
 	})
 
 	e.GET("/api/tabButton/activate/:type", func(c echo.Context) error {
 		// TODO: fetch appropriate TabData.Items from database
 		// based on sort. Implement infinite scroll for them.
-		pageData, err := viewutils.GetPageData(c)
+		pageData, err := foodlib.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
-		return RenderTab(TabActivateRenderer, c, pageData, pageData.GetTabDataByType(viewutils.String2TabType(c.Param("type"))))
+		return RenderTab(TabActivateRenderer, c, pageData, pageData.GetTabDataByType(foodlib.String2TabType(c.Param("type"))))
 	})
 
 	e.POST("/api/tabButton/maximize/:type", func(c echo.Context) error {
 		// TODO: fetch appropriate TabData.Items from database
 		// based on sort. Implement infinite scroll for them.
-		pageData, err := viewutils.GetPageData(c)
+		pageData, err := foodlib.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
-		return RenderTab(TabMaximizeRenderer, c, pageData, pageData.GetTabDataByType(viewutils.String2TabType(c.Param("type"))))
+		return RenderTab(TabMaximizeRenderer, c, pageData, pageData.GetTabDataByType(foodlib.String2TabType(c.Param("type"))))
 	})
 
 	e.POST("/api/mediaQuery", func(c echo.Context) error {
-		pageData, err := viewutils.GetPageData(c)
+		pageData, err := foodlib.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
 		if c.FormValue("query") == "(prefers-color-scheme: dark)" && c.FormValue("value") == "light" {
-			pageData.Palette = viewutils.Light
+			pageData.Palette = foodlib.Light
 			pageData.SavePageData(c)
 		} else {
-			pageData.Palette = viewutils.Dark
+			pageData.Palette = foodlib.Dark
 			pageData.SavePageData(c)
 		}
 		return c.NoContent(http.StatusOK)

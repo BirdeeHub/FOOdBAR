@@ -2,25 +2,25 @@ package tabviews
 
 import (
 	"fmt"
-	"FOOdBAR/views/viewutils"
+	foodlib "FOOdBAR/FOOlib"
 )
 
-templ CustomerTabContents(td *viewutils.TabData) {
-	@viewutils.RenderListWithComponent(td.GetTabItems(), CustomerItemContainer)
+templ CustomerTabContents(td *foodlib.TabData) {
+	@foodlib.RenderListWithComponent(td.GetTabItems(), CustomerItemContainer)
 }
 
-templ CustomerItemContainer(item *viewutils.TabItem) {
+templ CustomerItemContainer(item *foodlib.TabItem) {
 	<div id={ fmt.Sprintf("%s", item.ItemID.String()) } class={ TabListItemCSS() }>
 		<div class={ ListItemElementCSS() }>
 			{ item.ItemID.String() }
 		</div>
 		<div class={ ListItemElementCSS() }>
-			@viewutils.Trashcan()
+			@Trashcan()
 		</div>
 	</div>
 }
 
-templ RenderCustomerTab(td *viewutils.TabData) {
+templ RenderCustomerTab(td *foodlib.TabData) {
 	<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>
 		<div class={ TabHeaderTitleCSS() }>
 			Customers!
@@ -33,7 +33,7 @@ templ RenderCustomerTab(td *viewutils.TabData) {
 	</div>
 }
 
-templ ModalCustomerContent(item *viewutils.TabItem) {
+templ ModalCustomerContent(item *foodlib.TabItem) {
 	if item != nil {
 		<div style="display: flex; flex-direction: column; flex: 0 1;">
 			Hello from { item.Ttype.String() }

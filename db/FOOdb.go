@@ -2,7 +2,6 @@ package db
 
 import (
 	foodlib "FOOdBAR/FOOlib"
-	"FOOdBAR/views/viewutils"
 	"database/sql"
 	"errors"
 	"path/filepath"
@@ -11,7 +10,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func CreateTabTableIfNotExists(userID uuid.UUID, dbpath string, tt viewutils.TabType) (*sql.DB, error) {
+func CreateTabTableIfNotExists(userID uuid.UUID, dbpath string, tt foodlib.TabType) (*sql.DB, error) {
 	var err error
 	fooDB := filepath.Join(dbpath, "FOOdBAR", "FOOdb.db")
 	fooDB, err = foodlib.CreateEmptyFileIfNotExists(fooDB)
@@ -22,7 +21,7 @@ func CreateTabTableIfNotExists(userID uuid.UUID, dbpath string, tt viewutils.Tab
 
 	var createTable string
 	switch tt {
-	case viewutils.Recipe:
+	case foodlib.Recipe:
 		createTable = `CREATE TABLE IF NOT EXISTS ?_? (
 				id TEXT PRIMARY KEY,
 				created_at TEXT,
@@ -34,7 +33,7 @@ func CreateTabTableIfNotExists(userID uuid.UUID, dbpath string, tt viewutils.Tab
 				ingredients TEXT,
 				instructions TEXT,
 				)`
-	case viewutils.Menu:
+	case foodlib.Menu:
 		createTable = `CREATE TABLE IF NOT EXISTS ?_? (
 				id TEXT PRIMARY KEY,
 				created_at TEXT,
@@ -44,7 +43,7 @@ func CreateTabTableIfNotExists(userID uuid.UUID, dbpath string, tt viewutils.Tab
 				name TEXT,
 				number INTEGER,
 				)`
-	case viewutils.Pantry:
+	case foodlib.Pantry:
 		createTable = `CREATE TABLE IF NOT EXISTS ?_? (
 				id TEXT PRIMARY KEY,
 				created_at TEXT,
@@ -55,7 +54,7 @@ func CreateTabTableIfNotExists(userID uuid.UUID, dbpath string, tt viewutils.Tab
 				amount TEXT,
 				units TEXT,
 				)`
-	case viewutils.Customer:
+	case foodlib.Customer:
 		createTable = `CREATE TABLE IF NOT EXISTS ?_? (
 				id TEXT PRIMARY KEY,
 				created_at TEXT,
@@ -66,7 +65,7 @@ func CreateTabTableIfNotExists(userID uuid.UUID, dbpath string, tt viewutils.Tab
 				name TEXT,
 				dietary TEXT,
 				)`
-	case viewutils.Events:
+	case foodlib.Events:
 		createTable = `CREATE TABLE IF NOT EXISTS ?_? (
 				id TEXT PRIMARY KEY,
 				created_at TEXT,
@@ -78,7 +77,7 @@ func CreateTabTableIfNotExists(userID uuid.UUID, dbpath string, tt viewutils.Tab
 				location TEXT,
 				customer TEXT,
 				)`
-	case viewutils.Preplist:
+	case foodlib.Preplist:
 		createTable = `CREATE TABLE IF NOT EXISTS ?_? (
 				id TEXT PRIMARY KEY,
 				created_at TEXT,
@@ -87,7 +86,7 @@ func CreateTabTableIfNotExists(userID uuid.UUID, dbpath string, tt viewutils.Tab
 				event_id TEXT,
 				menu_id TEXT,
 				)`
-	case viewutils.Shopping:
+	case foodlib.Shopping:
 		createTable = `CREATE TABLE IF NOT EXISTS ?_? (
 				id TEXT PRIMARY KEY,
 				created_at TEXT,
@@ -99,7 +98,7 @@ func CreateTabTableIfNotExists(userID uuid.UUID, dbpath string, tt viewutils.Tab
 				amount TEXT,
 				units TEXT,
 				)`
-	case viewutils.Earnings:
+	case foodlib.Earnings:
 		createTable = `CREATE TABLE IF NOT EXISTS ?_? (
 				id TEXT PRIMARY KEY,
 				created_at TEXT,
@@ -127,7 +126,7 @@ func CreateTabTableIfNotExists(userID uuid.UUID, dbpath string, tt viewutils.Tab
 	return db, nil
 }
 
-func makeAuditTriggers(db *sql.DB, userID uuid.UUID, tt viewutils.TabType) error {
+func makeAuditTriggers(db *sql.DB, userID uuid.UUID, tt foodlib.TabType) error {
 
 	updateTrigger := `CREATE TRIGGER IF NOT EXISTS update_?_?_audit 
 		AFTER INSERT OR UPDATE OR DELETE ON ?_?
@@ -176,13 +175,13 @@ NOTE:
 		Expanded bool   `json:"expanded"`
 	}
 */
-func FillXTabItems(userID uuid.UUID, dbpath string, tbd *viewutils.TabData, number int) error {
+func FillXTabItems(userID uuid.UUID, dbpath string, tbd *foodlib.TabData, number int) error {
 	db, err := CreateTabTableIfNotExists(userID, dbpath, tbd.Ttype)
 	defer db.Close()
 	if err != nil {
 		return err
 	}
-	// TODO: fill tbd.Items with X number of items based on tbd.OrderBy: map[string]SortMethod
+	// TODO: fill tbd.Items with X number of items based on tbd.OrderBy: SortMethod
 	// where the key string is a column name
 
 	return nil

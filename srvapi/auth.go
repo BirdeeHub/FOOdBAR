@@ -1,7 +1,7 @@
 package srvapi
 
 import (
-	"FOOdBAR/views/viewutils"
+	foodlib "FOOdBAR/FOOlib"
 	"errors"
 	"fmt"
 	"net/http"
@@ -45,7 +45,7 @@ func GetJWTmiddlewareWithConfig(signingKey []byte) echo.MiddlewareFunc {
 		ErrorHandler: func(c echo.Context, err error) error {
 			WipeAuth(c)
 			c.Logger().Print(err)
-			return c.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("%s/login", viewutils.PagePrefix))
+			return c.Redirect(http.StatusTemporaryRedirect, fmt.Sprintf("%s/login", foodlib.PagePrefix))
 		},
 		SigningKey: signingKey,
 	})
@@ -64,7 +64,7 @@ func GenerateJWTfromIDandKey(userID uuid.UUID, key []byte) (*http.Cookie, error)
 	return &http.Cookie{
 		Name:     "user",
 		Value:    t,
-		Path:     fmt.Sprintf("%s", viewutils.PagePrefix),
+		Path:     fmt.Sprintf("%s", foodlib.PagePrefix),
 		SameSite: http.SameSiteStrictMode,
 	}, nil
 }
@@ -74,7 +74,7 @@ func WipeAuth(c echo.Context) {
 	cookie := http.Cookie{
 		Name:     "user",
 		Value:    "",
-		Path:     fmt.Sprintf("%s", viewutils.PagePrefix),
+		Path:     fmt.Sprintf("%s", foodlib.PagePrefix),
 		Expires:  expiration,
 		SameSite: http.SameSiteStrictMode,
 	}
