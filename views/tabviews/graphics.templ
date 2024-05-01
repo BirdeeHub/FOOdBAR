@@ -2,43 +2,6 @@ package tabviews
 
 import ()
 
-templ ColorsCSS() {
-	<style type="text/css">
-		html {
-			font-size: 100%;
-		}
-		select, textarea, input, button {
-		  font: inherit;
-		}
-		textarea,
-		input:not([type="checkbox"]):not([type="file"]):not([type="image"]):not([type="radio"]):not([type="range"]) {
-		  font: inherit;
-		  letter-spacing: inherit;
-		  word-spacing: inherit;
-		  border: 0.1em solid;
-		  padding: 0 0.2em;
-		}
-		@media (prefers-color-scheme: dark) {
-			.bodycolors {
-				border-color: white;
-				background-color: #1e1e1f;
-				color: white;
-				fill: white;
-				stroke: white;
-			}
-		}
-		@media (not (prefers-color-scheme: dark)) {
-			.bodycolors {
-				border-color: black;
-				background-color: lightgray;
-				color: black;
-				fill: black;
-				stroke: black;
-			}
-		}
-	</style>
-}
-
 templ Trashcan() {
 	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
 		<path fill="none" d="M0 0h24v24H0z"></path>

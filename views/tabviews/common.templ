@@ -5,6 +5,43 @@ import (
 	foodlib "FOOdBAR/FOOlib"
 )
 
+templ ColorsCSS() {
+	<style type="text/css">
+		html {
+			font-size: 100%;
+		}
+		select, textarea, input, button {
+		  font: inherit;
+		}
+		textarea,
+		input:not([type="checkbox"]):not([type="file"]):not([type="image"]):not([type="radio"]):not([type="range"]) {
+		  font: inherit;
+		  letter-spacing: inherit;
+		  word-spacing: inherit;
+		  border: 0.1em solid;
+		  padding: 0 0.2em;
+		}
+		@media (prefers-color-scheme: dark) {
+			.bodycolors {
+				border-color: white;
+				background-color: #1e1e1f;
+				color: white;
+				fill: white;
+				stroke: white;
+			}
+		}
+		@media (not (prefers-color-scheme: dark)) {
+			.bodycolors {
+				border-color: black;
+				background-color: lightgray;
+				color: black;
+				fill: black;
+				stroke: black;
+			}
+		}
+	</style>
+}
+
 templ MaximizeTabButton(tt foodlib.TabType) {
 	<div
 		hx-post={ fmt.Sprintf("%s/api/tabButton/maximize/%s", foodlib.PagePrefix, tt) }
