@@ -586,12 +586,12 @@ video {
   border-width: 1px;
 }
 
-.text-emerald-800 {
+.text-emerald-400 {
   --tw-text-opacity: 1;
-  color: rgb(6 95 70 / var(--tw-text-opacity));
+  color: rgb(52 211 153 / var(--tw-text-opacity));
 }
 
-.text-orange-600 {
+.text-orange-800 {
   --tw-text-opacity: 1;
-  color: rgb(234 88 12 / var(--tw-text-opacity));
+  color: rgb(154 52 18 / var(--tw-text-opacity));
 }
