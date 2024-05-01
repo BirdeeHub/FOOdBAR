@@ -13,7 +13,7 @@ import (
 
 func SetupAPIroutes(e *echo.Group, dbpath string) error {
 
-	var mainPage func(echo.Context) error = func(c echo.Context) error {
+	mainPage := func(c echo.Context) error {
 		pd, err := foodlib.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
