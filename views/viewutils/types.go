@@ -94,7 +94,7 @@ type PageData struct {
 type TabData struct {
 	Ttype   TabType                `json:"tab_type"`
 	Items   map[uuid.UUID]*TabItem `json:"items"`
-	OrderBy map[string]SortMethod  `json:"order_by"`
+	OrderBy SortMethod  `json:"order_by"`
 }
 
 type TabItem struct {
@@ -164,7 +164,7 @@ func (pgd *PageData) GetTabDataByType(tt TabType) *TabData {
 	td := &TabData{
 		Ttype:   tt,
 		Items:   make(map[uuid.UUID]*TabItem),
-		OrderBy: make(map[string]SortMethod),
+		OrderBy: Inactive,
 	}
 	pgd.TabDatas = append(pgd.TabDatas, td)
 	return td
@@ -275,18 +275,14 @@ func (tbd *TabData) MarshalJSON() ([]byte, error) {
 	for k, v := range tbd.Items {
 		itemsmap[k.String()] = *v
 	}
-	orderby := make(map[string]string)
-	for k, v := range tbd.OrderBy {
-		orderby[k] = string(v)
-	}
 	configpre := struct {
 		Ttype   string             `json:"tab_type"`
 		Items   map[string]TabItem `json:"items"`
-		OrderBy map[string]string  `json:"order_by"`
+		OrderBy string  `json:"order_by"`
 	}{
 		Ttype:   tbd.Ttype.String(),
 		Items:   itemsmap,
-		OrderBy: orderby,
+		OrderBy: string(tbd.OrderBy),
 	}
 	marshalled, err := json.Marshal(configpre)
 	return marshalled, err
@@ -296,7 +292,7 @@ func (tbd *TabData) UnmarshalJSON(data []byte) error {
 	var irJson struct {
 		Ttype   string             `json:"tab_type"`
 		Items   map[string]TabItem `json:"items"`
-		OrderBy map[string]string  `json:"order_by"`
+		OrderBy string  `json:"order_by"`
 	}
 	err := json.Unmarshal(data, &irJson)
 	if err != nil {
@@ -310,13 +306,11 @@ func (tbd *TabData) UnmarshalJSON(data []byte) error {
 		}
 		tbd.Items[id] = &v
 	}
-	for k, v := range irJson.OrderBy {
-		for _, x := range GetSortMethods() {
-			if v == string(x) {
-				tbd.OrderBy[k] = x
-			} else {
-				return errors.New("invalid sort method")
-			}
+	for _, x := range GetSortMethods() {
+		if irJson.OrderBy == string(x) {
+			tbd.OrderBy = x
+		} else {
+			return errors.New("invalid sort method")
 		}
 	}
 	return nil
