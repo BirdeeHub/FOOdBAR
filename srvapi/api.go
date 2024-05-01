@@ -10,16 +10,17 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func mainPage(c echo.Context) error {
-	pd, err := foodlib.GetPageData(c)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusUnauthorized, err)
-	}
-	pd.SavePageData(c)
-	return HTML(c, http.StatusOK, views.Homepage(pd))
-}
 
 func SetupAPIroutes(e *echo.Group, dbpath string) error {
+
+	var mainPage func(echo.Context) error = func(c echo.Context) error {
+		pd, err := foodlib.GetPageData(c)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, err)
+		}
+		pd.SavePageData(c)
+		return HTML(c, http.StatusOK, views.Homepage(pd))
+	}
 
 	e.GET("", func(c echo.Context) error {
 		return mainPage(c)
