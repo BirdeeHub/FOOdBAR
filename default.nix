@@ -28,7 +28,7 @@ buildGoApplication {
   preBuild = ''
     templ generate
     mkdir -p $out/FOOstatic
-    tailwindcss -o $out/FOOstatic/tailwind.css
+    tailwindcss build -o $out/FOOstatic/tailwind.css
   '';
   postFixup = ''
     mkdir -p $out/dist
