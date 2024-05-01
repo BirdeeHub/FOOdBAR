@@ -25,13 +25,13 @@ const (
 	NameDescending                   = "name DESC;"
 	NameAscending                    = "name ASC;"
 	NameRandom                       = "name RANDOM();"
-	DietaryDescending                = "dietary DESC;"
-	DietaryAscending                 = "dietary ASC;"
-	DietaryRandom                    = "dietary RANDOM();"
-	CategoryDescending               = "category DESC;"
-	CategoryAscending                = "category ASC;"
-	CategoryRandom                   = "category RANDOM();"
 	// These are incorrect, the values are stored as json lists, not just single value strings
+	// DietaryDescending                = "dietary DESC;"
+	// DietaryAscending                 = "dietary ASC;"
+	// DietaryRandom                    = "dietary RANDOM();"
+	// CategoryDescending               = "category DESC;"
+	// CategoryAscending                = "category ASC;"
+	// CategoryRandom                   = "category RANDOM();"
 	// IngredientsDescending            = "ingredients DESC;"
 	// IngredientsAscending             = "ingredients ASC;"
 	// IngredientsRandom                = "ingredients RANDOM();"
@@ -39,18 +39,21 @@ const (
 	// NameCustom                = "CASE WHEN condition THEN value ELSE value END;"
 )
 
-func GetSortMethods() [10]SortMethod {
+func GetSortMethods() [4]SortMethod {
 	return [...]SortMethod{
 		Inactive,
 		NameDescending,
 		NameAscending,
 		NameRandom,
-		DietaryDescending,
-		DietaryAscending,
-		DietaryRandom,
-		CategoryDescending,
-		CategoryAscending,
-		CategoryRandom,
+		// DietaryDescending,
+		// DietaryAscending,
+		// DietaryRandom,
+		// CategoryDescending,
+		// CategoryAscending,
+		// CategoryRandom,
+		// IngredientsDescending,
+		// IngredientsAscending,
+		// IngredientsRandom,
 	}
 }
 
