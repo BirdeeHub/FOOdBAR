@@ -44,7 +44,9 @@ templ RenderPantryTab(td *viewutils.TabData) {
 templ ModalPantryContent(item *viewutils.TabItem) {
 	if item != nil {
 		<div style="display: flex; flex-direction: column; flex: 0 1;">
-			Hello from { item.Ttype.String() }
+			<div class="text-orange-600">
+				Hello from { item.Ttype.String() }
+			</div>
 		</div>
 		<button _="on click trigger closeModal">Close</button>
 	}

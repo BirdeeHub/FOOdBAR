@@ -95,8 +95,7 @@ func Init(dbpath string, signingKey []byte, listenOn string) {
 	r.Use(GetJWTmiddlewareWithConfig(signingKey))
 
 	r.Use(middleware.Logger())
-	r.Static("/images", "FOOimg")
-	r.Static("/layout", "FOOstatic")
+	r.Static("/static", "FOOstatic")
 	// r.Use(echo.WrapMiddleware(func(hndl http.Handler) http.Handler {
 	// 	cssmiddleware := templ.NewCSSMiddleware(hndl, views.StaticStyles...)
 	// 	cssmiddleware.Path = fmt.Sprintf("%s/styles/templ.css", viewutils.PagePrefix)

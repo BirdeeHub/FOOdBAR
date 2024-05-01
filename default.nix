@@ -14,6 +14,9 @@
 , dbpath ? "/tmp"
 }: let
   templ = inputs.templ.packages.${pkgs.system}.templ;
+  tailwindcss = pkgs.writeShellScriptBin "tailwindcss" ''
+    ${pkgs.tailwindcss}/bin/tailwindcss -c ${./tailwind.config.js}
+  '';
 in
 buildGoApplication {
   pname = "FOOdBAR";
@@ -21,10 +24,11 @@ buildGoApplication {
   pwd = ./.;
   src = ./.;
   modules = ./gomod2nix.toml;
-  nativeBuildInputs = [ templ pkgs.makeWrapper pkgs.tailwindcss ];
+  nativeBuildInputs = [ templ pkgs.makeWrapper tailwindcss ];
   preBuild = ''
     templ generate
-    tailwindcss build -o ./FOOstatic/tailwind.css
+    mkdir -p $out/FOOstatic
+    tailwindcss -o $out/FOOstatic/tailwind.css
   '';
   postFixup = ''
     mkdir -p $out/dist
