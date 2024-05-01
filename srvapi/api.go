@@ -10,24 +10,31 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+func mainPage(c echo.Context) error {
+	pd, err := foodlib.GetPageData(c)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, err)
+	}
+	pd.SavePageData(c)
+	return HTML(c, http.StatusOK, views.Homepage(pd))
+}
+
 func SetupAPIroutes(e *echo.Group, dbpath string) error {
 
 	e.GET("", func(c echo.Context) error {
-		pd, err := foodlib.GetPageData(c)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, err)
-		}
-		pd.SavePageData(c)
-		return HTML(c, http.StatusOK, views.Homepage(pd))
+		return mainPage(c)
 	})
 
 	e.POST("", func(c echo.Context) error {
-		pd, err := foodlib.GetPageData(c)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, err)
-		}
-		pd.SavePageData(c)
-		return HTML(c, http.StatusOK, views.Homepage(pd))
+		return mainPage(c)
+	})
+
+	e.GET("/", func(c echo.Context) error {
+		return mainPage(c)
+	})
+
+	e.POST("/", func(c echo.Context) error {
+		return mainPage(c)
 	})
 
 	e.DELETE("/api/tabButton/deactivate/:type", func(c echo.Context) error {
