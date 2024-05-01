@@ -45,7 +45,7 @@ func CreateTabTableIfNotExists(userID uuid.UUID, dbpath string, tt viewutils.Tab
 				last_modified TEXT,
 				last_author TEXT,
 				menu_id TEXT,
-				recipe TEXT,
+				name TEXT,
 				number INTEGER,
 				)`
 	case viewutils.Pantry:
@@ -75,6 +75,7 @@ func CreateTabTableIfNotExists(userID uuid.UUID, dbpath string, tt viewutils.Tab
 				created_at TEXT,
 				last_modified TEXT,
 				last_author TEXT,
+				name TEXT,
 				menu_id TEXT,
 				date TEXT,
 				location TEXT,
