@@ -3,4 +3,3 @@
 /node_modules/
 /views/**/*_templ.go
 /result
-/FOOstatic/tailwind.css
