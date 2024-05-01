@@ -27,10 +27,13 @@ const (
 	CategoryDescending            = "category DESC;"
 	CategoryAscending             = "category ASC;"
 	CategoryRandom                = "category RANDOM();"
+	IngredientsDescending            = "ingredients DESC;"
+	IngredientsAscending             = "ingredients ASC;"
+	IngredientsRandom                = "ingredients RANDOM();"
 	// NameCustom                = "CASE WHEN condition THEN value ELSE value END;"
 )
 
-func GetSortMethods() [10]SortMethod {
+func GetSortMethods() [13]SortMethod {
 	return [...]SortMethod{
 		Inactive,
 		NameDescending,
@@ -42,6 +45,9 @@ func GetSortMethods() [10]SortMethod {
 		CategoryDescending,
 		CategoryAscending,
 		CategoryRandom,
+		IngredientsDescending,
+		IngredientsAscending,
+		IngredientsRandom,
 	}
 }
 
