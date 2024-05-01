@@ -1,9 +1,26 @@
 package foodlib
 
 import (
+	"context"
+	"io"
 	"os"
 	"path/filepath"
+
+	"github.com/a-h/templ"
 )
+
+// render all items in a list with a component
+func RenderListWithComponent[T interface{}](list []T, component func(T) templ.Component) templ.Component {
+	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) error {
+		for _, item := range list {
+			err := component(item).Render(ctx, w)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}
 
 func CreateEmptyFileIfNotExists(filename string) (string, error) {
 	// Create the directory if it doesn't exist
@@ -35,38 +52,38 @@ func CreateEmptyFileIfNotExists(filename string) (string, error) {
 	return absPath, nil
 }
 
-func MapSlice[T interface{}, V interface{}](f func(T) V, list []T) ([]V) {
-    var ret []V
-    for _, item := range list {
-        ret = append(ret, f(item))
-    }
-    return ret
+func MapSlice[T interface{}, V interface{}](f func(T) V, list []T) []V {
+	var ret []V
+	for _, item := range list {
+		ret = append(ret, f(item))
+	}
+	return ret
 }
 
-func FilterSlice[T interface{}](f func(T) bool, list []T) ([]T) {
-    var ret []T
-    for _, item := range list {
-        if f(item) {
-            ret = append(ret, item)
-        }
-    }
-    return ret
+func FilterSlice[T interface{}](f func(T) bool, list []T) []T {
+	var ret []T
+	for _, item := range list {
+		if f(item) {
+			ret = append(ret, item)
+		}
+	}
+	return ret
 }
 
 func MapMap[T comparable, V interface{}, R interface{}](f func(T, V) R, m map[T]V) map[T]R {
-    ret := make(map[T]R)
-    for k, v := range m {
-        ret[k] = f(k, v)
-    }
-    return ret
+	ret := make(map[T]R)
+	for k, v := range m {
+		ret[k] = f(k, v)
+	}
+	return ret
 }
 
 func FilterMap[T comparable, V interface{}](f func(T, V) bool, m map[T]V) map[T]V {
-    ret := make(map[T]V)
-    for k, v := range m {
-        if f(k, v) {
-            ret[k] = v
-        }
-    }
-    return ret
+	ret := make(map[T]V)
+	for k, v := range m {
+		if f(k, v) {
+			ret[k] = v
+		}
+	}
+	return ret
 }
