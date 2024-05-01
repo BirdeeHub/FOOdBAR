@@ -5,7 +5,9 @@ import (
 	"FOOdBAR/views/viewutils"
 	"database/sql"
 	"errors"
+	"os"
 	"path/filepath"
+	"runtime"
 
 	"github.com/google/uuid"
 	_ "github.com/mattn/go-sqlite3"
@@ -14,7 +16,11 @@ import (
 func CreateTabTableIfNotExists(userID uuid.UUID, dbpath string, tt viewutils.TabType) (*sql.DB, error) {
 	var fooDB string = dbpath
 	if fooDB == "" {
-		fooDB = "/tmp"
+		if runtime.GOOS == "windows" {
+			fooDB = os.Getenv("TEMP") 
+		} else {
+			fooDB = "/tmp"
+		}
 	}
 	var err error
 	fooDB = filepath.Join(dbpath, "FOOdBAR", "FOOdb.db")
