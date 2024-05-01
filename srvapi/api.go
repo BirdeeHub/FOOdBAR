@@ -22,21 +22,13 @@ func SetupAPIroutes(e *echo.Group, dbpath string) error {
 		return HTML(c, http.StatusOK, views.Homepage(pd))
 	}
 
-	e.GET("", func(c echo.Context) error {
-		return mainPage(c)
-	})
+	e.GET("", mainPage)
 
-	e.POST("", func(c echo.Context) error {
-		return mainPage(c)
-	})
+	e.POST("", mainPage)
 
-	e.GET("/", func(c echo.Context) error {
-		return mainPage(c)
-	})
+	e.GET("/", mainPage)
 
-	e.POST("/", func(c echo.Context) error {
-		return mainPage(c)
-	})
+	e.POST("/", mainPage)
 
 	e.DELETE("/api/tabButton/deactivate/:type", func(c echo.Context) error {
 		pageData, err := foodlib.GetPageData(c)
