@@ -169,11 +169,10 @@ templ TabContainer(td *viewutils.TabData) {
 	}
 }
 
+// TODO: make this better
 script resizeTab(tabtarget string) {
-	// TODO: make better
 	let dragBar = document.getElementById("resizebar_"+tabtarget)
 	let div1 = document.getElementById("tabContainer_"+tabtarget)
-	// This is not functional code yet
 	dragStartWidth = div1.offsetWidth;
 	window.addEventListener('mousemove', resize);
 
