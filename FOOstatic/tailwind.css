@@ -585,13 +585,3 @@ video {
 .border {
   border-width: 1px;
 }
-
-.text-emerald-400 {
-  --tw-text-opacity: 1;
-  color: rgb(52 211 153 / var(--tw-text-opacity));
-}
-
-.text-orange-800 {
-  --tw-text-opacity: 1;
-  color: rgb(154 52 18 / var(--tw-text-opacity));
-}
