@@ -393,3 +393,123 @@ This will insert a row into the `audit_log` table on any INSERT, UPDATE or DELET
 The `NEW` and `OLD` references work the same as individual triggers. For INSERT, only `NEW` is populated. For DELETE, only `OLD` is populated. For UPDATE, both are populated.
 
 So this allows you to create a single trigger that audits all changes to a table, instead of needing separate triggers for each operation.
+
+
+> can I do lists in sql as a value in a table?
+> 
+> ```go
+> 				ingredients TEXT,
+> ```
+
+Yes, you can store lists or arrays as a value in a SQL table column. Here are a few ways to do it in SQLite:
+
+**Comma-separated string**
+
+Store the list as a comma-separated string:
+
+```sql
+CREATE TABLE recipes (
+  id INTEGER PRIMARY KEY,
+  name TEXT,
+  ingredients TEXT -- comma separated list
+);
+
+-- Example row
+INSERT INTO recipes VALUES (
+  1, 
+  'Omelette',
+  'eggs,cheese,milk,salt,pepper'
+);
+```
+
+Then you can split the string on commas when retrieving the data.
+
+**JSON array** 
+
+Store the list as a JSON array string:
+
+```sql
+CREATE TABLE recipes (
+  id INTEGER PRIMARY KEY, 
+  name TEXT,
+  ingredients TEXT -- json array
+);
+
+-- Example row 
+INSERT INTO recipes VALUES (
+  1,
+  'Pasta',
+  '["noodles", "tomato sauce", "parmesan"]' 
+);
+```
+
+SQLite has JSON functions like JSON_EXTRACT to query JSON values.
+
+**Separate table**
+
+Use a separate table to store the list elements, with a foreign key to the parent row:
+
+```sql
+CREATE TABLE recipe_ingredients (
+  recipe_id INTEGER,
+  ingredient TEXT,
+  FOREIGN KEY (recipe_id) REFERENCES recipes(id)
+);
+
+INSERT INTO recipe_ingredients VALUES
+  (1, 'eggs'),
+  (1, 'cheese'),
+  (1, 'milk'); 
+```
+
+Then join the tables to get the ingredients for a recipe.
+
+So in summary, you have several options to store lists in SQLite columns, with trade-offs.
+
+> I want to sort based on values in json lists that are values in the db
+
+To sort based on values in a JSON list column in SQLite, you can use the JSON functions to extract the values and sort on them.
+
+For example, if you have a table like:
+
+```sql
+CREATE TABLE recipes (
+  id INTEGER PRIMARY KEY,
+  name TEXT,
+  ingredients TEXT -- json array 
+);
+
+INSERT INTO recipes VALUES
+  (1, 'Omelette', '["eggs", "cheese", "milk"]'),
+  (2, 'Pasta', '["noodles", "tomato sauce", "parmesan"]'); 
+```
+
+You can sort by the length of the ingredients array like this:
+
+```sql
+SELECT name, ingredients
+FROM recipes
+ORDER BY JSON_ARRAY_LENGTH(ingredients) DESC;
+```
+
+This will extract the length of the JSON array and sort by it.
+
+To access specific element values, you can use JSON_EXTRACT:
+
+```sql
+SELECT name, ingredients
+FROM recipes
+ORDER BY JSON_EXTRACT(ingredients, '$[0]') DESC; 
+```
+
+This will sort by the first element in the array. The $[index] syntax lets you access array elements.
+
+You can also filter based on array values:
+
+```sql
+SELECT * 
+FROM recipes
+WHERE JSON_EXTRACT(ingredients, '$[0]') = 'eggs'
+```
+
+So in summary, use the SQLite JSON functions like JSON_ARRAY_LENGTH, JSON_EXTRACT and JSON_TYPE to query and sort by values within JSON columns.

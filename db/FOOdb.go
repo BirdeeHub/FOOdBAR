@@ -57,6 +57,7 @@ func CreateTabTableIfNotExists(userID uuid.UUID, dbpath string, tt viewutils.Tab
 				name TEXT UNIQUE,
 				dietary TEXT,
 				amount TEXT,
+				units TEXT,
 				)`
 	case viewutils.Customer:
 		createTable = `CREATE TABLE IF NOT EXISTS ?_? (
@@ -133,7 +134,7 @@ func CreateTabTableIfNotExists(userID uuid.UUID, dbpath string, tt viewutils.Tab
 func makeAuditTriggers(db *sql.DB, userID uuid.UUID, tt viewutils.TabType) error {
 
 	updateTrigger := `CREATE TRIGGER IF NOT EXISTS update_?_?_audit 
-		AFTER UPDATE OR DELETE ON ?_?
+		AFTER INSERT OR UPDATE OR DELETE ON ?_?
 		FOR EACH ROW
 		BEGIN
 			UPDATE ?_?

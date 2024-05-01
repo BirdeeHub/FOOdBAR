@@ -18,6 +18,10 @@ type SortMethod string
 
 const (
 	Inactive              SortMethod = ""
+	CreatedDescending                = "created_at DESC;"
+	CreatedAscending                 = "created_at ASC;"
+	RecencyDescending                = "last_modified DESC;"
+	RecencyAscending                 = "last_modified ASC;"
 	NameDescending                   = "name DESC;"
 	NameAscending                    = "name ASC;"
 	NameRandom                       = "name RANDOM();"
@@ -27,9 +31,11 @@ const (
 	CategoryDescending               = "category DESC;"
 	CategoryAscending                = "category ASC;"
 	CategoryRandom                   = "category RANDOM();"
-	IngredientsDescending            = "ingredients DESC;"
-	IngredientsAscending             = "ingredients ASC;"
-	IngredientsRandom                = "ingredients RANDOM();"
+	// These are incorrect, the values are stored as json lists, not just single value strings
+	// IngredientsDescending            = "ingredients DESC;"
+	// IngredientsAscending             = "ingredients ASC;"
+	// IngredientsRandom                = "ingredients RANDOM();"
+
 	// NameCustom                = "CASE WHEN condition THEN value ELSE value END;"
 )
 
