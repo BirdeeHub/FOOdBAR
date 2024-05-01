@@ -30,6 +30,34 @@ script htmxAllowedCodes() {
 templ LoginPage(formtype LoginFormType, e error) {
 	<!DOCTYPE html>
 	@viewutils.ColorsCSS()
+	<style type="text/css">
+		/* Reset default button styles */
+		button {
+			padding: 10px;
+			border-bottom: 1px solid;
+			border-top: 1px solid;
+			cursor: pointer;
+			border-radius: 10px;
+			transition: border-color 0.3s ease;
+		}
+
+		/* Hover effect */
+		button:hover {
+			border-color: orange; /* Darker green */
+		}
+
+		/* Focus effect */
+		button:focus {
+			box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.2); /* Example focus outline */
+		}
+
+		/* Disabled state */
+		button:disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
+		}
+	</style>
+
 	<html lang="en">
 		<head>
 			<title>🍜 Log in!</title>
@@ -47,30 +75,45 @@ templ LoginPage(formtype LoginFormType, e error) {
 templ LoginPageContents(formtype LoginFormType, e error) {
 	<div id="loginpage" class={ displayFlex("column") }>
 		@FormTypeButton(formtype)
+		<div style="border-bottom: 1px solid;">
+		</div>
 		@LoginForm(formtype, e)
 	</div>
+}
+css modeButtonItemCSS() {
+	display: flex;
+	flex-direction: row;
+	padding: 10px;
+	border-bottom: 1px solid;
+	border-top: 1px solid;
+	cursor: pointer;
+	border-radius: 10px;
 }
 
 templ FormTypeButton(formtype LoginFormType) {
 	if formtype != "login" {
-		<div
-			hx-get={ fmt.Sprintf("%s/loginform/%s", viewutils.PagePrefix, "login") }
-			hx-swap="outerHTML"
-			hx-target="#loginpage"
-			id="loginbutton"
-			class={ button(), displayFlex("column") }
-		>
-			Log in!
+		<div style="display: flex; flex: row;">
+			<div
+				hx-get={ fmt.Sprintf("%s/loginform/%s", viewutils.PagePrefix, "login") }
+				hx-swap="outerHTML"
+				hx-target="#loginpage"
+				id="loginbutton"
+				class={ modeButtonItemCSS() }
+			>
+				Log in!
+			</div>
 		</div>
 	} else {
-		<div
-			hx-get={ fmt.Sprintf("%s/loginform/%s", viewutils.PagePrefix, "signup") }
-			hx-swap="outerHTML"
-			hx-target="#loginpage"
-			id="signupbutton"
-			class={ button(), displayFlex("column") }
-		>
-			Sign up!
+		<div style="display: flex; flex: row;">
+			<div
+				hx-get={ fmt.Sprintf("%s/loginform/%s", viewutils.PagePrefix, "signup") }
+				hx-swap="outerHTML"
+				hx-target="#loginpage"
+				id="signupbutton"
+				class={ modeButtonItemCSS() }
+			>
+				Sign up!
+			</div>
 		</div>
 	}
 }
@@ -83,8 +126,10 @@ templ LoginForm(formtype LoginFormType, e error) {
 			enctype="application/x-www-form-urlencoded"
 			class={ displayFlex("column") }
 		>
-			<div class={ displayFlex("column") } id="loginform">
+			<div class={ displayFlex("row") } id="signupform">
 				@LoginFormContents(formtype, e)
+				<div style="flex: 1;">
+				</div>
 			</div>
 		</form>
 	} else {
@@ -94,8 +139,10 @@ templ LoginForm(formtype LoginFormType, e error) {
 			enctype="application/x-www-form-urlencoded"
 			class={ displayFlex("column") }
 		>
-			<div class={ displayFlex("column") } id="signupform">
+			<div class={ displayFlex("row") } id="signupform">
 				@LoginFormContents(formtype, e)
+				<div style="flex: 1;">
+				</div>
 			</div>
 		</form>
 	}
@@ -110,36 +157,34 @@ css hidden() {
 }
 
 templ LoginFormContents(formtype LoginFormType, e error) {
-	if formtype == LoginType {
-		Username:
-		<input value="" type="text" name="username"/>
-		Password:
-		<input value="" type="password" name="password"/>
-		<input class={ hidden() } value="" type="text" name="beepboop"/>
-		if e != nil {
-			{ e.Error() }
+	<div class={ displayFlex("column") }>
+		if formtype == LoginType {
+			Username:
+			<input value="" type="text" name="username"/>
+			Password:
+			<input value="" type="password" name="password"/>
+			<input class={ hidden() } value="" type="text" name="beepboop"/>
+			if e != nil {
+				{ e.Error() }
+			}
+			<button style="margin-top: 5px" type="submit">log in</button>
+		} else {
+			Username:
+			<input value="" type="text" name="username"/>
+			Password:
+			<input value="" type="password" name="password"/>
+			Confirm password:
+			<input value="" type="password" name="confirmpassword"/>
+			<input class={ hidden() } value="" type="text" name="beepboop"/>
+			if e != nil {
+				{ e.Error() }
+			}
+			<button style="margin-top: 5px" type="submit">sign up</button>
 		}
-		<button class={ button() } type="submit">log in</button>
-	} else {
-		Username:
-		<input value="" type="text" name="username"/>
-		Password:
-		<input value="" type="password" name="password"/>
-		Confirm password:
-		<input value="" type="password" name="confirmpassword"/>
-		<input class={ hidden() } value="" type="text" name="beepboop"/>
-		if e != nil {
-			{ e.Error() }
-		}
-		<button class={ button() } type="submit">sign up</button>
-	}
+	</div>
 }
 
 css displayFlex(direction string) {
 	display: flex;
 	flex-direction: { direction };
-}
-
-css button() {
-	cursor: pointer;
 }
