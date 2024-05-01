@@ -29,7 +29,7 @@ script htmxAllowedCodes() {
 
 templ LoginPage(formtype LoginFormType, e error) {
 	<!DOCTYPE html>
-	@colorsCSS()
+	@viewutils.ColorsCSS()
 	<html lang="en">
 		<head>
 			<title>🍜 Log in!</title>
@@ -131,4 +131,13 @@ templ LoginFormContents(formtype LoginFormType, e error) {
 		}
 		<button class={ button() } type="submit">sign up</button>
 	}
+}
+
+css displayFlex(direction string) {
+	display: flex;
+	flex-direction: { direction };
+}
+
+css button() {
+	cursor: pointer;
 }

@@ -10,7 +10,7 @@ templ Homepage(pd *viewutils.PageData) {
 	<!DOCTYPE html>
 	<html lang="en">
 		@getColorScheme(fmt.Sprintf("%s/api/mediaQuery", viewutils.PagePrefix))
-		@colorsCSS()
+		@viewutils.ColorsCSS()
 		@htmxAllowedCodes()
 		@tabviews.ModalCSS()
 		<head>
@@ -38,29 +38,6 @@ script htmxAllowedCodes() {
 			}
 		});
 	})
-}
-
-templ colorsCSS() {
-	<style type="text/css">
-		@media (prefers-color-scheme: dark) {
-			.bodycolors {
-				border-color: white;
-				background-color: #1e1e1f;
-				color: white;
-				fill: white;
-				stroke: white;
-			}
-		}
-		@media (not (prefers-color-scheme: dark)) {
-			.bodycolors {
-				border-color: black;
-				background-color: lightgray;
-				color: black;
-				fill: black;
-				stroke: black;
-			}
-		}
-	</style>
 }
 
 css PageContainerCSS() {
