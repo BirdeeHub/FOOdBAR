@@ -44,6 +44,13 @@ func Init(dbpath string, signingKey []byte, listenOn string) {
 	e.POST(fmt.Sprintf("%s/submitlogin", viewutils.PagePrefix), func(c echo.Context) error {
 		username := c.FormValue("username")
 		password := c.FormValue("password")
+		beepboop := c.FormValue("beepboop")
+		if beepboop != "" {
+			WipeAuth(c)
+			err := errors.New("Scraper no scraping!")
+			c.Logger().Print(err)
+			return HTML(c, http.StatusUnprocessableEntity, loginPage.LoginPage(loginPage.LoginType, err))
+		}
 		userID, err := db.AuthUser(username, password, dbpath)
 		if err != nil {
 			WipeAuth(c)
