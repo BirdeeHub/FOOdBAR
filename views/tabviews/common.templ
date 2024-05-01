@@ -16,6 +16,19 @@ templ MaximizeTabButton(tt viewutils.TabType) {
 	</div>
 }
 
+templ AddTabItemButton(tt viewutils.TabType) {
+	<div
+		id={ fmt.Sprintf("tabItemAdd_%s", tt.String()) }
+		hx-post={ fmt.Sprintf("%s/api/itemCreateModal/open/%s", viewutils.PagePrefix, tt.String()) }
+		hx-swap="beforeend"
+		hx-target="body"
+		class={ TabHeaderButtonCSS("0 0 1.5rem") }
+	>
+		@viewutils.AddCircle()
+	</div>
+}
+
+
 templ RenderModalContent(item *viewutils.TabItem) {
 	switch item.Ttype {
 		case viewutils.Recipe:

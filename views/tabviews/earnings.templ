@@ -25,15 +25,7 @@ templ RenderEarningsTab(td *viewutils.TabData) {
 		<div class={ TabHeaderTitleCSS() }>
 			Earnings!
 		</div>
-		<div
-			id={ fmt.Sprintf("tabItemAdd_%s", td.Ttype) }
-			hx-post={ fmt.Sprintf("%s/api/itemCreateModal/open/%s", viewutils.PagePrefix, td.Ttype.String()) }
-			hx-swap="beforeend"
-			hx-target="body"
-			class={ TabHeaderButtonCSS("0 0 1.5rem") }
-		>
-			@viewutils.AddCircle()
-		</div>
+		@AddTabItemButton(td.Ttype)
 		@MaximizeTabButton(td.Ttype)
 	</div>
 	<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
