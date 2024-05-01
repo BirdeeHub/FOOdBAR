@@ -111,7 +111,9 @@ css hidden() {
 
 templ LoginFormContents(formtype LoginFormType, e error) {
 	if formtype == LoginType {
+		Username:
 		<input value="" type="text" name="username"/>
+		Password:
 		<input value="" type="password" name="password"/>
 		<input class={ hidden() } value="" type="text" name="beepboop"/>
 		if e != nil {
