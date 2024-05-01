@@ -23,12 +23,6 @@ let
   tailwindcss = pkgs.writeShellScriptBin "tailwindcss" ''
     ${pkgs.tailwindcss}/bin/tailwindcss -c ${./tailwind.config.js}
   '';
-  CFGfoodbar = pkgs.writeShellScriptBin "buildfoodbar" ''
-    go mod tidy &&\
-    gomod2nix &&\
-    ${tailwindcss}/bin/tailwindcss build > ./static/tailwind.css &&\
-    ${templ}/bin/templ generate
-  '';
   goEnv = mkGoEnv { pwd = ./.; };
 in
 pkgs.mkShell {
@@ -39,7 +33,6 @@ pkgs.mkShell {
     air
     templ
     tailwindcss
-    CFGfoodbar
   ];
   FOOdBAR_STATE = "/home/birdee/.local/share";
   shellHook = ''
