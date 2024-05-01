@@ -39,7 +39,7 @@ const (
 	// NameCustom                = "CASE WHEN condition THEN value ELSE value END;"
 )
 
-func GetSortMethods() [13]SortMethod {
+func GetSortMethods() [10]SortMethod {
 	return [...]SortMethod{
 		Inactive,
 		NameDescending,
@@ -51,9 +51,6 @@ func GetSortMethods() [13]SortMethod {
 		CategoryDescending,
 		CategoryAscending,
 		CategoryRandom,
-		IngredientsDescending,
-		IngredientsAscending,
-		IngredientsRandom,
 	}
 }
 
