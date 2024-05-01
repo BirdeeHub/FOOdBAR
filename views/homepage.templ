@@ -9,11 +9,6 @@ import (
 templ Homepage(pd *viewutils.PageData) {
 	<!DOCTYPE html>
 	<html lang="en">
-		<style type="text/css">
-			@tailwind base;
-			@tailwind components;
-			@tailwind utilities;
-		</style>
 		@getColorScheme(fmt.Sprintf("%s/api/mediaQuery", viewutils.PagePrefix))
 		@colorsCSS()
 		@htmxAllowedCodes()
