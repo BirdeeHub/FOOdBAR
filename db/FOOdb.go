@@ -13,8 +13,8 @@ import (
 
 func CreateTabTableIfNotExists(userID uuid.UUID, dbpath string, tt viewutils.TabType) (*sql.DB, error) {
 	var err error
-	dbpath = filepath.Join(dbpath, "FOOdBAR", "FOOdb.db")
-	dbpath, err = foodlib.CreateEmptyFileIfNotExists(dbpath)
+	fooDB := filepath.Join(dbpath, "FOOdBAR", "FOOdb.db")
+	fooDB, err = foodlib.CreateEmptyFileIfNotExists(fooDB)
 	if err != nil {
 		return nil, err
 	}

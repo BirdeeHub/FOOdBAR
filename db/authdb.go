@@ -4,7 +4,7 @@ import (
 	"crypto/sha256"
 	"database/sql"
 	"errors"
-	"fmt"
+	"path/filepath"
 	"strings"
 
 	foodlib "FOOdBAR/FOOlib"
@@ -14,7 +14,7 @@ import (
 )
 
 func AuthUser(username string, password string, dbpath string) (uuid.UUID, error) {
-	authDB := fmt.Sprintf("%s/FOOdBAR/auth.db", dbpath)
+	authDB := filepath.Join(dbpath, "FOOdBAR", "auth.db")
 	authdbpath, err := foodlib.CreateEmptyFileIfNotExists(authDB)
 	if err != nil {
 		return uuid.Nil, err
@@ -69,7 +69,7 @@ func AuthUser(username string, password string, dbpath string) (uuid.UUID, error
 }
 
 func CreateUser(username string, password string, dbpath string) (uuid.UUID, error) {
-	authDB := fmt.Sprintf("%s/FOOdBAR/auth.db", dbpath)
+	authDB := filepath.Join(dbpath, "FOOdBAR", "auth.db")
 	authdbpath, err := foodlib.CreateEmptyFileIfNotExists(authDB)
 	if err != nil {
 		return uuid.Nil, err
