@@ -319,6 +319,7 @@ These are some of the common sorting options available in SQL, but the specifics
 >>> In SQLite, you can create triggers for various events that occur on tables. Here are some of the most common ones:1. **INSERT**: Triggered when a new row is inserted into the table.2. **UPDATE**: Triggered whe
 ... n an existing row is updated in the table (like I showed you earlier).3. **DELETE**: Triggered when a row is deleted from the table. Can I get the row that these were triggered for, and put the row into the au
 ... dit table witht he extra info?
+
 In SQLite, you can access the affected rows using the `NEW` table in UPDATE and DELETE triggers, and the `INSERTED` table in INSERT triggers.
 
 Here's how you can modify your trigger to include the affected row in the audit table:
@@ -359,3 +360,36 @@ In these triggers:
 Remember to replace `datetime('now')` with your preferred timestamp format.
 
 These triggers will populate the audit table with the updated, inserted, or deleted data, along with the relevant timestamps and user IDs.
+
+> Is there a generic trigger that will trigger on ANY event for the table, and also insert which action it was into the table?
+> 
+> ```markdown
+> CREATE TRIGGER update_item_audits
+> AFTER UPDATE OF itemID ON items
+> BEGIN
+>     INSERT INTO audits (userID, itemID, updated_at)
+>     VALUES (NEW.userID, NEW.itemID, datetime('now'));
+> END;
+> ```
+
+Yes, you can create a trigger that fires on INSERT, UPDATE, or DELETE by using `AFTER INSERT OR UPDATE OR DELETE` instead of specifying a specific operation. 
+
+You can also check which operation triggered the trigger using the `TG_OP` variable.
+
+Here is an example:
+
+```sql
+CREATE TRIGGER audit_changes
+AFTER INSERT OR UPDATE OR DELETE ON items
+FOR EACH ROW
+BEGIN
+  INSERT INTO audit_log (table_name, operation, rowid, changed_at) 
+  VALUES ('items', TG_OP, NEW.rowid, CURRENT_TIMESTAMP);
+END;
+```
+
+This will insert a row into the `audit_log` table on any INSERT, UPDATE or DELETE, and populate the `operation` column with 'INSERT', 'UPDATE' or 'DELETE' based on which operation triggered it.
+
+The `NEW` and `OLD` references work the same as individual triggers. For INSERT, only `NEW` is populated. For DELETE, only `OLD` is populated. For UPDATE, both are populated.
+
+So this allows you to create a single trigger that audits all changes to a table, instead of needing separate triggers for each operation.
