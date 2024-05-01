@@ -41,6 +41,7 @@ func Init(dbpath string, signingKey []byte, listenOn string) {
 		}
 	})
 
+	// TODO: implement timeout
 	e.POST(fmt.Sprintf("%s/submitlogin", viewutils.PagePrefix), func(c echo.Context) error {
 		username := c.FormValue("username")
 		password := c.FormValue("password")
