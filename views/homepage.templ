@@ -12,6 +12,7 @@ templ Homepage(pd *viewutils.PageData) {
 		@getColorScheme(fmt.Sprintf("%s/api/mediaQuery", viewutils.PagePrefix))
 		@colorsCSS()
 		@htmxAllowedCodes()
+		@tabviews.ModalCSS()
 		<head>
 			<title>FOOd-BAR</title>
 			<meta charset="utf-8"/>

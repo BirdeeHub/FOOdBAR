@@ -50,7 +50,7 @@ templ RenderModalContent(item *viewutils.TabItem) {
 	}
 }
 
-templ ItemEditModal(component templ.Component) {
+templ ModalCSS() {
 	<style type="text/css">
 		/***** MODAL DIALOG ****/
 		#modal {
@@ -139,6 +139,10 @@ templ ItemEditModal(component templ.Component) {
 			100% {transform: scale(0.9);}
 		} 
 	</style>
+}
+
+// requires above css to already be loaded (because otherwise we send it many many times)
+templ ItemEditModal(component templ.Component) {
 	<div id="modal" _="on closeModal add .closing then wait for animationend then remove me">
 		<div class="modal-underlay" _="on click trigger closeModal"></div>
 		<div class="modal-content bodycolors">
