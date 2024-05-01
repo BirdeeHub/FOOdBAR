@@ -14,9 +14,6 @@ import (
 )
 
 func AuthUser(username string, password string, dbpath string) (uuid.UUID, error) {
-	if dbpath == "" {
-		dbpath = "/tmp"
-	}
 	authDB := fmt.Sprintf("%s/FOOdBAR/auth.db", dbpath)
 	authdbpath, err := foodlib.CreateEmptyFileIfNotExists(authDB)
 	if err != nil {
@@ -72,9 +69,6 @@ func AuthUser(username string, password string, dbpath string) (uuid.UUID, error
 }
 
 func CreateUser(username string, password string, dbpath string) (uuid.UUID, error) {
-	if dbpath == "" {
-		dbpath = "/tmp"
-	}
 	authDB := fmt.Sprintf("%s/FOOdBAR/auth.db", dbpath)
 	authdbpath, err := foodlib.CreateEmptyFileIfNotExists(authDB)
 	if err != nil {

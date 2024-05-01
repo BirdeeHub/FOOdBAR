@@ -5,30 +5,20 @@ import (
 	"FOOdBAR/views/viewutils"
 	"database/sql"
 	"errors"
-	"os"
 	"path/filepath"
-	"runtime"
 
 	"github.com/google/uuid"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 func CreateTabTableIfNotExists(userID uuid.UUID, dbpath string, tt viewutils.TabType) (*sql.DB, error) {
-	var fooDB string = dbpath
-	if fooDB == "" {
-		if runtime.GOOS == "windows" {
-			fooDB = os.Getenv("TEMP") 
-		} else {
-			fooDB = "/tmp"
-		}
-	}
 	var err error
-	fooDB = filepath.Join(dbpath, "FOOdBAR", "FOOdb.db")
-	fooDB, err = foodlib.CreateEmptyFileIfNotExists(fooDB)
+	dbpath = filepath.Join(dbpath, "FOOdBAR", "FOOdb.db")
+	dbpath, err = foodlib.CreateEmptyFileIfNotExists(dbpath)
 	if err != nil {
 		return nil, err
 	}
-	db, err := sql.Open("sqlite3", fooDB)
+	db, err := sql.Open("sqlite3", dbpath)
 
 	var createTable string
 	switch tt {
