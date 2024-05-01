@@ -174,29 +174,11 @@ func makeAuditTriggers(db *sql.DB, userID uuid.UUID, tt viewutils.TabType) error
 
 /*
 NOTE:
-
 	type TabItem struct {
 		ItemID uuid.UUID `json:"item_id"`
 		Ttype  TabType   `json:"tab_type"`
 		Expanded bool   `json:"expanded"`
 	}
-
-	NOTE:
-
-type SortMethod string
-const (
-
-	Inactive   SortMethod = ""
-	Descending            = "DESC;"
-	Ascending             = "ASC;"
-	Random                = "RANDOM();"
-	Custom                = "END;"
-
-	// Others can be made with CASE WHEN condition THEN value ELSE value END
-	// when using this syntax, put the CASE WHEN... etc... into the OrderBy key
-	// and then put Custom as the SortMethod
-
-)
 */
 func FillXTabItems(userID uuid.UUID, dbpath string, tbd *viewutils.TabData, number int) error {
 	db, err := CreateTabTableIfNotExists(userID, dbpath, tbd.Ttype)
