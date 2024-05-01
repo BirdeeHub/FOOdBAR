@@ -39,9 +39,13 @@ const (
 	// NameCustom                = "CASE WHEN condition THEN value ELSE value END;"
 )
 
-func GetSortMethods() [4]SortMethod {
+func GetSortMethods() [8]SortMethod {
 	return [...]SortMethod{
 		Inactive,
+		CreatedDescending,
+		CreatedAscending,
+		RecencyDescending,
+		RecencyAscending,
 		NameDescending,
 		NameAscending,
 		NameRandom,
@@ -329,12 +333,15 @@ func (tbd *TabData) UnmarshalJSON(data []byte) error {
 		}
 		tbd.Items[id] = &v
 	}
+	invalidSort := true
 	for _, x := range GetSortMethods() {
 		if irJson.OrderBy == string(x) {
 			tbd.OrderBy = x
-		} else {
-			return errors.New("invalid sort method")
+			invalidSort = false
 		}
+	}
+	if invalidSort {
+		return errors.New("invalid sort method")
 	}
 	return nil
 }
