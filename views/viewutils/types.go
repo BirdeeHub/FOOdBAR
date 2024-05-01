@@ -14,6 +14,37 @@ import (
 
 const PagePrefix = "/FOOdBAR"
 
+type SortMethod string
+
+const (
+	Inactive           SortMethod = ""
+	NameDescending                = "name DESC;"
+	NameAscending                 = "name ASC;"
+	NameRandom                    = "name RANDOM();"
+	DietaryDescending             = "dietary DESC;"
+	DietaryAscending              = "dietary ASC;"
+	DietaryRandom                 = "dietary RANDOM();"
+	CategoryDescending            = "category DESC;"
+	CategoryAscending             = "category ASC;"
+	CategoryRandom                = "category RANDOM();"
+	// NameCustom                = "CASE WHEN condition THEN value ELSE value END;"
+)
+
+func GetSortMethods() [10]SortMethod {
+	return [...]SortMethod{
+		Inactive,
+		NameDescending,
+		NameAscending,
+		NameRandom,
+		DietaryDescending,
+		DietaryAscending,
+		DietaryRandom,
+		CategoryDescending,
+		CategoryAscending,
+		CategoryRandom,
+	}
+}
+
 type TabType string
 
 const (
@@ -58,27 +89,7 @@ func GetColorSchemes() [3]ColorScheme {
 	return [...]ColorScheme{Dark, Light, None}
 }
 
-type SortMethod string
-
-const (
-	Inactive   SortMethod = ""
-	Descending            = "DESC;"
-	Ascending             = "ASC;"
-	Random                = "RANDOM();"
-	Custom                = "END;"
-	// Others can be made with CASE WHEN condition THEN value ELSE value END
-	// when using this syntax, put the CASE WHEN... etc... into the OrderBy key
-	// and then put Custom as the SortMethod
-)
-
-func GetSortMethods() [4]SortMethod {
-	return [...]SortMethod{Descending, Ascending, Random, Custom}
-}
-
-
 // PageData and its children
-
-
 
 type TabButtonData struct {
 	Ttype  TabType `json:"tab_type"`
@@ -94,7 +105,7 @@ type PageData struct {
 type TabData struct {
 	Ttype   TabType                `json:"tab_type"`
 	Items   map[uuid.UUID]*TabItem `json:"items"`
-	OrderBy SortMethod  `json:"order_by"`
+	OrderBy SortMethod             `json:"order_by"`
 }
 
 type TabItem struct {
@@ -278,7 +289,7 @@ func (tbd *TabData) MarshalJSON() ([]byte, error) {
 	configpre := struct {
 		Ttype   string             `json:"tab_type"`
 		Items   map[string]TabItem `json:"items"`
-		OrderBy string  `json:"order_by"`
+		OrderBy string             `json:"order_by"`
 	}{
 		Ttype:   tbd.Ttype.String(),
 		Items:   itemsmap,
@@ -292,7 +303,7 @@ func (tbd *TabData) UnmarshalJSON(data []byte) error {
 	var irJson struct {
 		Ttype   string             `json:"tab_type"`
 		Items   map[string]TabItem `json:"items"`
-		OrderBy string  `json:"order_by"`
+		OrderBy string             `json:"order_by"`
 	}
 	err := json.Unmarshal(data, &irJson)
 	if err != nil {
