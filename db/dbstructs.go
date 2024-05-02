@@ -2,11 +2,11 @@ package db
 
 import (
 	// foodlib "FOOdBAR/FOOlib"
-	// "database/sql"
 	// "errors"
 	"time"
 
 	"github.com/google/uuid"
+	// "database/sql"
 	// _ "github.com/mattn/go-sqlite3"
 )
 
