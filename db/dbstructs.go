@@ -11,89 +11,89 @@ import (
 )
 
 type Recipe struct {
-	ID           uuid.UUID
-	CreatedAt    time.Time
-	LastModified time.Time
-	LastAuthor   string
-	Name         string
-	Category     []string
-	Dietary      []string
-	Ingredients  []uuid.UUID
-	Instructions string
+	ID           uuid.UUID   `json:"id"`
+	CreatedAt    time.Time   `json:"createdat"`
+	LastModified time.Time   `json:"lastmodified"`
+	LastAuthor   string      `json:"lastauthor"`
+	Name         string      `json:"name"`
+	Category     []string    `json:"category"`
+	Dietary      []string    `json:"dietary"`
+	Ingredients  []uuid.UUID `json:"ingredients"`
+	Instructions string      `json:"instructions"`
 }
 
 type Menu struct {
-	ID           uuid.UUID
-	CreatedAt    time.Time
-	LastModified time.Time
-	LastAuthor   string
-	MenuID       uuid.UUID
-	Name         string
-	Number       int
+	ID           uuid.UUID `json:"id"`
+	CreatedAt    time.Time `json:"createdat"`
+	LastModified time.Time `json:"lastmodified"`
+	LastAuthor   string    `json:"lastauthor"`
+	MenuID       uuid.UUID `json:"menuid"`
+	Name         string    `json:"name"`
+	Number       int       `json:"number"`
 }
 
 type Pantry struct {
-	ID           uuid.UUID
-	CreatedAt    time.Time
-	LastModified time.Time
-	LastAuthor   string
-	Name         string
-	Dietary      []string
-	Amount       float32
-	Units        string
+	ID           uuid.UUID `json:"id"`
+	CreatedAt    time.Time `json:"createdat"`
+	LastModified time.Time `json:"lastmodified"`
+	LastAuthor   string    `json:"lastauthor"`
+	Name         string    `json:"name"`
+	Dietary      []string  `json:"dietary"`
+	Amount       float32   `json:"amount"`
+	Units        string    `json:"units"`
 }
 
 type Customer struct {
-	ID           uuid.UUID
-	CreatedAt    time.Time
-	LastModified time.Time
-	LastAuthor   string
-	Email        string
-	Phone        string
-	Name         string
-	Dietary      []string
+	ID           uuid.UUID `json:"id"`
+	CreatedAt    time.Time `json:"createdat"`
+	LastModified time.Time `json:"lastmodified"`
+	LastAuthor   string    `json:"lastauthor"`
+	Email        string    `json:"email"`
+	Phone        string    `json:"phone"`
+	Name         string    `json:"name"`
+	Dietary      []string  `json:"dietary"`
 }
 
 type Event struct {
-	ID           uuid.UUID
-	CreatedAt    time.Time
-	LastModified time.Time
-	LastAuthor   string
-	Name         string
-	MenuID       uuid.UUID
-	Date         string
-	Location     string
-	Customer     string
+	ID           uuid.UUID `json:"id"`
+	CreatedAt    time.Time `json:"createdat"`
+	LastModified time.Time `json:"lastmodified"`
+	LastAuthor   string    `json:"lastauthor"`
+	Name         string    `json:"name"`
+	MenuID       uuid.UUID `json:"menuid"`
+	Date         string    `json:"date"`
+	Location     string    `json:"location"`
+	Customer     string    `json:"customer"`
 }
 
 type Preplist struct {
-	ID           uuid.UUID
-	CreatedAt    time.Time
-	LastModified time.Time
-	LastAuthor   string
-	EventID      uuid.UUID
-	MenuID       uuid.UUID
-	ingredients  map[uuid.UUID]float32
-	recipes      []uuid.UUID
+	ID           uuid.UUID             `json:"id"`
+	CreatedAt    time.Time             `json:"createdat"`
+	LastModified time.Time             `json:"lastmodified"`
+	LastAuthor   string                `json:"lastauthor"`
+	EventID      uuid.UUID             `json:"eventid"`
+	MenuID       uuid.UUID             `json:"menuid"`
+	Ingredients  map[uuid.UUID]float32 `json:"ingredients"`
+	Recipes      []uuid.UUID           `json:"recipes"`
 }
 
 type Shopping struct {
-	ID           uuid.UUID
-	CreatedAt    time.Time
-	LastModified time.Time
-	LastAuthor   string
-	EventID      uuid.UUID
-	MenuID       uuid.UUID
-	Amount       float32
-	Units        string
-	ingredients  []uuid.UUID
+	ID           uuid.UUID   `json:"id"`
+	CreatedAt    time.Time   `json:"createdat"`
+	LastModified time.Time   `json:"lastmodified"`
+	LastAuthor   string      `json:"lastauthor"`
+	EventID      uuid.UUID   `json:"eventid"`
+	MenuID       uuid.UUID   `json:"menuid"`
+	Amount       float32     `json:"amount"`
+	Units        string      `json:"units"`
+	Ingredients  []uuid.UUID `json:"ingredients"`
 }
 
 type Earnings struct {
-	ID           uuid.UUID
-	CreatedAt    time.Time
-	LastModified time.Time
-	LastAuthor   string
-	EventID      uuid.UUID
-	MenuID       uuid.UUID
+	ID           uuid.UUID `json:"id"`
+	CreatedAt    time.Time `json:"createdat"`
+	LastModified time.Time `json:"lastmodified"`
+	LastAuthor   string    `json:"lastauthor"`
+	EventID      uuid.UUID `json:"eventid"`
+	MenuID       uuid.UUID `json:"menuid"`
 }
