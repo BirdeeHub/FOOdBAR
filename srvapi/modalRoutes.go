@@ -12,7 +12,7 @@ import (
 
 func SetupModalAPIroutes(e *echo.Group, dbpath string) error {
 
-	e.POST("/api/itemEditModal/open/:type/:itemID", func(c echo.Context) error {
+	e.GET("/api/itemEditModal/open/:type/:itemID", func(c echo.Context) error {
 		pageData, err := foodlib.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
@@ -36,7 +36,7 @@ func SetupModalAPIroutes(e *echo.Group, dbpath string) error {
 		return HTML(c, http.StatusOK, tabviews.ItemEditModal(tabviews.RenderModalContent(item)))
 	})
 
-	e.POST("/api/itemCreateModal/open/:type", func(c echo.Context) error {
+	e.GET("/api/itemCreateModal/open/:type", func(c echo.Context) error {
 		pageData, err := foodlib.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)

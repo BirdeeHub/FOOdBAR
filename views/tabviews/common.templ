@@ -30,9 +30,9 @@ templ ColorsCSS() {
 
 templ MaximizeTabButton(tt foodlib.TabType) {
 	<div
+		id={ fmt.Sprintf("tabButton_%s", tt) }
 		hx-post={ fmt.Sprintf("%s/api/tabButton/maximize/%s", foodlib.PagePrefix, tt) }
 		hx-target="#tabViewContainer"
-		id={ fmt.Sprintf("tabButton_%s", tt) }
 		class={ TabHeaderButtonCSS("0 0 1.5rem") }
 	>
 		@Maximize()
@@ -42,7 +42,7 @@ templ MaximizeTabButton(tt foodlib.TabType) {
 templ AddTabItemButton(tt foodlib.TabType) {
 	<div
 		id={ fmt.Sprintf("tabItemAdd_%s", tt.String()) }
-		hx-post={ fmt.Sprintf("%s/api/itemCreateModal/open/%s", foodlib.PagePrefix, tt.String()) }
+		hx-get={ fmt.Sprintf("%s/api/itemCreateModal/open/%s", foodlib.PagePrefix, tt.String()) }
 		hx-swap="beforeend"
 		hx-target="body"
 		class={ TabHeaderButtonCSS("0 0 1.5rem") }
