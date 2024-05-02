@@ -21,7 +21,7 @@ in
 buildGoApplication {
   pname = "FOOdBAR";
   version = "0.1";
-  pwd = ./.;
+  pwd = ./cmd/FOOdBAR;
   src = ./.;
   modules = ./gomod2nix.toml;
   nativeBuildInputs = [ templ pkgs.makeWrapper tailwindcss ];
@@ -30,9 +30,7 @@ buildGoApplication {
     tailwindcss build > ./static/tailwind.css
   '';
   postFixup = ''
-    mkdir -p $out/dist
-    mv $out/bin/cmd $out/dist/cmd
-    makeWrapper $out/dist/cmd $out/bin/FOOdBAR \
+    wrapProgram $out/bin/FOOdBAR \
       --set FOOdBAR_STATE ${dbpath}
   '';
   buildInputs = [ pkgs.sqlite ];
