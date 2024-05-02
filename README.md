@@ -26,7 +26,7 @@ Then go to localhost:42069 in a web browser
 
 If you dont want to install nix, the following should work, and the air command might work, assuming you have go, templ, and sqlite3 installed.
 ```bash
-go mod tidy && templ generate && go build -o dist/FOOdBAR ./FOOdBAR/main.go
+go mod tidy && templ generate && go build -o dist/FOOdBAR ./cmd/FOOdBAR/main.go
 ```
 -OR-
 ```bash
