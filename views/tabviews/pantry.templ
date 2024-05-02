@@ -41,9 +41,13 @@ templ ModalPantryContent(item *foodlib.TabItem) {
 				hx-post={ fmt.Sprintf("%s/api/submitItemInfo/%s/%s", foodlib.PagePrefix, item.Ttype.String(), item.ItemID.String()) }
 				hx-swap="none"
 			>
+				Name:
 				<input class="text-black" value="" type="text" name="itemName"/>
+				Dietary:
 				<input class="text-black" value="" type="text" name="itemDietary"/>
+				Amount:
 				<input class="text-black" value="" type="text" name="itemAmount"/>
+				Units:
 				<input class="text-black" value="" type="text" name="itemUnits"/>
 				<button action="submit">submit</button>
 			</form>
