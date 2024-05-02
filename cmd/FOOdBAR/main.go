@@ -18,5 +18,5 @@ func main() {
 		}
 	}
 	listenOn := ":42069"
-	srvapi.Init(dbpath, signingKey, listenOn)
+	srvapi.InitServer(dbpath, signingKey, listenOn)
 }

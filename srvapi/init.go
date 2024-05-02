@@ -14,7 +14,7 @@ import (
 
 )
 
-func Init(dbpath string, signingKey []byte, listenOn string) {
+func InitServer(dbpath string, signingKey []byte, listenOn string) {
 	e := echo.New()
 	e.Use(middleware.Logger())
 	// e.Use(middleware.Recover())
