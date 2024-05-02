@@ -85,6 +85,8 @@ func CreateTabTableIfNotExists(userID uuid.UUID, dbpath string, tt foodlib.TabTy
 				last_author TEXT,
 				event_id TEXT,
 				menu_id TEXT,
+				ingredients TEXT,
+				recipes TEXT,
 				)`
 	case foodlib.Shopping:
 		createTable = `CREATE TABLE IF NOT EXISTS ?_? (
@@ -94,7 +96,7 @@ func CreateTabTableIfNotExists(userID uuid.UUID, dbpath string, tt foodlib.TabTy
 				last_author TEXT,
 				event_id TEXT,
 				menu_id TEXT,
-				ingredient TEXT,
+				ingredients TEXT,
 				amount TEXT,
 				units TEXT,
 				)`
