@@ -110,52 +110,6 @@ Below is stuff that is probably mostly random AI garbage but I might take 1 or 2
 ### SQL
 
 
-> can tables in sqlite contain pointers to other tables?
-> Can I create a separate set of tables for each user instead of having the userdata just be rows in a user_pantry table?
-
-Yes, SQLite supports foreign keys which allow you to reference rows in another table. This can be used to create separate tables per user.
-
-Here is an example schema:
-
-```sql
-CREATE TABLE users (
-  id INTEGER PRIMARY KEY,
-  name TEXT
-);
-
-CREATE TABLE user_1_recipes (
-  id INTEGER PRIMARY KEY, 
-  recipe_name TEXT,
-  user_id INTEGER REFERENCES users(id) 
-);
-
-CREATE TABLE user_2_recipes (
-  id INTEGER PRIMARY KEY,
-  recipe_name TEXT,
-  user_id INTEGER REFERENCES users(id)
-);
-
-CREATE TABLE user_1_pantry (
-  id INTEGER PRIMARY KEY,
-  ingredient TEXT,
-  user_id INTEGER REFERENCES users(id)
-); 
-
-CREATE TABLE user_2_pantry (
-  id INTEGER PRIMARY KEY,
-  ingredient TEXT, 
-  user_id INTEGER REFERENCES users(id)
-);
-```
-
-This creates a separate recipes and pantry table for each user, with a `user_id` column that references the `id` column in the `users` table.
-
-When inserting data, you would lookup the user id, then insert into the appropriate per-user table.
-
-The main downside is the table structure is not dynamic - you have to know all the user ids ahead of time to create the tables. An alternative is a single table per tab type with a `user_id` column.
-
-So in summary, yes SQLite supports separate per-user tables through foreign keys, but it requires knowing user ids upfront. Let me know if you have any other questions!
-
 > how to select items conditionally from a database?
 
 Here are a few ways to conditionally select data from a database in SQL:
