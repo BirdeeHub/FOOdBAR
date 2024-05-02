@@ -1,8 +1,9 @@
 package srvapi
 
 import (
-	"FOOdBAR/views/tabviews"
 	foodlib "FOOdBAR/FOOlib"
+	"FOOdBAR/db"
+	"FOOdBAR/views/tabviews"
 	"errors"
 	"net/http"
 
@@ -10,17 +11,6 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func submitPantryItem(c echo.Context, pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem) error {
-	name := c.FormValue("itemName")
-	dietary := c.FormValue("itemDietary")
-	amount := c.FormValue("itemAmount")
-	units := c.FormValue("itemUnits")
-	c.Logger().Print(name)
-	c.Logger().Print(dietary)
-	c.Logger().Print(amount)
-	c.Logger().Print(units)
-	return nil
-}
 
 func SetupModalAPIroutes(e *echo.Group, dbpath string) error {
 
@@ -41,7 +31,7 @@ func SetupModalAPIroutes(e *echo.Group, dbpath string) error {
 		c.Logger().Print(td)
 		switch tt {
 		case foodlib.Pantry:
-			submitPantryItem(c, pageData, td, td.GetTabItem(itemID))
+			db.SubmitPantryItem(c, dbpath, pageData, td, td.GetTabItem(itemID))
 		}
 		return nil
 	})

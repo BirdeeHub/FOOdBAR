@@ -7,8 +7,29 @@ import (
 	"path/filepath"
 
 	"github.com/google/uuid"
+	"github.com/labstack/echo/v4"
 	_ "github.com/mattn/go-sqlite3"
 )
+
+func SubmitPantryItem(c echo.Context, dbpath string, pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem) error {
+	db, err := CreateTabTableIfNotExists(pd.UserID, dbpath, td.Ttype)
+	defer db.Close()
+	if err != nil {
+		return err
+	}
+	name := c.FormValue("itemName")
+	dietary := c.FormValue("itemDietary")
+	amount := c.FormValue("itemAmount")
+	units := c.FormValue("itemUnits")
+	insertStmt, err := db.Prepare(`INSERT INTO ?_? (id, last_author, name, dietary, amount, units) VALUES (?, ?, ?, ?, ?, ?)`)
+	if err != nil {
+		return err
+	}
+	defer insertStmt.Close()
+
+	_, err = insertStmt.Exec(pd.UserID, td.Ttype.String(), item.ItemID.String(), pd.UserID, name, dietary, amount, units)
+	return err 
+}
 
 func CreateTabTableIfNotExists(userID uuid.UUID, dbpath string, tt foodlib.TabType) (*sql.DB, error) {
 	var err error
