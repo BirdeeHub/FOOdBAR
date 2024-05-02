@@ -31,11 +31,11 @@ func SetupModalAPIroutes(e *echo.Group, dbpath string) error {
 		}
 		tt := foodlib.String2TabType(c.Param("type"))
 		if tt == foodlib.Invalid {
-			return echo.NewHTTPError(http.StatusUnauthorized, errors.New("Invalid tab type"))
+			return echo.NewHTTPError(http.StatusUnprocessableEntity, errors.New("Invalid tab type"))
 		}
 		itemID, err := uuid.Parse(c.Param("itemID"))
 		if err != nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, err)
+			return echo.NewHTTPError(http.StatusUnprocessableEntity, errors.New("itemID is not a valid UUID"))
 		}
 		td := pageData.GetTabDataByType(tt)
 		c.Logger().Print(td)
