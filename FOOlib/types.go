@@ -150,7 +150,7 @@ func (tbd *TabData) GetTabItem(itemID uuid.UUID) *TabItem {
 		tbd.Items = make(map[uuid.UUID]*TabItem)
 	}
 	ti, ok := tbd.Items[itemID]
-	if !ok && ti != nil {
+	if !ok || ti == nil {
 		return tbd.AddTabItem(&TabItem{ItemID: itemID})
 	}
 	return ti
