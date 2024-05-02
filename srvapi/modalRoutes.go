@@ -10,6 +10,18 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+func submitPantryItem(c echo.Context, pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem) error {
+	name := c.FormValue("itemName")
+	dietary := c.FormValue("itemDietary")
+	amount := c.FormValue("itemAmount")
+	units := c.FormValue("itemUnits")
+	c.Logger().Print(name)
+	c.Logger().Print(dietary)
+	c.Logger().Print(amount)
+	c.Logger().Print(units)
+	return nil
+}
+
 func SetupModalAPIroutes(e *echo.Group, dbpath string) error {
 
 	e.POST("/api/submitItemInfo/:type/:itemID", func(c echo.Context) error {
@@ -25,14 +37,7 @@ func SetupModalAPIroutes(e *echo.Group, dbpath string) error {
 		c.Logger().Print(td)
 		switch tt {
 		case foodlib.Pantry:
-			name := c.FormValue("itemName")
-			dietary := c.FormValue("itemDietary")
-			amount := c.FormValue("itemAmount")
-			units := c.FormValue("itemUnits")
-			c.Logger().Print(name)
-			c.Logger().Print(dietary)
-			c.Logger().Print(amount)
-			c.Logger().Print(units)
+			submitPantryItem(c, pageData, td, td.GetTabItem(c.Param("itemID")))
 		}
 		return nil
 	})

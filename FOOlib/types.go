@@ -144,6 +144,15 @@ func (tbd *TabData) AddTabItem(ti *TabItem) *TabItem {
 	return ti
 }
 
+func (tbd *TabData) GetTabItem(itemID uuid.UUID) *TabItem {
+	var ti *TabItem
+	ti, ok := tbd.Items[itemID]
+	if !ok {
+		return tbd.AddTabItem(&TabItem{ItemID: itemID})
+	}
+	return ti
+}
+
 func (tbd *TabData) GetTabItems() []*TabItem {
 	var tis []*TabItem
 	for _, ti := range tbd.Items {
