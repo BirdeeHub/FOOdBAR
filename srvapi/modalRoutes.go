@@ -12,6 +12,28 @@ import (
 
 func SetupModalAPIroutes(e *echo.Group, dbpath string) error {
 
+	e.POST("/api/submitItemInfo/:type/:itemID", func(c echo.Context) error {
+		pageData, err := foodlib.GetPageData(c)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, err)
+		}
+		tt := foodlib.String2TabType(c.Param("type"))
+		if tt == foodlib.Invalid {
+			return echo.NewHTTPError(http.StatusUnauthorized, errors.New("Invalid tab type"))
+		}
+		td := pageData.GetTabDataByType(tt)
+		name := c.FormValue("itemName")
+		dietary := c.FormValue("itemDietary")
+		amount := c.FormValue("itemAmount")
+		units := c.FormValue("itemUnits")
+		c.Logger().Print(td)
+		c.Logger().Print(name)
+		c.Logger().Print(dietary)
+		c.Logger().Print(amount)
+		c.Logger().Print(units)
+		return nil
+	})
+
 	e.GET("/api/itemEditModal/open/:type/:itemID", func(c echo.Context) error {
 		pageData, err := foodlib.GetPageData(c)
 		if err != nil {

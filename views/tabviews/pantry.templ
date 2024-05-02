@@ -37,7 +37,16 @@ templ ModalPantryContent(item *foodlib.TabItem) {
 	if item != nil {
 		<div style="display: flex; flex-direction: column; flex: 0 1;">
 			Hello from { item.Ttype.String() }
+			<form
+				hx-post={ fmt.Sprintf("%s/api/submitItemInfo/%s/%s", foodlib.PagePrefix, item.Ttype.String(), item.ItemID.String()) }
+				hx-swap="none"
+			>
+				<input class="text-black" value="" type="text" name="itemName"/>
+				<input class="text-black" value="" type="text" name="itemDietary"/>
+				<input class="text-black" value="" type="text" name="itemAmount"/>
+				<input class="text-black" value="" type="text" name="itemUnits"/>
+				<button action="submit">submit</button>
+			</form>
 		</div>
-		<button _="on click trigger closeModal">Close</button>
 	}
 }
