@@ -10,7 +10,7 @@ import (
 	// _ "github.com/mattn/go-sqlite3"
 )
 
-type Recipe struct {
+type RecipeResult struct {
 	ID           uuid.UUID   `json:"id"`
 	CreatedAt    time.Time   `json:"createdat"`
 	LastModified time.Time   `json:"lastmodified"`
@@ -22,7 +22,7 @@ type Recipe struct {
 	Instructions string      `json:"instructions"`
 }
 
-type Menu struct {
+type MenuResult struct {
 	ID           uuid.UUID `json:"id"`
 	CreatedAt    time.Time `json:"createdat"`
 	LastModified time.Time `json:"lastmodified"`
@@ -32,7 +32,7 @@ type Menu struct {
 	Number       int       `json:"number"`
 }
 
-type Pantry struct {
+type PantryResult struct {
 	ID           uuid.UUID `json:"id"`
 	CreatedAt    time.Time `json:"createdat"`
 	LastModified time.Time `json:"lastmodified"`
@@ -43,7 +43,7 @@ type Pantry struct {
 	Units        string    `json:"units"`
 }
 
-type Customer struct {
+type CustomerResult struct {
 	ID           uuid.UUID `json:"id"`
 	CreatedAt    time.Time `json:"createdat"`
 	LastModified time.Time `json:"lastmodified"`
@@ -54,7 +54,7 @@ type Customer struct {
 	Dietary      []string  `json:"dietary"`
 }
 
-type Event struct {
+type EventResult struct {
 	ID           uuid.UUID `json:"id"`
 	CreatedAt    time.Time `json:"createdat"`
 	LastModified time.Time `json:"lastmodified"`
@@ -66,7 +66,7 @@ type Event struct {
 	Customer     string    `json:"customer"`
 }
 
-type Preplist struct {
+type PreplistResult struct {
 	ID           uuid.UUID             `json:"id"`
 	CreatedAt    time.Time             `json:"createdat"`
 	LastModified time.Time             `json:"lastmodified"`
@@ -77,7 +77,7 @@ type Preplist struct {
 	Recipes      []uuid.UUID           `json:"recipes"`
 }
 
-type Shopping struct {
+type ShoppingResult struct {
 	ID           uuid.UUID   `json:"id"`
 	CreatedAt    time.Time   `json:"createdat"`
 	LastModified time.Time   `json:"lastmodified"`
@@ -89,7 +89,7 @@ type Shopping struct {
 	Ingredients  []uuid.UUID `json:"ingredients"`
 }
 
-type Earnings struct {
+type EarningsResult struct {
 	ID           uuid.UUID `json:"id"`
 	CreatedAt    time.Time `json:"createdat"`
 	LastModified time.Time `json:"lastmodified"`

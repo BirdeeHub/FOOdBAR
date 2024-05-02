@@ -22,15 +22,18 @@ func SetupModalAPIroutes(e *echo.Group, dbpath string) error {
 			return echo.NewHTTPError(http.StatusUnauthorized, errors.New("Invalid tab type"))
 		}
 		td := pageData.GetTabDataByType(tt)
-		name := c.FormValue("itemName")
-		dietary := c.FormValue("itemDietary")
-		amount := c.FormValue("itemAmount")
-		units := c.FormValue("itemUnits")
 		c.Logger().Print(td)
-		c.Logger().Print(name)
-		c.Logger().Print(dietary)
-		c.Logger().Print(amount)
-		c.Logger().Print(units)
+		switch tt {
+		case foodlib.Pantry:
+			name := c.FormValue("itemName")
+			dietary := c.FormValue("itemDietary")
+			amount := c.FormValue("itemAmount")
+			units := c.FormValue("itemUnits")
+			c.Logger().Print(name)
+			c.Logger().Print(dietary)
+			c.Logger().Print(amount)
+			c.Logger().Print(units)
+		}
 		return nil
 	})
 
