@@ -33,11 +33,15 @@ func SetupModalAPIroutes(e *echo.Group, dbpath string) error {
 		if tt == foodlib.Invalid {
 			return echo.NewHTTPError(http.StatusUnauthorized, errors.New("Invalid tab type"))
 		}
+		itemID, err := uuid.Parse(c.Param("itemID"))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, err)
+		}
 		td := pageData.GetTabDataByType(tt)
 		c.Logger().Print(td)
 		switch tt {
 		case foodlib.Pantry:
-			submitPantryItem(c, pageData, td, td.GetTabItem(c.Param("itemID")))
+			submitPantryItem(c, pageData, td, td.GetTabItem(itemID))
 		}
 		return nil
 	})
