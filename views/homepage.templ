@@ -71,10 +71,14 @@ templ BodyContents(pd *foodlib.PageData) {
 			Hello, chef! Welcome to FOOdBAR!
 		</div>
 		<div id="tabButtonContainer" class={ TabButtonContainerCSS() }>
-			@foodlib.RenderListWithComponent(pd.GetTabButtonData(), TabButton)
+			for _, tbd := range pd.GetTabButtonData() {
+				@TabButton(tbd)
+			}
 		</div>
 		<div id="tabViewContainer" class={ TabViewContainerCSS() }>
-			@foodlib.RenderListWithComponent(pd.TabDatas, TabContainer)
+			for _, td := range pd.TabDatas {
+				@TabContainer(td)
+			}
 		</div>
 	</div>
 }

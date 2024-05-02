@@ -6,7 +6,9 @@ import (
 )
 
 templ EarningsTabContents(td *foodlib.TabData) {
-	@foodlib.RenderListWithComponent(td.GetTabItems(), EarningsItemContainer)
+	for _, ti := range td.GetTabItems() {
+		@EarningsItemContainer(ti)
+	}
 }
 
 templ EarningsItemContainer(item *foodlib.TabItem) {

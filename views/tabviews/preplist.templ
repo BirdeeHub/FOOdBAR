@@ -6,7 +6,9 @@ import (
 )
 
 templ PreplistTabContents(td *foodlib.TabData) {
-	@foodlib.RenderListWithComponent(td.GetTabItems(), PreplistItemContainer)
+	for _, ti := range td.GetTabItems() {
+		@PreplistItemContainer(ti)
+	}
 }
 
 templ PreplistItemContainer(item *foodlib.TabItem) {

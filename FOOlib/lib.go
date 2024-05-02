@@ -1,26 +1,23 @@
 package foodlib
 
 import (
-	"context"
-	"io"
 	"os"
 	"path/filepath"
-
-	"github.com/a-h/templ"
 )
 
 // render all items in a list with a component
-func RenderListWithComponent[T interface{}](list []T, component func(T) templ.Component) templ.Component {
-	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) error {
-		for _, item := range list {
-			err := component(item).Render(ctx, w)
-			if err != nil {
-				return err
-			}
-		}
-		return nil
-	})
-}
+// lmao I coulda just done a for loop. Saving this here in case I want to reference it.
+// func RenderListWithComponent[T interface{}](list []T, component func(T) templ.Component) templ.Component {
+// 	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) error {
+// 		for _, item := range list {
+// 			err := component(item).Render(ctx, w)
+// 			if err != nil {
+// 				return err
+// 			}
+// 		}
+// 		return nil
+// 	})
+// }
 
 func CreateEmptyFileIfNotExists(filename string) (string, error) {
 	// Create the directory if it doesn't exist

@@ -6,7 +6,9 @@ import (
 )
 
 templ CustomerTabContents(td *foodlib.TabData) {
-	@foodlib.RenderListWithComponent(td.GetTabItems(), CustomerItemContainer)
+	for _, ti := range td.GetTabItems() {
+		@CustomerItemContainer(ti)
+	}
 }
 
 templ CustomerItemContainer(item *foodlib.TabItem) {
