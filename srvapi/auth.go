@@ -66,6 +66,7 @@ func GenerateJWTfromIDandKey(userID uuid.UUID, key []byte) (*http.Cookie, error)
 		Value:    t,
 		Path:     fmt.Sprintf("%s", foodlib.PagePrefix),
 		SameSite: http.SameSiteStrictMode,
+		HttpOnly: true,
 	}, nil
 }
 func WipeAuth(c echo.Context) {
@@ -77,6 +78,7 @@ func WipeAuth(c echo.Context) {
 		Path:     fmt.Sprintf("%s", foodlib.PagePrefix),
 		Expires:  expiration,
 		SameSite: http.SameSiteStrictMode,
+		HttpOnly: true,
 	}
 	http.SetCookie(c.Response().Writer, &cookie)
 }
