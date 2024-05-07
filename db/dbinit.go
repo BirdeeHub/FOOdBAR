@@ -23,15 +23,14 @@ func SetDBpath(newdbpath string) {
 
 func init() {
 	SetDBpath("")
-	go cleanSessBlacklist()
-}
-
-func cleanSessBlacklist() {
-	for {
-		err := CleanSessionBlacklist()
-		if err != nil {
-			fmt.Print(err)
+	go func() {
+		for {
+			time.Sleep(time.Second * 10)
+			err := CleanSessionBlacklist()
+			if err != nil {
+				fmt.Print(err)
+			}
+			time.Sleep(time.Hour - (time.Second * 10))
 		}
-		time.Sleep(time.Hour)
-	}
+	}()
 }

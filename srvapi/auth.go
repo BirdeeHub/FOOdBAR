@@ -167,7 +167,7 @@ func GetSessionIDFromClaims(claims map[string]interface{}) (uuid.UUID, error) {
 	case string:
 		return uuid.Parse(sessionID)
 	default:
-		return uuid.Nil, errors.New("invalid userID")
+		return uuid.Nil, errors.New("invalid sessionID")
 	}
 }
 

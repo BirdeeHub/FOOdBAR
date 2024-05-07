@@ -96,10 +96,7 @@ func QuerySessionBlacklist(sessionID uuid.UUID) (bool, error) {
 	var expiresAt string
 	err = rows.Scan(&expiresAt)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return false, nil
-		}
-		return false, err
+		return false, nil
 	}
 	expiration, err := time.Parse("2006-01-02 15:04:05", expiresAt)
 	if err != nil {
