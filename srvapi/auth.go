@@ -16,6 +16,8 @@ import (
 
 const tokenDuration = time.Hour * 72
 
+//TODO: Currently this is unused. Unsure that I want to add it to WipeAuth
+//But not having it would be a mistake.
 func AddSessionToBlacklist(c echo.Context) error {
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
