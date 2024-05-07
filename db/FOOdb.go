@@ -11,6 +11,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+//TODO: make this assign a new uuid to the item if needed?
 func SubmitPantryItem(c echo.Context, pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem) error {
 	db, err := CreateTabTableIfNotExists(pd.UserID, td.Ttype)
 	defer db.Close()
