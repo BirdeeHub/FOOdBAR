@@ -2,6 +2,7 @@ package srvapi
 
 import (
 	foodlib "FOOdBAR/FOOlib"
+	"FOOdBAR/db"
 	"errors"
 	"fmt"
 	"net/http"
@@ -13,7 +14,22 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-var SessionBlacklist = make(map[uuid.UUID]*time.Time)
+const tokenDuration = time.Hour * 72
+
+func AddSessionToBlacklist(c echo.Context) error {
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	sess, err := GetSessionIDFromClaims(claims)
+	if err != nil {
+		return err
+	}
+	expiration, err := GetExpirationFromToken(user)
+	if err != nil {
+		return err
+	}
+	err = db.AddToSessionBlacklist(sess, *expiration)
+	return err
+}
 
 func getKeyFunc(signingKey *[]byte, signingKeys map[string]interface{}, signingMethod string) (func(*jwt.Token) (interface{}, error)) {
 	return func(token *jwt.Token) (interface{}, error) {
@@ -78,12 +94,15 @@ func GetJWTmiddlewareWithConfig(signingKey []byte) echo.MiddlewareFunc {
 			if !token.Valid {
 				return nil, &echojwt.TokenError{Token: token, Err: errors.New("invalid token")}
 			}
+			if _, err := GetExpirationFromToken(token); err != nil {
+				return nil, &echojwt.TokenError{Token: token, Err: errors.New("invalid token")}
+			}
 			sessionID, err := GetSessionIDFromClaims(token.Claims.(jwt.MapClaims))
 			if err != nil {
 				return nil, &echojwt.TokenError{Token: token, Err: errors.New("invalid sessionID")}
 			}
-			_, ok := SessionBlacklist[sessionID]
-			if ok {
+			status, err := db.QuerySessionBlacklist(sessionID)
+			if err != nil || status == true {
 				return nil, &echojwt.TokenError{Token: token, Err: errors.New("blacklisted sessionID")}
 			}
 			return token, nil
@@ -95,7 +114,7 @@ func GenerateJWTfromIDandKey(userID uuid.UUID, key []byte) (*http.Cookie, error)
 	claims := jwt.RegisteredClaims{
 		Subject:   userID.String(),
 		ID: uuid.New().String(),
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 72)),
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(tokenDuration)),
 		IssuedAt: jwt.NewNumericDate(time.Now()),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -148,21 +167,6 @@ func GetSessionIDFromClaims(claims map[string]interface{}) (uuid.UUID, error) {
 	default:
 		return uuid.Nil, errors.New("invalid userID")
 	}
-}
-
-func AddSessionToBlacklist(c echo.Context) error {
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
-	sess, err := GetSessionIDFromClaims(claims)
-	if err != nil {
-		return err
-	}
-	expiration, err := GetExpirationFromToken(user)
-	if err != nil {
-		return err
-	}
-	SessionBlacklist[sess] = expiration
-	return nil
 }
 
 func GetExpirationFromToken(token *jwt.Token) (*time.Time, error) {

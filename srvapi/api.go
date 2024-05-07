@@ -11,7 +11,7 @@ import (
 )
 
 
-func SetupAPIroutes(e *echo.Group, dbpath string) error {
+func SetupAPIroutes(e *echo.Group) error {
 
 	mainPage := func(c echo.Context) error {
 		pd, err := foodlib.GetPageData(c)
@@ -73,7 +73,7 @@ func SetupAPIroutes(e *echo.Group, dbpath string) error {
 		return c.NoContent(http.StatusOK)
 	})
 
-	err := SetupModalAPIroutes(e, dbpath)
+	err := SetupModalAPIroutes(e)
 	if err != nil {
 		echo.NewHTTPError(
 			http.StatusTeapot,

@@ -12,7 +12,7 @@ import (
 )
 
 
-func SetupModalAPIroutes(e *echo.Group, dbpath string) error {
+func SetupModalAPIroutes(e *echo.Group) error {
 
 	e.POST("/api/submitItemInfo/:type/:itemID", func(c echo.Context) error {
 		pageData, err := foodlib.GetPageData(c)
@@ -31,7 +31,7 @@ func SetupModalAPIroutes(e *echo.Group, dbpath string) error {
 		c.Logger().Print(td)
 		switch tt {
 		case foodlib.Pantry:
-			db.SubmitPantryItem(c, dbpath, pageData, td, td.GetTabItem(itemID))
+			db.SubmitPantryItem(c, pageData, td, td.GetTabItem(itemID))
 		}
 		return nil
 	})

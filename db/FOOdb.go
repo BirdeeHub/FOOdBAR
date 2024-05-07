@@ -11,8 +11,8 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func SubmitPantryItem(c echo.Context, dbpath string, pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem) error {
-	db, err := CreateTabTableIfNotExists(pd.UserID, dbpath, td.Ttype)
+func SubmitPantryItem(c echo.Context, pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem) error {
+	db, err := CreateTabTableIfNotExists(pd.UserID, td.Ttype)
 	defer db.Close()
 	if err != nil {
 		return err
@@ -31,7 +31,7 @@ func SubmitPantryItem(c echo.Context, dbpath string, pd *foodlib.PageData, td *f
 	return err 
 }
 
-func CreateTabTableIfNotExists(userID uuid.UUID, dbpath string, tt foodlib.TabType) (*sql.DB, error) {
+func CreateTabTableIfNotExists(userID uuid.UUID, tt foodlib.TabType) (*sql.DB, error) {
 	var err error
 	fooDB := filepath.Join(dbpath, "FOOdBAR", "FOOdb.db")
 	fooDB, err = foodlib.CreateEmptyFileIfNotExists(fooDB)
@@ -198,8 +198,8 @@ NOTE:
 		Expanded bool   `json:"expanded"`
 	}
 */
-func FillXTabItems(userID uuid.UUID, dbpath string, tbd *foodlib.TabData, number int) error {
-	db, err := CreateTabTableIfNotExists(userID, dbpath, tbd.Ttype)
+func FillXTabItems(userID uuid.UUID, tbd *foodlib.TabData, number int) error {
+	db, err := CreateTabTableIfNotExists(userID, tbd.Ttype)
 	defer db.Close()
 	if err != nil {
 		return err

@@ -14,7 +14,7 @@ import (
 
 )
 
-func InitServer(dbpath string, signingKey []byte, listenOn string) {
+func InitServer(signingKey []byte, listenOn string) {
 	e := echo.New()
 	e.Use(middleware.Logger())
 	// e.Use(middleware.Recover())
@@ -54,7 +54,7 @@ func InitServer(dbpath string, signingKey []byte, listenOn string) {
 			c.Logger().Print(err)
 			return HTML(c, http.StatusUnprocessableEntity, loginPage.LoginPage(loginPage.LoginType, err))
 		}
-		userID, err := db.AuthUser(username, password, dbpath)
+		userID, err := db.AuthUser(username, password)
 		if err != nil {
 			WipeAuth(c)
 			c.Logger().Print(err)
@@ -88,7 +88,7 @@ func InitServer(dbpath string, signingKey []byte, listenOn string) {
 			c.Logger().Print(err)
 			return HTML(c, http.StatusUnprocessableEntity, loginPage.LoginPage(loginPage.SignupType, err))
 		}
-		userID, err := db.CreateUser(username, password, dbpath)
+		userID, err := db.CreateUser(username, password)
 		if err != nil {
 			WipeAuth(c)
 			c.Logger().Print(err)
@@ -119,7 +119,7 @@ func InitServer(dbpath string, signingKey []byte, listenOn string) {
 	// 	return cssmiddleware
 	// }))
 
-	err := SetupAPIroutes(r, dbpath)
+	err := SetupAPIroutes(r)
 	if err != nil {
 		e.Logger.Print(err)
 		echo.NewHTTPError(

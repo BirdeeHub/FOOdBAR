@@ -6,6 +6,7 @@ import (
 	"errors"
 	"path/filepath"
 	"strings"
+	"time"
 
 	foodlib "FOOdBAR/FOOlib"
 
@@ -13,7 +14,111 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func AuthUser(username string, password string, dbpath string) (uuid.UUID, error) {
+func CleanSessionBlacklist() error {
+	authDB := filepath.Join(dbpath, "FOOdBAR", "auth.db")
+	authdbpath, err := foodlib.CreateEmptyFileIfNotExists(authDB)
+	if err != nil {
+		return err
+	}
+	db, err := sql.Open("sqlite3", authdbpath)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS session_blacklist_table (
+						sessionID TEXT PRIMARY KEY,
+						expires_at DATETIME
+					)`)
+	if err != nil {
+		return err
+	}
+	_, err = db.Exec("DELETE FROM session_blacklist_table WHERE expires_at < DATETIME('now')")
+	return err
+}
+
+func AddToSessionBlacklist(sessionID uuid.UUID, expiration time.Time) error {
+	authDB := filepath.Join(dbpath, "FOOdBAR", "auth.db")
+	authdbpath, err := foodlib.CreateEmptyFileIfNotExists(authDB)
+	if err != nil {
+		return err
+	}
+	db, err := sql.Open("sqlite3", authdbpath)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS session_blacklist_table (
+						sessionID TEXT PRIMARY KEY,
+						expires_at DATETIME
+					)`)
+	if err != nil {
+		return err
+	}
+
+	expirationDATETIME := expiration.Format("2006-01-02 15:04:05")
+
+	_, err = db.Exec("INSERT INTO session_blacklist_table (sessionID, expires_at) VALUES (?, ?)", sessionID.String(), expirationDATETIME)
+	if err != nil {
+		// If the session is already in the blacklist, then I guess it worked...
+		if strings.Contains(err.Error(), "UNIQUE constraint failed") {
+			return nil
+		}
+	}
+	return nil
+}
+
+func QuerySessionBlacklist(sessionID uuid.UUID) (bool, error) {
+	authDB := filepath.Join(dbpath, "FOOdBAR", "auth.db")
+	authdbpath, err := foodlib.CreateEmptyFileIfNotExists(authDB)
+	if err != nil {
+		return false, err
+	}
+	db, err := sql.Open("sqlite3", authdbpath)
+	if err != nil {
+		return false, err
+	}
+	defer db.Close()
+
+	// prepare statement (for input sanitization)
+	stmt, err := db.Prepare("SELECT expires_at FROM session_blacklist_table WHERE sessionID = ?")
+	if err != nil {
+		return false, err
+	}
+	defer stmt.Close()
+
+	rows, err := stmt.Query(sessionID.String())
+	if err != nil {
+		return false, err
+	}
+	defer rows.Close()
+
+	var expiresAt string
+	err = rows.Scan(&expiresAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return false, nil
+		}
+		return false, err
+	}
+	expiration, err := time.Parse("2006-01-02 15:04:05", expiresAt)
+	if err != nil {
+		return false, nil
+	}
+
+	if expiration.Before(time.Now()) {
+		_, err = db.Exec("DELETE FROM session_blacklist_table WHERE sessionID = ?", sessionID.String())
+		if err != nil {
+			return false, err
+		}
+		return false, nil
+	}
+
+	return true, nil
+
+}
+
+func AuthUser(username string, password string) (uuid.UUID, error) {
 	authDB := filepath.Join(dbpath, "FOOdBAR", "auth.db")
 	authdbpath, err := foodlib.CreateEmptyFileIfNotExists(authDB)
 	if err != nil {
@@ -68,7 +173,7 @@ func AuthUser(username string, password string, dbpath string) (uuid.UUID, error
 	return userID, nil
 }
 
-func CreateUser(username string, password string, dbpath string) (uuid.UUID, error) {
+func CreateUser(username string, password string) (uuid.UUID, error) {
 	authDB := filepath.Join(dbpath, "FOOdBAR", "auth.db")
 	authdbpath, err := foodlib.CreateEmptyFileIfNotExists(authDB)
 	if err != nil {
