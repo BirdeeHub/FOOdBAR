@@ -17,14 +17,14 @@ const PagePrefix = "/FOOdBAR"
 type SortMethod string
 
 const (
-	Inactive              SortMethod = ""
-	CreatedDescending                = "created_at DESC;"
-	CreatedAscending                 = "created_at ASC;"
-	RecencyDescending                = "last_modified DESC;"
-	RecencyAscending                 = "last_modified ASC;"
-	NameDescending                   = "name DESC;"
-	NameAscending                    = "name ASC;"
-	NameRandom                       = "name RANDOM();"
+	Inactive          SortMethod = ""
+	CreatedDescending            = "created_at DESC;"
+	CreatedAscending             = "created_at ASC;"
+	RecencyDescending            = "last_modified DESC;"
+	RecencyAscending             = "last_modified ASC;"
+	NameDescending               = "name DESC;"
+	NameAscending                = "name ASC;"
+	NameRandom                   = "name RANDOM();"
 	// These are incorrect, the values are stored as json lists, not just single value strings
 	// DietaryDescending                = "dietary DESC;"
 	// DietaryAscending                 = "dietary ASC;"
@@ -113,9 +113,10 @@ type TabButtonData struct {
 }
 
 type PageData struct {
-	UserID   uuid.UUID   `json:"user_id"`
-	TabDatas []*TabData  `json:"tab_datas"`
-	Palette  ColorScheme `json:"palette"`
+	UserID    uuid.UUID   `json:"user_id"`
+	SessionID uuid.UUID   `json:"session_id"`
+	TabDatas  []*TabData  `json:"tab_datas"`
+	Palette   ColorScheme `json:"palette"`
 }
 
 type TabData struct {
@@ -209,11 +210,12 @@ func (pgd *PageData) GetTabDataByType(tt TabType) *TabData {
 	return td
 }
 
-func InitPageData(userID uuid.UUID) *PageData {
+func InitPageData(userID uuid.UUID, sessionID uuid.UUID) *PageData {
 	pd := &PageData{
-		UserID:   userID,
-		Palette:  None,
-		TabDatas: []*TabData{},
+		SessionID: sessionID,
+		UserID:    userID,
+		Palette:   None,
+		TabDatas:  []*TabData{},
 	}
 	return pd
 }
@@ -237,25 +239,34 @@ func GetPageData(c echo.Context) (*PageData, error) {
 	claims := user.Claims.(jwt.MapClaims)
 	switch stringID := claims["sub"].(type) {
 	case string:
-		userID, err := uuid.Parse(stringID)
-		if err != nil {
-			return nil, err
-		}
-		pdcookie, err := c.Cookie(userID.String())
-		if err != nil {
-			pd := InitPageData(userID)
+		switch sessionID := claims["jti"].(type) {
+		case string:
+			SID, err := uuid.Parse(sessionID)
+			if err != nil {
+				return nil, err
+			}
+			userID, err := uuid.Parse(stringID)
+			if err != nil {
+				return nil, err
+			}
+			pdcookie, err := c.Cookie(userID.String())
+			if err != nil {
+				pd := InitPageData(userID, SID)
+				return pd, nil
+			}
+			pd := &PageData{}
+			pdmarshalled, err := base64.StdEncoding.DecodeString(pdcookie.Value)
+			if err != nil {
+				return nil, err
+			}
+			err = json.Unmarshal(pdmarshalled, pd)
+			if err != nil {
+				return nil, err
+			}
 			return pd, nil
+		default:
+			return nil, errors.New("invalid sessionID")
 		}
-		pd := &PageData{}
-		pdmarshalled, err := base64.StdEncoding.DecodeString(pdcookie.Value)
-		if err != nil {
-			return nil, err
-		}
-		err = json.Unmarshal(pdmarshalled, pd)
-		if err != nil {
-			return nil, err
-		}
-		return pd, nil
 	default:
 		return nil, errors.New("invalid user id")
 	}
@@ -360,13 +371,15 @@ func (tbd *TabData) UnmarshalJSON(data []byte) error {
 
 func (pd *PageData) MarshalJSON() ([]byte, error) {
 	configpre := struct {
-		UserID   string     `json:"user_id"`
-		TabDatas []*TabData `json:"tab_datas"`
-		Palette  string     `json:"palette"`
+		SessionID string     `json:"session_id"`
+		UserID    string     `json:"user_id"`
+		TabDatas  []*TabData `json:"tab_datas"`
+		Palette   string     `json:"palette"`
 	}{
-		UserID:   pd.UserID.String(),
-		TabDatas: pd.TabDatas,
-		Palette:  string(pd.Palette),
+		SessionID: pd.SessionID.String(),
+		UserID:    pd.UserID.String(),
+		TabDatas:  pd.TabDatas,
+		Palette:   string(pd.Palette),
 	}
 	marshalled, err := json.Marshal(configpre)
 	return marshalled, err
@@ -374,15 +387,20 @@ func (pd *PageData) MarshalJSON() ([]byte, error) {
 
 func (pd *PageData) UnmarshalJSON(data []byte) error {
 	var irJson struct {
-		UserID   string     `json:"user_id"`
-		TabDatas []*TabData `json:"tab_datas"`
-		Palette  string     `json:"palette"`
+		SessionID string     `json:"session_id"`
+		UserID    string     `json:"user_id"`
+		TabDatas  []*TabData `json:"tab_datas"`
+		Palette   string     `json:"palette"`
 	}
 	err := json.Unmarshal(data, &irJson)
 	if err != nil {
 		return err
 	}
 	pd.TabDatas = irJson.TabDatas
+	pd.SessionID, err = uuid.Parse(irJson.SessionID)
+	if err != nil {
+		return err
+	}
 	pd.UserID, err = uuid.Parse(irJson.UserID)
 	if err != nil {
 		return err
