@@ -351,9 +351,6 @@ So this allows you to create a single trigger that audits all changes to a table
 
 > can I do lists in sql as a value in a table?
 > 
-> ```go
-> 				ingredients TEXT,
-> ```
 
 Yes, you can store lists or arrays as a value in a SQL table column. Here are a few ways to do it in SQLite:
 
@@ -467,3 +464,24 @@ WHERE JSON_EXTRACT(ingredients, '$[0]') = 'eggs'
 ```
 
 So in summary, use the SQLite JSON functions like JSON_ARRAY_LENGTH, JSON_EXTRACT and JSON_TYPE to query and sort by values within JSON columns.
+
+
+
+
+
+
+```go
+// render all items in a list with a component
+// lmao I coulda just done a for loop. Saving this here in case I want to reference it.
+ func RenderListWithComponent[T interface{}](list []T, component func(T) templ.Component) templ.Component {
+ 	return templ.ComponentFunc(func(ctx context.Context, w io.Writer) error {
+ 		for _, item := range list {
+ 			err := component(item).Render(ctx, w)
+ 			if err != nil {
+ 				return err
+ 			}
+ 		}
+ 		return nil
+ 	})
+ }
+```
