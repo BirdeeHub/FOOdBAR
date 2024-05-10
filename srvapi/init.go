@@ -58,6 +58,7 @@ func InitServer(signingKey []byte, listenOn string) {
 			if time.Since(lockouts[c.RealIP()].Last) > 10*time.Minute {
 				lockouts[c.RealIP()] = nil
 			} else if lockouts[c.RealIP()].Num > 9 {
+				lockouts[c.RealIP()].Last = time.Now()
 				return HTML(c, http.StatusNotAcceptable, loginPage.LoginPage(loginPage.LoginType, errors.New("Too many failed login attempts, please try again later")))
 			}
 		}
