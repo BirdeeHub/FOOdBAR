@@ -129,6 +129,7 @@ type TabItem struct {
 	ItemID uuid.UUID `json:"item_id"`
 	Ttype  TabType   `json:"tab_type"`
 
+	Selected bool `json:"selected"`
 	Expanded bool `json:"expanded"`
 }
 
@@ -291,11 +292,13 @@ func (ti *TabItem) MarshalJSON() ([]byte, error) {
 	configpre := struct {
 		ItemID   string `json:"item_id"`
 		Ttype    string `json:"tab_type"`
+		Selected bool `json:"selected"`
 		Expanded bool   `json:"expanded"`
 	}{
 		ItemID:   ti.ItemID.String(),
 		Ttype:    ti.Ttype.String(),
 		Expanded: ti.Expanded,
+		Selected: ti.Selected,
 	}
 	marshalled, err := json.Marshal(configpre)
 	return marshalled, err
@@ -305,6 +308,7 @@ func (ti *TabItem) UnmarshalJSON(data []byte) error {
 	var irJson struct {
 		ItemID   string `json:"item_id"`
 		Ttype    string `json:"tab_type"`
+		Selected bool `json:"selected"`
 		Expanded bool   `json:"expanded"`
 	}
 	err := json.Unmarshal(data, &irJson)
@@ -312,6 +316,7 @@ func (ti *TabItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	ti.Expanded = irJson.Expanded
+	ti.Selected = irJson.Selected
 	ti.Ttype = String2TabType(irJson.Ttype)
 	ti.ItemID, err = uuid.Parse(irJson.ItemID)
 	if err != nil {
