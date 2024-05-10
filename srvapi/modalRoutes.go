@@ -11,7 +11,6 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-
 func SetupModalAPIroutes(e *echo.Group) error {
 
 	e.POST("/api/submitItemInfo/:type/:itemID", func(c echo.Context) error {
