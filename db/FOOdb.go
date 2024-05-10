@@ -11,7 +11,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-//TODO: This function
+//TODO: This function (should be applicable for both submit AND update, retaining old values for empty fields)
 func SubmitPantryItem(c echo.Context, pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem) error {
 	db, err := CreateTabTableIfNotExists(pd.UserID, td.Ttype)
 	defer db.Close()
