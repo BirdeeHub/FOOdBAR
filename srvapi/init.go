@@ -54,10 +54,12 @@ func InitServer(signingKey []byte, listenOn string) {
 
 	// TODO: implement timeout
 	e.POST(fmt.Sprintf("%s/submitlogin", foodlib.PagePrefix), func(c echo.Context) error {
-		if time.Since(lockouts[c.RealIP()].Last) > 10*time.Minute {
-			lockouts[c.RealIP()] = nil
-		} else if lockouts[c.RealIP()].Num > 9 {
-			return HTML(c, http.StatusNotAcceptable, loginPage.LoginPage(loginPage.LoginType, errors.New("Too many failed login attempts, please try again later")))
+		if lockouts[c.RealIP()] != nil {
+			if time.Since(lockouts[c.RealIP()].Last) > 10*time.Minute {
+				lockouts[c.RealIP()] = nil
+			} else if lockouts[c.RealIP()].Num > 9 {
+				return HTML(c, http.StatusNotAcceptable, loginPage.LoginPage(loginPage.LoginType, errors.New("Too many failed login attempts, please try again later")))
+			}
 		}
 		username := c.FormValue("username")
 		password := c.FormValue("password")
