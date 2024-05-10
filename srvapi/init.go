@@ -4,21 +4,12 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"time"
 
 	foodlib "FOOdBAR/FOOlib"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
-
-var lockouts = make(map[string]*lockoutEntry)
-
-type lockoutEntry struct {
-	Num int
-	Last time.Time
-	IP string
-}
 
 func InitServer(signingKey []byte, listenOn string) {
 	e := echo.New()

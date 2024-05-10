@@ -13,6 +13,13 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+var lockouts = make(map[string]*lockoutEntry)
+
+type lockoutEntry struct {
+	Num int
+	Last time.Time
+	IP string
+}
 
 func SetupLoginRoutes(e *echo.Echo, signingKey []byte) error {
 	e.GET(fmt.Sprintf("%s/login", foodlib.PagePrefix), func(c echo.Context) error {
