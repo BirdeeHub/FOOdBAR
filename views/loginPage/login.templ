@@ -124,7 +124,7 @@ templ LoginForm(formtype LoginFormType, e error) {
 	}
 }
 
-css hidden() {
+css beepboop() {
 	position: absolute;
 	left: -9999px;
 	width: 1px;
@@ -139,7 +139,7 @@ templ LoginFormContents(formtype LoginFormType, e error) {
 			<input class="text-black" value="" type="text" name="username"/>
 			Password:
 			<input class="text-black" value="" type="password" name="password"/>
-			<input class={ hidden() } value="" type="text" name="beepboop"/>
+			<input class={ beepboop() } value="" type="text" name="beepboop"/>
 			if e != nil {
 				{ e.Error() }
 			}
@@ -151,7 +151,7 @@ templ LoginFormContents(formtype LoginFormType, e error) {
 			<input class="text-black" value="" type="password" name="password"/>
 			Confirm password:
 			<input class="text-black" value="" type="password" name="confirmpassword"/>
-			<input class={ hidden() } value="" type="text" name="beepboop"/>
+			<input class={ beepboop() } value="" type="text" name="beepboop"/>
 			if e != nil {
 				{ e.Error() }
 			}

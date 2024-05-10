@@ -29,9 +29,29 @@ func SetupModalAPIroutes(e *echo.Group) error {
 		}
 		td := pageData.GetTabDataByType(tt)
 		c.Logger().Print(td)
+		ti := td.GetTabItem(itemID)
+		c.Logger().Print(ti)
 		switch tt {
+		case foodlib.Recipe:
+			err = db.SubmitPantryItem(c, pageData, td, ti)
 		case foodlib.Pantry:
-			db.SubmitPantryItem(c, pageData, td, td.GetTabItem(itemID))
+			err = db.SubmitPantryItem(c, pageData, td, ti)
+		case foodlib.Menu:
+			err = db.SubmitPantryItem(c, pageData, td, ti)
+		case foodlib.Preplist:
+			err = db.SubmitPantryItem(c, pageData, td, ti)
+		case foodlib.Shopping:
+			err = db.SubmitPantryItem(c, pageData, td, ti)
+		case foodlib.Events:
+			err = db.SubmitPantryItem(c, pageData, td, ti)
+		case foodlib.Customer:
+			err = db.SubmitPantryItem(c, pageData, td, ti)
+		case foodlib.Earnings:
+			err = db.SubmitPantryItem(c, pageData, td, ti)
+		}
+		c.Logger().Print(err)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusUnprocessableEntity, errors.New("failed to submit item"))
 		}
 		return nil
 	})
