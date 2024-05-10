@@ -35,7 +35,7 @@ templ RenderEarningsTab(td *foodlib.TabData) {
 	</div>
 }
 
-templ ModalEarningsContent(item *foodlib.TabItem) {
+templ ModalEarningsContent(item *foodlib.TabItem, e error) {
 	if item != nil {
 		<div style="display: flex; flex-direction: column; flex: 0 1;">
 			Hello from { item.Ttype.String() }

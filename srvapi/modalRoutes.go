@@ -77,7 +77,7 @@ func SetupModalAPIroutes(e *echo.Group) error {
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, errors.New("Item with that ID not found in this tab"))
 		}
-		return HTML(c, http.StatusOK, tabviews.ItemEditModal(tabviews.RenderModalContent(item)))
+		return HTML(c, http.StatusOK, tabviews.ItemEditModal(tabviews.RenderModalContent(item, nil)))
 	})
 
 	e.GET("/api/itemCreateModal/open/:type", func(c echo.Context) error {
@@ -91,7 +91,7 @@ func SetupModalAPIroutes(e *echo.Group) error {
 		}
 		td := pageData.GetTabDataByType(tt)
 		item := td.AddTabItem(&foodlib.TabItem{Expanded: false})
-		return HTML(c, http.StatusOK, tabviews.ItemEditModal(tabviews.RenderModalContent(item)))
+		return HTML(c, http.StatusOK, tabviews.ItemEditModal(tabviews.RenderModalContent(item, nil)))
 	})
 
 	return nil

@@ -35,7 +35,7 @@ templ RenderPantryTab(td *foodlib.TabData) {
 	</div>
 }
 
-templ ModalPantryContent(item *foodlib.TabItem) {
+templ ModalPantryContent(item *foodlib.TabItem, e error) {
 	if item != nil {
 		<div style="display: flex; flex-direction: column; flex: 0 1;">
 			Hello from { item.Ttype.String() }

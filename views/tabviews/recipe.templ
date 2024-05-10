@@ -35,7 +35,7 @@ templ RenderRecipeTab(td *foodlib.TabData) {
 	</div>
 }
 
-templ ModalRecipeContent(item *foodlib.TabItem) {
+templ ModalRecipeContent(item *foodlib.TabItem, e error) {
 	if item != nil {
 		<div style="display: flex; flex-direction: column; flex: 0 1;">
 			Hello from { item.Ttype.String() }

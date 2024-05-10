@@ -35,7 +35,7 @@ templ RenderShoppingTab(td *foodlib.TabData) {
 	</div>
 }
 
-templ ModalShoppingContent(item *foodlib.TabItem) {
+templ ModalShoppingContent(item *foodlib.TabItem, e error) {
 	if item != nil {
 		<div style="display: flex; flex-direction: column; flex: 0 1;">
 			Hello from { item.Ttype.String() }
