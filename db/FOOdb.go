@@ -153,7 +153,7 @@ func CreateTabTableIfNotExists(userID uuid.UUID, tt foodlib.TabType) (*sql.DB, e
 func makeAuditTriggers(db *sql.DB, userID uuid.UUID, tt foodlib.TabType) error {
 
 	updateTrigger := `CREATE TRIGGER IF NOT EXISTS update_?_?_audit 
-		AFTER INSERT OR UPDATE OR DELETE ON ?_?
+		INSERT OR UPDATE OR DELETE ON ?_?
 		FOR EACH ROW
 		BEGIN
 			UPDATE ?_?
@@ -162,7 +162,7 @@ func makeAuditTriggers(db *sql.DB, userID uuid.UUID, tt foodlib.TabType) error {
 		END;`
 
 	insertTrigger := `CREATE TRIGGER IF NOT EXISTS add_created_?_?_audit
-		AFTER INSERT ON ?_?
+		INSERT ON ?_?
 		FOR EACH ROW  
 		BEGIN
 			UPDATE ?_?
