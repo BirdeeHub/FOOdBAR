@@ -96,8 +96,12 @@ func GetJWTmiddlewareWithConfig(signingKey []byte) echo.MiddlewareFunc {
 			if !token.Valid {
 				return nil, &echojwt.TokenError{Token: token, Err: errors.New("invalid token")}
 			}
-			if _, err := GetIPfromClaims(token.Claims.(jwt.MapClaims)); err != nil {
-				return nil, &echojwt.TokenError{Token: token, Err: errors.New("You changed IP!")}
+			ip, err := GetIPfromClaims(token.Claims.(jwt.MapClaims))
+			if err != nil {
+				return nil, &echojwt.TokenError{Token: token, Err: errors.New("invalid ip field")}
+			}
+			if ip != c.RealIP() {
+				return nil, &echojwt.TokenError{Token: token, Err: errors.New("You changed IP! Please log in again.")}
 			}
 			if _, err := GetExpirationFromToken(token); err != nil {
 				return nil, &echojwt.TokenError{Token: token, Err: errors.New("invalid token")}
