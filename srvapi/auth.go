@@ -74,7 +74,7 @@ func GetJWTmiddlewareWithConfig(signingKey []byte) echo.MiddlewareFunc {
 				return
 			}
 			if time.Until(expirationtime.Time) < time.Hour {
-				cookie, err := GenerateJWTfromIDandKey(userID, signingKey)
+				cookie, err := GenerateJWTfromIDandKey(userID, signingKey, c.RealIP())
 				if err != nil {
 					WipeAuth(c)
 					c.Logger().Print(err)
@@ -96,6 +96,9 @@ func GetJWTmiddlewareWithConfig(signingKey []byte) echo.MiddlewareFunc {
 			if !token.Valid {
 				return nil, &echojwt.TokenError{Token: token, Err: errors.New("invalid token")}
 			}
+			if _, err := GetIPfromClaims(token.Claims.(jwt.MapClaims)); err != nil {
+				return nil, &echojwt.TokenError{Token: token, Err: errors.New("You changed IP!")}
+			}
 			if _, err := GetExpirationFromToken(token); err != nil {
 				return nil, &echojwt.TokenError{Token: token, Err: errors.New("invalid token")}
 			}
@@ -112,12 +115,20 @@ func GetJWTmiddlewareWithConfig(signingKey []byte) echo.MiddlewareFunc {
 	})
 }
 
-func GenerateJWTfromIDandKey(userID uuid.UUID, key []byte) (*http.Cookie, error) {
-	claims := jwt.RegisteredClaims{
-		Subject:   userID.String(),
-		ID: uuid.New().String(),
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(tokenDuration)),
-		IssuedAt: jwt.NewNumericDate(time.Now()),
+type jwtCustomClaims struct {
+	IP string   `json:"ip"`
+	jwt.RegisteredClaims
+}
+
+func GenerateJWTfromIDandKey(userID uuid.UUID, key []byte, ip string) (*http.Cookie, error) {
+	claims := jwtCustomClaims{
+		ip,
+		jwt.RegisteredClaims{
+			Subject:   userID.String(),
+			ID: uuid.New().String(),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(tokenDuration)),
+			IssuedAt: jwt.NewNumericDate(time.Now()),
+		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	t, err := token.SignedString(key)
@@ -151,6 +162,15 @@ func GetClaimsFromContext(c echo.Context) map[string]interface{} {
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
 	return claims
+}
+
+func GetIPfromClaims(claims map[string]interface{}) (string, error) {
+	switch ip := claims["ip"].(type) {
+	case string:
+		return ip, nil
+	default:
+		return "", errors.New("invalid userID")
+	}
 }
 
 func GetUserFromClaims(claims map[string]interface{}) (uuid.UUID, error) {

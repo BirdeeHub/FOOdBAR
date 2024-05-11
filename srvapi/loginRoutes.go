@@ -75,7 +75,7 @@ func SetupLoginRoutes(e *echo.Echo, signingKey []byte) error {
 			}
 			return HTML(c, http.StatusNotAcceptable, loginPage.LoginPage(loginPage.LoginType, err))
 		}
-		cookie, err := GenerateJWTfromIDandKey(userID, signingKey)
+		cookie, err := GenerateJWTfromIDandKey(userID, signingKey, c.RealIP())
 		if err != nil {
 			WipeAuth(c)
 			c.Logger().Print(err)
@@ -115,7 +115,7 @@ func SetupLoginRoutes(e *echo.Echo, signingKey []byte) error {
 			c.Logger().Print(err)
 			return HTML(c, http.StatusUnprocessableEntity, loginPage.LoginPage(loginPage.SignupType, err))
 		}
-		cookie, err := GenerateJWTfromIDandKey(userID, signingKey)
+		cookie, err := GenerateJWTfromIDandKey(userID, signingKey, c.RealIP())
 		if err != nil {
 			WipeAuth(c)
 			c.Logger().Print(err)
