@@ -14,7 +14,7 @@ import (
 
 //TODO: This function (should be applicable for both submit AND update, retaining old values for empty fields)
 func SubmitPantryItem(c echo.Context, pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem) error {
-	db, err := CreateTabTableIfNotExists(pd.UserID, td.Ttype)
+	db, err := CreateTabTableIfNotExists(td.Ttype)
 	defer db.Close()
 	if err != nil {
 		return err
@@ -33,7 +33,7 @@ func SubmitPantryItem(c echo.Context, pd *foodlib.PageData, td *foodlib.TabData,
 	return err 
 }
 
-func CreateTabTableIfNotExists(userID uuid.UUID, tt foodlib.TabType) (*sql.DB, error) {
+func CreateTabTableIfNotExists(tt foodlib.TabType) (*sql.DB, error) {
 	var err error
 	fooDB := filepath.Join(dbpath, "FOOdBAR", "FOOdb.db")
 	fooDB, err = foodlib.CreateEmptyFileIfNotExists(fooDB)
@@ -152,7 +152,6 @@ func CreateTabTableIfNotExists(userID uuid.UUID, tt foodlib.TabType) (*sql.DB, e
 	}
 	err = makeAuditTriggers(db, tt)
 	if err != nil {
-		fmt.Printf("error: %s path: %s command: %s\n", err.Error(), fooDB, fmt.Sprintf(createTable, tt.String()))
 		return nil, err
 	}
 	return db, nil
@@ -160,62 +159,34 @@ func CreateTabTableIfNotExists(userID uuid.UUID, tt foodlib.TabType) (*sql.DB, e
 
 func makeAuditTriggers(db *sql.DB, tt foodlib.TabType) error {
 
-	updateTrigger := `CREATE TRIGGER IF NOT EXISTS update_%s_audit 
-		DELETE ON %s
-		FOR EACH ROW
-		BEGIN
-			UPDATE %s
-			SET last_modified = CURRENT_TIMESTAMP
-			WHERE id = NEW.id;
-		END;
-		CREATE TRIGGER IF NOT EXISTS update_%s_audit 
-		UPDATE ON %s
-		FOR EACH ROW
-		BEGIN
-			UPDATE %s
-			SET last_modified = CURRENT_TIMESTAMP
-			WHERE id = NEW.id;
-		END;
-		CREATE TRIGGER IF NOT EXISTS update_%s_audit 
-		INSERT ON %s
-		FOR EACH ROW
-		BEGIN
-			UPDATE %s
-			SET last_modified = CURRENT_TIMESTAMP
-			WHERE id = NEW.id;
-		END;`
-
-	insertTrigger := `CREATE TRIGGER IF NOT EXISTS add_created_%s_audit
-		INSERT ON %s
-		FOR EACH ROW  
-		BEGIN
-			UPDATE %s
-			SET created_at = CURRENT_TIMESTAMP
-			WHERE id = NEW.id;
-		END;`
+	createTrigger := func(name string, method string, field string, old string, tt foodlib.TabType) string {
+		trigger := `CREATE TRIGGER IF NOT EXISTS %s_%s_audit
+			%s ON %s
+			FOR EACH ROW  
+			BEGIN
+				UPDATE %s
+				SET %s = CURRENT_TIMESTAMP
+				WHERE id = %s.id;
+			END;`
+		out := fmt.Sprintf(trigger, name, tt.String(), method, tt.String(), tt.String(), field, old)
+		fmt.Println(out)
+		return out
+	}
 
 	var err error = nil
-	_, err = db.Exec(fmt.Sprintf(
-		updateTrigger,
-		tt.String(),
-		tt.String(),
-		tt.String(),
-		tt.String(),
-		tt.String(),
-		tt.String(),
-		tt.String(),
-		tt.String(),
-		tt.String(),
-	))
+	_, err = db.Exec(createTrigger("add_created", "AFTER INSERT", "created_at", "NEW", tt))
 	if err != nil {
 		return err
 	}
-	_, err = db.Exec(fmt.Sprintf(
-		insertTrigger,
-		tt.String(),
-		tt.String(),
-		tt.String(),
-	))
+	_, err = db.Exec(createTrigger("update_modified_insert", "AFTER INSERT", "last_modified", "NEW", tt))
+	if err != nil {
+		return err
+	}
+	_, err = db.Exec(createTrigger("update_modified_update", "AFTER UPDATE", "last_modified", "OLD", tt))
+	if err != nil {
+		return err
+	}
+	_, err = db.Exec(createTrigger("update_modified_delete", "AFTER DELETE", "last_modified", "OLD", tt))
 	return err
 }
 
@@ -228,7 +199,7 @@ NOTE:
 	}
 */
 func FillXTabItems(userID uuid.UUID, tbd *foodlib.TabData, number int) error {
-	db, err := CreateTabTableIfNotExists(userID, tbd.Ttype)
+	db, err := CreateTabTableIfNotExists(tbd.Ttype)
 	defer db.Close()
 	if err != nil {
 		return err
