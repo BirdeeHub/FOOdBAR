@@ -4,6 +4,7 @@ import (
 	foodlib "FOOdBAR/FOOlib"
 	"database/sql"
 	"errors"
+	"fmt"
 	"path/filepath"
 
 	"github.com/google/uuid"
@@ -22,13 +23,13 @@ func SubmitPantryItem(c echo.Context, pd *foodlib.PageData, td *foodlib.TabData,
 	dietary := c.FormValue("itemDietary")
 	amount := c.FormValue("itemAmount")
 	units := c.FormValue("itemUnits")
-	insertStmt, err := db.Prepare(`INSERT INTO ?_? (id, last_author, name, dietary, amount, units) VALUES (?, ?, ?, ?, ?, ?)`)
+	insertStmt, err := db.Prepare(fmt.Sprintf(`INSERT INTO %s (id, userid, last_author, name, dietary, amount, units) VALUES (?, ?, ?, ?, ?, ?, ?)`, item.Ttype.String()))
 	if err != nil {
 		return err
 	}
 	defer insertStmt.Close()
 
-	_, err = insertStmt.Exec(pd.UserID, td.Ttype.String(), item.ItemID.String(), pd.UserID, name, dietary, amount, units)
+	_, err = insertStmt.Exec(item.ItemID.String(), pd.UserID, pd.UserID, name, dietary, amount, units)
 	return err 
 }
 
@@ -39,13 +40,17 @@ func CreateTabTableIfNotExists(userID uuid.UUID, tt foodlib.TabType) (*sql.DB, e
 	if err != nil {
 		return nil, err
 	}
-	db, err := sql.Open("sqlite3", dbpath)
+	db, err := sql.Open("sqlite3", fooDB)
+	if err != nil {
+		return nil, err
+	}
 
 	var createTable string
 	switch tt {
 	case foodlib.Recipe:
-		createTable = `CREATE TABLE IF NOT EXISTS ?_? (
+		createTable = `CREATE TABLE IF NOT EXISTS %s (
 				id TEXT PRIMARY KEY,
+				userid TEXT,
 				created_at TEXT,
 				last_modified TEXT,
 				last_author TEXT,
@@ -53,43 +58,47 @@ func CreateTabTableIfNotExists(userID uuid.UUID, tt foodlib.TabType) (*sql.DB, e
 				category TEXT,
 				dietary TEXT,
 				ingredients TEXT,
-				instructions TEXT,
+				instructions TEXT
 				)`
 	case foodlib.Menu:
-		createTable = `CREATE TABLE IF NOT EXISTS ?_? (
+		createTable = `CREATE TABLE IF NOT EXISTS %s (
 				id TEXT PRIMARY KEY,
+				userid TEXT,
 				created_at TEXT,
 				last_modified TEXT,
 				last_author TEXT,
 				menu_id TEXT,
 				name TEXT,
-				number INTEGER,
+				number INTEGER
 				)`
 	case foodlib.Pantry:
-		createTable = `CREATE TABLE IF NOT EXISTS ?_? (
+		createTable = `CREATE TABLE IF NOT EXISTS %s (
 				id TEXT PRIMARY KEY,
+				userid TEXT,
 				created_at TEXT,
 				last_modified TEXT,
 				last_author TEXT,
 				name TEXT UNIQUE,
 				dietary TEXT,
 				amount TEXT,
-				units TEXT,
+				units TEXT
 				)`
 	case foodlib.Customer:
-		createTable = `CREATE TABLE IF NOT EXISTS ?_? (
+		createTable = `CREATE TABLE IF NOT EXISTS %s (
 				id TEXT PRIMARY KEY,
+				userid TEXT,
 				created_at TEXT,
 				last_modified TEXT,
 				last_author TEXT,
 				email TEXT UNIQUE,
 				phone TEXT UNIQUE,
 				name TEXT,
-				dietary TEXT,
+				dietary TEXT
 				)`
 	case foodlib.Events:
-		createTable = `CREATE TABLE IF NOT EXISTS ?_? (
+		createTable = `CREATE TABLE IF NOT EXISTS %s (
 				id TEXT PRIMARY KEY,
+				userid TEXT,
 				created_at TEXT,
 				last_modified TEXT,
 				last_author TEXT,
@@ -97,22 +106,24 @@ func CreateTabTableIfNotExists(userID uuid.UUID, tt foodlib.TabType) (*sql.DB, e
 				menu_id TEXT,
 				date TEXT,
 				location TEXT,
-				customer TEXT,
+				customer TEXT
 				)`
 	case foodlib.Preplist:
-		createTable = `CREATE TABLE IF NOT EXISTS ?_? (
+		createTable = `CREATE TABLE IF NOT EXISTS %s (
 				id TEXT PRIMARY KEY,
+				userid TEXT,
 				created_at TEXT,
 				last_modified TEXT,
 				last_author TEXT,
 				event_id TEXT,
 				menu_id TEXT,
 				ingredients TEXT,
-				recipes TEXT,
+				recipes TEXT
 				)`
 	case foodlib.Shopping:
-		createTable = `CREATE TABLE IF NOT EXISTS ?_? (
+		createTable = `CREATE TABLE IF NOT EXISTS %s (
 				id TEXT PRIMARY KEY,
+				userid TEXT,
 				created_at TEXT,
 				last_modified TEXT,
 				last_author TEXT,
@@ -120,74 +131,91 @@ func CreateTabTableIfNotExists(userID uuid.UUID, tt foodlib.TabType) (*sql.DB, e
 				menu_id TEXT,
 				ingredients TEXT,
 				amount TEXT,
-				units TEXT,
+				units TEXT
 				)`
 	case foodlib.Earnings:
-		createTable = `CREATE TABLE IF NOT EXISTS ?_? (
+		createTable = `CREATE TABLE IF NOT EXISTS %s (
 				id TEXT PRIMARY KEY,
+				userid TEXT,
 				created_at TEXT,
 				last_modified TEXT,
 				last_author TEXT,
 				event_id TEXT,
-				menu_id TEXT,
+				menu_id TEXT
 				)`
 	default:
 		return nil, errors.New("invalid tab type")
 	}
-	createStmt, err := db.Prepare(createTable)
+	_, err = db.Exec(fmt.Sprintf(createTable, tt.String()))
 	if err != nil {
 		return nil, err
 	}
-	defer createStmt.Close()
-	_, err = createStmt.Exec(userID, tt.String())
+	err = makeAuditTriggers(db, tt)
 	if err != nil {
-		return nil, err
-	}
-	err = makeAuditTriggers(db, userID, tt)
-	if err != nil {
+		fmt.Printf("error: %s path: %s command: %s\n", err.Error(), fooDB, fmt.Sprintf(createTable, tt.String()))
 		return nil, err
 	}
 	return db, nil
 }
 
-func makeAuditTriggers(db *sql.DB, userID uuid.UUID, tt foodlib.TabType) error {
+func makeAuditTriggers(db *sql.DB, tt foodlib.TabType) error {
 
-	updateTrigger := `CREATE TRIGGER IF NOT EXISTS update_?_?_audit 
-		INSERT OR UPDATE OR DELETE ON ?_?
+	updateTrigger := `CREATE TRIGGER IF NOT EXISTS update_%s_audit 
+		DELETE ON %s
 		FOR EACH ROW
 		BEGIN
-			UPDATE ?_?
+			UPDATE %s
 			SET last_modified = CURRENT_TIMESTAMP
-			WHERE id = OLD.id;
+			WHERE id = NEW.id;
+		END;
+		CREATE TRIGGER IF NOT EXISTS update_%s_audit 
+		UPDATE ON %s
+		FOR EACH ROW
+		BEGIN
+			UPDATE %s
+			SET last_modified = CURRENT_TIMESTAMP
+			WHERE id = NEW.id;
+		END;
+		CREATE TRIGGER IF NOT EXISTS update_%s_audit 
+		INSERT ON %s
+		FOR EACH ROW
+		BEGIN
+			UPDATE %s
+			SET last_modified = CURRENT_TIMESTAMP
+			WHERE id = NEW.id;
 		END;`
 
-	insertTrigger := `CREATE TRIGGER IF NOT EXISTS add_created_?_?_audit
-		INSERT ON ?_?
+	insertTrigger := `CREATE TRIGGER IF NOT EXISTS add_created_%s_audit
+		INSERT ON %s
 		FOR EACH ROW  
 		BEGIN
-			UPDATE ?_?
+			UPDATE %s
 			SET created_at = CURRENT_TIMESTAMP
-			WHERE id = OLD.id;
+			WHERE id = NEW.id;
 		END;`
 
-	updateStmt, err := db.Prepare(updateTrigger)
+	var err error = nil
+	_, err = db.Exec(fmt.Sprintf(
+		updateTrigger,
+		tt.String(),
+		tt.String(),
+		tt.String(),
+		tt.String(),
+		tt.String(),
+		tt.String(),
+		tt.String(),
+		tt.String(),
+		tt.String(),
+	))
 	if err != nil {
 		return err
 	}
-	defer updateStmt.Close()
-
-	_, err = updateStmt.Exec(userID, tt.String(), userID, tt.String(), userID, tt.String())
-	if err != nil {
-		return err
-	}
-
-	insertStmt, err := db.Prepare(insertTrigger)
-	if err != nil {
-		return err
-	}
-	defer insertStmt.Close()
-
-	_, err = insertStmt.Exec(userID, tt.String(), userID, tt.String(), userID, tt.String())
+	_, err = db.Exec(fmt.Sprintf(
+		insertTrigger,
+		tt.String(),
+		tt.String(),
+		tt.String(),
+	))
 	return err
 }
 
