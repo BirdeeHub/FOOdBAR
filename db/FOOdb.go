@@ -36,6 +36,11 @@ func SubmitPantryItem(c echo.Context, pd *foodlib.PageData, td *foodlib.TabData,
 	return err 
 }
 
+//TODO: This function
+func GetTabItemByUUID(c echo.Context, item foodlib.TabItem) error {
+	return errors.New("not yet implemented")
+}
+
 func CreateTabTableIfNotExists(tt foodlib.TabType) (*sql.DB, error) {
 	var err error
 	fooDB := filepath.Join(dbpath, "FOOdBAR", "FOOdb.db")

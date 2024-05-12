@@ -55,8 +55,9 @@ func SetupModalAPIroutes(e *echo.Group) error {
 		return nil
 	})
 
-	e.GET("/api/modalgetNewField/:type/:field/:index", func(c echo.Context) error {
-		return nil
+	//TODO: this route
+	e.GET("/api/modalGetNewField/:type/:field/:index", func(c echo.Context) error {
+		return echo.NewHTTPError(http.StatusNotImplemented, errors.New("Route Not Yet Implemented"))
 	})
 
 	e.GET("/api/itemEditModal/open/:type/:itemID", func(c echo.Context) error {

@@ -56,7 +56,7 @@ templ ModalPantryContent(item *foodlib.TabItem, e error) {
 							</div>
 							<div
 								hx-trigger={ "click" }
-								hx-get={ fmt.Sprintf("%s/api/modalgetNewField/%s/dietary/%s", foodlib.PagePrefix, item.Ttype.String(), "1") }
+								hx-get={ fmt.Sprintf("%s/api/modalGetNewField/%s/dietary/%s", foodlib.PagePrefix, item.Ttype.String(), "1") }
 								hx-swap="beforeend"
 								hx-target={ fmt.Sprintf("dietaryInputs_%s", item.ItemID.String()) }
 								style="cursor: pointer; height: 100%; width: 1.5rem;"
