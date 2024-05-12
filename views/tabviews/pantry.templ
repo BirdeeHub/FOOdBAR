@@ -45,16 +45,31 @@ templ ModalPantryContent(item *foodlib.TabItem, e error) {
 					hx-post={ fmt.Sprintf("%s/api/submitItemInfo/%s/%s", foodlib.PagePrefix, item.Ttype.String(), item.ItemID.String()) }
 					hx-swap="none"
 				>
-					Name:
-					<input class="text-black" value="" type="text" name="itemName"/>
-					Dietary:
-					//TODO: render list of dietary inputs, with button to add more
-					<input class="text-black" value="" type="text" name="itemDietary"/>
-					Amount:
-					<input class="text-black" value="" type="text" name="itemAmount"/>
-					Units:
-					<input class="text-black" value="" type="text" name="itemUnits"/>
-					<button action="submit" _="on click trigger closeModal">submit</button>
+					<div style="display: flex; flex-direction: column; flex: 0 0;">
+						Name:
+						<input class="text-black" value="" type="text" name="itemName"/>
+						Dietary:
+						//TODO: render list of dietary inputs, with button to add more
+						<div style="display: flex; flex-direction: row; flex: 0 1;">
+							<div id={ fmt.Sprintf("dietaryInputs_%s", item.ItemID.String()) }>
+								<input class="text-black" value="" type="text" name="itemDietary0"/>
+							</div>
+							<div
+								hx-trigger={ "click" }
+								hx-get={ fmt.Sprintf("%s/api/modalgetNewField/%s/dietary/%s", foodlib.PagePrefix, item.Ttype.String(), "0") }
+								hx-swap="beforeend"
+								hx-target={ fmt.Sprintf("dietaryInputs_%s", item.ItemID.String()) }
+								style="cursor: pointer; height: 100%; width: 1.5rem;"
+							>
+								@AddCircle()
+							</div>
+						</div>
+						Amount:
+						<input class="text-black" value="" type="text" name="itemAmount"/>
+						Units:
+						<input class="text-black" value="" type="text" name="itemUnits"/>
+						<button action="submit" _="on click trigger closeModal">submit</button>
+					</div>
 				</form>
 			</div>
 		}
