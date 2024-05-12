@@ -38,6 +38,14 @@ func SubmitPantryItem(c echo.Context, pd *foodlib.PageData, td *foodlib.TabData,
 
 //TODO: This function
 func GetTabItemDataByUUID(c echo.Context, item foodlib.TabItem) error {
+	if item.Ttype == foodlib.Invalid {
+		return errors.New("Invalid Tab Type")
+	}
+	db, err := CreateTabTableIfNotExists(item.Ttype)
+	defer db.Close()
+	if err != nil {
+		return err
+	}
 	return errors.New("not yet implemented")
 }
 
@@ -53,6 +61,7 @@ func CreateTabTableIfNotExists(tt foodlib.TabType) (*sql.DB, error) {
 		return nil, err
 	}
 
+	//TODO: completely redesign tables
 	var createTable string
 	switch tt {
 	case foodlib.Recipe:
