@@ -37,7 +37,7 @@ func SubmitPantryItem(c echo.Context, pd *foodlib.PageData, td *foodlib.TabData,
 }
 
 //TODO: This function
-func GetTabItemByUUID(c echo.Context, item foodlib.TabItem) error {
+func GetTabItemDataByUUID(c echo.Context, item foodlib.TabItem) error {
 	return errors.New("not yet implemented")
 }
 
