@@ -49,14 +49,14 @@ templ ModalPantryContent(item *foodlib.TabItem, e error) {
 						Name:
 						<input class="text-black" value="" type="text" name="itemName"/>
 						Dietary:
-						//TODO: render list of dietary inputs, with button to add more
+						//TODO: render list of current dietary inputs, with button to add more
 						<div style="display: flex; flex-direction: row; flex: 0 1;">
 							<div id={ fmt.Sprintf("dietaryInputs_%s", item.ItemID.String()) }>
-								<input class="text-black" value="" type="text" name="itemDietary0"/>
+								<input class="text-black" value="" type="text" name="itemDietary_0"/>
 							</div>
 							<div
 								hx-trigger={ "click" }
-								hx-get={ fmt.Sprintf("%s/api/modalgetNewField/%s/dietary/%s", foodlib.PagePrefix, item.Ttype.String(), "0") }
+								hx-get={ fmt.Sprintf("%s/api/modalgetNewField/%s/dietary/%s", foodlib.PagePrefix, item.Ttype.String(), "1") }
 								hx-swap="beforeend"
 								hx-target={ fmt.Sprintf("dietaryInputs_%s", item.ItemID.String()) }
 								style="cursor: pointer; height: 100%; width: 1.5rem;"

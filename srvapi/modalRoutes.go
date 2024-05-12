@@ -55,6 +55,10 @@ func SetupModalAPIroutes(e *echo.Group) error {
 		return nil
 	})
 
+	e.GET("/api/modalgetNewField/:type/:field/:index", func(c echo.Context) error {
+		return nil
+	})
+
 	e.GET("/api/itemEditModal/open/:type/:itemID", func(c echo.Context) error {
 		pageData, err := foodlib.GetPageData(c)
 		if err != nil {
