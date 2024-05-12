@@ -14,6 +14,9 @@ import (
 
 //TODO: This function (should be applicable for both submit AND update, retaining old values for empty fields)
 func SubmitPantryItem(c echo.Context, pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem) error {
+	if item.Ttype == foodlib.Invalid {
+		return errors.New("Invalid Tab Type")
+	}
 	db, err := CreateTabTableIfNotExists(td.Ttype)
 	defer db.Close()
 	if err != nil {
@@ -54,7 +57,7 @@ func CreateTabTableIfNotExists(tt foodlib.TabType) (*sql.DB, error) {
 				created_at TEXT,
 				last_modified TEXT,
 				last_author TEXT,
-				name TEXT UNIQUE,
+				name TEXT,
 				category TEXT,
 				dietary TEXT,
 				ingredients TEXT,
@@ -78,7 +81,7 @@ func CreateTabTableIfNotExists(tt foodlib.TabType) (*sql.DB, error) {
 				created_at TEXT,
 				last_modified TEXT,
 				last_author TEXT,
-				name TEXT UNIQUE,
+				name TEXT,
 				dietary TEXT,
 				amount TEXT,
 				units TEXT
@@ -90,8 +93,8 @@ func CreateTabTableIfNotExists(tt foodlib.TabType) (*sql.DB, error) {
 				created_at TEXT,
 				last_modified TEXT,
 				last_author TEXT,
-				email TEXT UNIQUE,
-				phone TEXT UNIQUE,
+				email TEXT,
+				phone TEXT,
 				name TEXT,
 				dietary TEXT
 				)`
@@ -168,9 +171,7 @@ func makeAuditTriggers(db *sql.DB, tt foodlib.TabType) error {
 				SET %s = CURRENT_TIMESTAMP
 				WHERE id = %s.id;
 			END;`
-		out := fmt.Sprintf(trigger, name, tt.String(), method, tt.String(), tt.String(), field, old)
-		fmt.Println(out)
-		return out
+		return fmt.Sprintf(trigger, name, tt.String(), method, tt.String(), tt.String(), field, old)
 	}
 
 	var err error = nil
