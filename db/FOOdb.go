@@ -70,6 +70,7 @@ func CreateTabTableIfNotExists(userID uuid.UUID, tt foodlib.TabType) (*sql.DB, e
 	}
 
 	//TODO: completely redesign tables
+	//There should be a table of user tables, which stores the other table names and the pageData struct
 	var createTable string
 	switch tt {
 	case foodlib.Recipe:
@@ -213,14 +214,7 @@ func makeAuditTriggers(db *sql.DB, tt foodlib.TabType) error {
 	return err
 }
 
-/*
-NOTE:
-	type TabItem struct {
-		ItemID uuid.UUID `json:"item_id"`
-		Ttype  TabType   `json:"tab_type"`
-		Expanded bool   `json:"expanded"`
-	}
-*/
+//TODO: should not fetch data, but instead, which tabItems to fetch data from
 func FillXTabItems(userID uuid.UUID, tbd *foodlib.TabData, number int) error {
 	db, err := CreateTabTableIfNotExists(userID, tbd.Ttype)
 	defer db.Close()
