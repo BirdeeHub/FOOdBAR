@@ -69,6 +69,19 @@ func CreateTabTableIfNotExists(userID uuid.UUID, tt foodlib.TabType) (*sql.DB, e
 		return nil, err
 	}
 
+	// createUserTable := `CREATE TABLE IF NOT EXISTS user_meta_table (
+	// 	id TEXT PRIMARY KEY,
+	// 	recipe_table TEXT,
+	// 	menu_table TEXT,
+	// 	pantry_table TEXT,
+	// 	customer_table TEXT,
+	// 	events_table TEXT,
+	// 	preplist_table TEXT,
+	// 	shopping_table TEXT,
+	// 	earnings_table TEXT,
+	// )`
+	//TODO: check if table field is empty, if so, create new table with unique name and populate field.
+
 	//TODO: completely redesign tables
 	//There should be a table of user tables, which stores the other table names and the pageData struct
 	var createTable string
