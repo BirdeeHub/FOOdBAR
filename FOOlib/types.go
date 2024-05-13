@@ -235,6 +235,8 @@ func (pd *PageData) GetTabButtonData() []TabButtonData {
 	return retval
 }
 
+//TODO: Get this from db instead of cookie (cookie was a bad idea)
+// Luckily, all you need to change is this function, everything gets its pagaData via this function.
 func GetPageData(c echo.Context) (*PageData, error) {
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
@@ -273,6 +275,7 @@ func GetPageData(c echo.Context) (*PageData, error) {
 	}
 }
 
+//TODO: save to db insted of cookie
 func (pd *PageData) SavePageData(c echo.Context) error {
 	pdmarshalled, err := json.Marshal(pd)
 	if err != nil {
