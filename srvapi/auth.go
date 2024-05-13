@@ -26,6 +26,11 @@ type lockoutEntry struct {
 	IP string
 }
 
+type jwtCustomClaims struct {
+	IP string   `json:"ip"`
+	jwt.RegisteredClaims
+}
+
 func SetupLoginRoutes(e *echo.Echo, signingKey []byte) error {
 	e.GET(fmt.Sprintf("%s/login", foodlib.PagePrefix), func(c echo.Context) error {
 		WipeAuth(c)
@@ -236,11 +241,6 @@ func GetJWTmiddlewareWithConfig(signingKey []byte) echo.MiddlewareFunc {
 	})
 }
 
-type jwtCustomClaims struct {
-	IP string   `json:"ip"`
-	jwt.RegisteredClaims
-}
-
 func GenerateJWTfromIDandKey(userID uuid.UUID, key []byte, ip string) (*http.Cookie, error) {
 	claims := jwtCustomClaims{
 		ip,
@@ -278,5 +278,3 @@ func WipeAuth(c echo.Context) {
 	}
 	http.SetCookie(c.Response().Writer, &cookie)
 }
-
-
