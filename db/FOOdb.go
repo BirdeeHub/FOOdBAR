@@ -17,7 +17,11 @@ func SubmitPantryItem(c echo.Context, pd *foodlib.PageData, td *foodlib.TabData,
 	if item.Ttype == foodlib.Invalid {
 		return errors.New("Invalid Tab Type")
 	}
-	db, err := CreateTabTableIfNotExists(td.Ttype)
+	userID, err := foodlib.GetUserFromClaims(foodlib.GetClaimsFromContext(c))
+	if err != nil {
+		return err
+	}
+	db, err := CreateTabTableIfNotExists(userID, td.Ttype)
 	defer db.Close()
 	if err != nil {
 		return err
@@ -41,7 +45,11 @@ func GetTabItemDataByUUID(c echo.Context, item foodlib.TabItem) error {
 	if item.Ttype == foodlib.Invalid {
 		return errors.New("Invalid Tab Type")
 	}
-	db, err := CreateTabTableIfNotExists(item.Ttype)
+	userID, err := foodlib.GetUserFromClaims(foodlib.GetClaimsFromContext(c))
+	if err != nil {
+		return err
+	}
+	db, err := CreateTabTableIfNotExists(userID, item.Ttype)
 	defer db.Close()
 	if err != nil {
 		return err
@@ -49,7 +57,7 @@ func GetTabItemDataByUUID(c echo.Context, item foodlib.TabItem) error {
 	return errors.New("not yet implemented")
 }
 
-func CreateTabTableIfNotExists(tt foodlib.TabType) (*sql.DB, error) {
+func CreateTabTableIfNotExists(userID uuid.UUID, tt foodlib.TabType) (*sql.DB, error) {
 	var err error
 	fooDB := filepath.Join(dbpath, "FOOdBAR", "FOOdb.db")
 	fooDB, err = foodlib.CreateEmptyFileIfNotExists(fooDB)
@@ -214,7 +222,7 @@ NOTE:
 	}
 */
 func FillXTabItems(userID uuid.UUID, tbd *foodlib.TabData, number int) error {
-	db, err := CreateTabTableIfNotExists(tbd.Ttype)
+	db, err := CreateTabTableIfNotExists(userID, tbd.Ttype)
 	defer db.Close()
 	if err != nil {
 		return err

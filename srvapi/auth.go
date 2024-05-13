@@ -21,11 +21,11 @@ const tokenDuration = time.Hour * 72
 func AddSessionToBlacklist(c echo.Context) error {
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
-	sess, err := GetSessionIDFromClaims(claims)
+	sess, err := foodlib.GetSessionIDFromClaims(claims)
 	if err != nil {
 		return err
 	}
-	expiration, err := GetExpirationFromToken(user)
+	expiration, err := foodlib.GetExpirationFromToken(user)
 	if err != nil {
 		return err
 	}
@@ -59,7 +59,7 @@ func GetJWTmiddlewareWithConfig(signingKey []byte) echo.MiddlewareFunc {
 		ContextKey:  "user",
 		TokenLookup: "cookie:user",
 		SuccessHandler: func(c echo.Context) {
-			userID, err := GetUserFromClaims(GetClaimsFromContext(c))
+			userID, err := foodlib.GetUserFromClaims(foodlib.GetClaimsFromContext(c))
 			if err != nil {
 				WipeAuth(c)
 				c.Logger().Print(err)
@@ -96,17 +96,17 @@ func GetJWTmiddlewareWithConfig(signingKey []byte) echo.MiddlewareFunc {
 			if !token.Valid {
 				return nil, &echojwt.TokenError{Token: token, Err: errors.New("invalid token")}
 			}
-			ip, err := GetIPfromClaims(token.Claims.(jwt.MapClaims))
+			ip, err := foodlib.GetIPfromClaims(token.Claims.(jwt.MapClaims))
 			if err != nil {
 				return nil, &echojwt.TokenError{Token: token, Err: errors.New("invalid ip field")}
 			}
 			if ip != c.RealIP() {
 				return nil, &echojwt.TokenError{Token: token, Err: errors.New("You changed IP! Please log in again.")}
 			}
-			if _, err := GetExpirationFromToken(token); err != nil {
+			if _, err := foodlib.GetExpirationFromToken(token); err != nil {
 				return nil, &echojwt.TokenError{Token: token, Err: errors.New("invalid token")}
 			}
-			sessionID, err := GetSessionIDFromClaims(token.Claims.(jwt.MapClaims))
+			sessionID, err := foodlib.GetSessionIDFromClaims(token.Claims.(jwt.MapClaims))
 			if err != nil {
 				return nil, &echojwt.TokenError{Token: token, Err: errors.New("invalid sessionID")}
 			}
@@ -162,43 +162,3 @@ func WipeAuth(c echo.Context) {
 	http.SetCookie(c.Response().Writer, &cookie)
 }
 
-func GetClaimsFromContext(c echo.Context) map[string]interface{} {
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
-	return claims
-}
-
-func GetIPfromClaims(claims map[string]interface{}) (string, error) {
-	switch ip := claims["ip"].(type) {
-	case string:
-		return ip, nil
-	default:
-		return "", errors.New("invalid userID")
-	}
-}
-
-func GetUserFromClaims(claims map[string]interface{}) (uuid.UUID, error) {
-	switch userID := claims["sub"].(type) {
-	case string:
-		return uuid.Parse(userID)
-	default:
-		return uuid.Nil, errors.New("invalid userID")
-	}
-}
-
-func GetSessionIDFromClaims(claims map[string]interface{}) (uuid.UUID, error) {
-	switch sessionID := claims["jti"].(type) {
-	case string:
-		return uuid.Parse(sessionID)
-	default:
-		return uuid.Nil, errors.New("invalid sessionID")
-	}
-}
-
-func GetExpirationFromToken(token *jwt.Token) (*time.Time, error) {
-	t, err := token.Claims.GetExpirationTime()
-	if err != nil {
-		return nil, err
-	}
-	return &t.Time, nil
-}

@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
@@ -238,41 +237,29 @@ func (pd *PageData) GetTabButtonData() []TabButtonData {
 //TODO: Get this from db instead of cookie (cookie was a bad idea)
 // Luckily, all you need to change is this function, everything gets its pagaData via this function.
 func GetPageData(c echo.Context) (*PageData, error) {
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
-	switch stringID := claims["sub"].(type) {
-	case string:
-		switch sessionID := claims["jti"].(type) {
-		case string:
-			SID, err := uuid.Parse(sessionID)
-			if err != nil {
-				return nil, err
-			}
-			userID, err := uuid.Parse(stringID)
-			if err != nil {
-				return nil, err
-			}
-			pdcookie, err := c.Cookie(userID.String())
-			if err != nil {
-				pd := InitPageData(userID, SID)
-				return pd, nil
-			}
-			pd := &PageData{}
-			pdmarshalled, err := base64.StdEncoding.DecodeString(pdcookie.Value)
-			if err != nil {
-				return nil, err
-			}
-			err = json.Unmarshal(pdmarshalled, pd)
-			if err != nil {
-				return nil, err
-			}
-			return pd, nil
-		default:
-			return nil, errors.New("invalid sessionID")
-		}
-	default:
-		return nil, errors.New("invalid user id")
+	userID, err := GetUserFromClaims(GetClaimsFromContext(c))
+	if err != nil {
+		return nil, err
 	}
+	SID, err := GetSessionIDFromClaims(GetClaimsFromContext(c))
+	if err != nil {
+		return nil, err
+	}
+	pdcookie, err := c.Cookie(userID.String())
+	if err != nil {
+		pd := InitPageData(userID, SID)
+		return pd, nil
+	}
+	pd := &PageData{}
+	pdmarshalled, err := base64.StdEncoding.DecodeString(pdcookie.Value)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(pdmarshalled, pd)
+	if err != nil {
+		return nil, err
+	}
+	return pd, nil
 }
 
 //TODO: save to db insted of cookie

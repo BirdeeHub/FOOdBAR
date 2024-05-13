@@ -1,8 +1,14 @@
 package foodlib
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
+	"time"
+
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
+	"github.com/labstack/echo/v4"
 )
 
 func CreateEmptyFileIfNotExists(filename string) (string, error) {
@@ -69,4 +75,45 @@ func FilterMap[T comparable, V interface{}](f func(T, V) bool, m map[T]V) map[T]
 		}
 	}
 	return ret
+}
+
+func GetClaimsFromContext(c echo.Context) map[string]interface{} {
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	return claims
+}
+
+func GetIPfromClaims(claims map[string]interface{}) (string, error) {
+	switch ip := claims["ip"].(type) {
+	case string:
+		return ip, nil
+	default:
+		return "", errors.New("invalid userID")
+	}
+}
+
+func GetUserFromClaims(claims map[string]interface{}) (uuid.UUID, error) {
+	switch userID := claims["sub"].(type) {
+	case string:
+		return uuid.Parse(userID)
+	default:
+		return uuid.Nil, errors.New("invalid userID")
+	}
+}
+
+func GetSessionIDFromClaims(claims map[string]interface{}) (uuid.UUID, error) {
+	switch sessionID := claims["jti"].(type) {
+	case string:
+		return uuid.Parse(sessionID)
+	default:
+		return uuid.Nil, errors.New("invalid sessionID")
+	}
+}
+
+func GetExpirationFromToken(token *jwt.Token) (*time.Time, error) {
+	t, err := token.Claims.GetExpirationTime()
+	if err != nil {
+		return nil, err
+	}
+	return &t.Time, nil
 }
