@@ -12,7 +12,6 @@ import (
 
 type RecipeResult struct {
 	ID           uuid.UUID   `json:"id"`
-	UserID       uuid.UUID   `json:"userid"`
 	CreatedAt    time.Time   `json:"createdat"`
 	LastModified time.Time   `json:"lastmodified"`
 	LastAuthor   string      `json:"lastauthor"`
@@ -25,7 +24,6 @@ type RecipeResult struct {
 
 type MenuResult struct {
 	ID           uuid.UUID `json:"id"`
-	UserID       uuid.UUID   `json:"userid"`
 	CreatedAt    time.Time `json:"createdat"`
 	LastModified time.Time `json:"lastmodified"`
 	LastAuthor   string    `json:"lastauthor"`
@@ -36,7 +34,6 @@ type MenuResult struct {
 
 type PantryResult struct {
 	ID           uuid.UUID `json:"id"`
-	UserID       uuid.UUID   `json:"userid"`
 	CreatedAt    time.Time `json:"createdat"`
 	LastModified time.Time `json:"lastmodified"`
 	LastAuthor   string    `json:"lastauthor"`
@@ -48,7 +45,6 @@ type PantryResult struct {
 
 type CustomerResult struct {
 	ID           uuid.UUID `json:"id"`
-	UserID       uuid.UUID   `json:"userid"`
 	CreatedAt    time.Time `json:"createdat"`
 	LastModified time.Time `json:"lastmodified"`
 	LastAuthor   string    `json:"lastauthor"`
@@ -60,7 +56,6 @@ type CustomerResult struct {
 
 type EventResult struct {
 	ID           uuid.UUID `json:"id"`
-	UserID       uuid.UUID   `json:"userid"`
 	CreatedAt    time.Time `json:"createdat"`
 	LastModified time.Time `json:"lastmodified"`
 	LastAuthor   string    `json:"lastauthor"`
@@ -73,7 +68,6 @@ type EventResult struct {
 
 type PreplistResult struct {
 	ID           uuid.UUID             `json:"id"`
-	UserID       uuid.UUID   `json:"userid"`
 	CreatedAt    time.Time             `json:"createdat"`
 	LastModified time.Time             `json:"lastmodified"`
 	LastAuthor   string                `json:"lastauthor"`
@@ -85,7 +79,6 @@ type PreplistResult struct {
 
 type ShoppingResult struct {
 	ID           uuid.UUID   `json:"id"`
-	UserID       uuid.UUID   `json:"userid"`
 	CreatedAt    time.Time   `json:"createdat"`
 	LastModified time.Time   `json:"lastmodified"`
 	LastAuthor   string      `json:"lastauthor"`
@@ -98,7 +91,6 @@ type ShoppingResult struct {
 
 type EarningsResult struct {
 	ID           uuid.UUID `json:"id"`
-	UserID       uuid.UUID   `json:"userid"`
 	CreatedAt    time.Time `json:"createdat"`
 	LastModified time.Time `json:"lastmodified"`
 	LastAuthor   string    `json:"lastauthor"`

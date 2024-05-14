@@ -12,7 +12,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-//TODO: This function (should be applicable for both submit AND update, retaining old values for empty fields)
+//TODO: Make this function work for new db scheme
 func SubmitPantryItem(c echo.Context, pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem) error {
 	if item.Ttype == foodlib.Invalid {
 		return errors.New("Invalid Tab Type")
@@ -69,27 +69,64 @@ func CreateTabTableIfNotExists(userID uuid.UUID, tt foodlib.TabType) (*sql.DB, e
 		return nil, err
 	}
 
-	// createUserTable := `CREATE TABLE IF NOT EXISTS user_meta_table (
-	// 	id TEXT PRIMARY KEY,
-	// 	recipe_table TEXT,
-	// 	menu_table TEXT,
-	// 	pantry_table TEXT,
-	// 	customer_table TEXT,
-	// 	events_table TEXT,
-	// 	preplist_table TEXT,
-	// 	shopping_table TEXT,
-	// 	earnings_table TEXT,
-	// )`
-	//TODO: check if table field is empty, if so, create new table with unique name and populate field.
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS user_meta_table (
+		id TEXT PRIMARY KEY,
+		prefix TEXT UNIQUE,
+		recipe_table TEXT DEFAULT "",
+		menu_table TEXT DEFAULT "",
+		pantry_table TEXT DEFAULT "",
+		customer_table TEXT DEFAULT "",
+		events_table TEXT DEFAULT "",
+		preplist_table TEXT DEFAULT "",
+		shopping_table TEXT DEFAULT "",
+		earnings_table TEXT DEFAULT "",
+	)`)
+	if err != nil {
+		return nil, err
+	}
 
-	//TODO: completely redesign tables
-	//There should be a table of user tables, which stores the other table names and the pageData struct
+	var fieldname string
+	switch tt {
+	case foodlib.Recipe:
+		fieldname = "recipe_table"
+	case foodlib.Menu:
+		fieldname = "menu_table"
+	case foodlib.Pantry:
+		fieldname = "pantry_table"
+	case foodlib.Customer:
+		fieldname = "customer_table"
+	case foodlib.Events:
+		fieldname = "events_table"
+	case foodlib.Preplist:
+		fieldname = "preplist_table"
+	case foodlib.Shopping:
+		fieldname = "shopping_table"
+	case foodlib.Earnings:
+		fieldname = "earnings_table"
+	}
+	var field string
+	err = db.QueryRow("SELECT ? FROM user_meta_table WHERE id = ?", fieldname, userID).Scan(&field)
+	if err != nil && err != sql.ErrNoRows {
+		// no user row, create row for user, and a unique prefix for table names for this user.
+		// table names will be prefix_tabtype
+	} else if err != nil {
+		return nil, err
+	}
+
+	if field == "" {
+		// Field is empty
+		// create table name from user prefix and tab type
+		// insert the table name in the field in user meta table
+		// pass the name on to below to create the table
+	} else {
+		// Field is not empty, field is the table name to create below if not created
+	}
+
 	var createTable string
 	switch tt {
 	case foodlib.Recipe:
 		createTable = `CREATE TABLE IF NOT EXISTS %s (
 				id TEXT PRIMARY KEY,
-				userid TEXT,
 				created_at TEXT,
 				last_modified TEXT,
 				last_author TEXT,
@@ -102,7 +139,6 @@ func CreateTabTableIfNotExists(userID uuid.UUID, tt foodlib.TabType) (*sql.DB, e
 	case foodlib.Menu:
 		createTable = `CREATE TABLE IF NOT EXISTS %s (
 				id TEXT PRIMARY KEY,
-				userid TEXT,
 				created_at TEXT,
 				last_modified TEXT,
 				last_author TEXT,
@@ -113,7 +149,6 @@ func CreateTabTableIfNotExists(userID uuid.UUID, tt foodlib.TabType) (*sql.DB, e
 	case foodlib.Pantry:
 		createTable = `CREATE TABLE IF NOT EXISTS %s (
 				id TEXT PRIMARY KEY,
-				userid TEXT,
 				created_at TEXT,
 				last_modified TEXT,
 				last_author TEXT,
@@ -125,7 +160,6 @@ func CreateTabTableIfNotExists(userID uuid.UUID, tt foodlib.TabType) (*sql.DB, e
 	case foodlib.Customer:
 		createTable = `CREATE TABLE IF NOT EXISTS %s (
 				id TEXT PRIMARY KEY,
-				userid TEXT,
 				created_at TEXT,
 				last_modified TEXT,
 				last_author TEXT,
@@ -137,7 +171,6 @@ func CreateTabTableIfNotExists(userID uuid.UUID, tt foodlib.TabType) (*sql.DB, e
 	case foodlib.Events:
 		createTable = `CREATE TABLE IF NOT EXISTS %s (
 				id TEXT PRIMARY KEY,
-				userid TEXT,
 				created_at TEXT,
 				last_modified TEXT,
 				last_author TEXT,
@@ -150,7 +183,6 @@ func CreateTabTableIfNotExists(userID uuid.UUID, tt foodlib.TabType) (*sql.DB, e
 	case foodlib.Preplist:
 		createTable = `CREATE TABLE IF NOT EXISTS %s (
 				id TEXT PRIMARY KEY,
-				userid TEXT,
 				created_at TEXT,
 				last_modified TEXT,
 				last_author TEXT,
@@ -162,7 +194,6 @@ func CreateTabTableIfNotExists(userID uuid.UUID, tt foodlib.TabType) (*sql.DB, e
 	case foodlib.Shopping:
 		createTable = `CREATE TABLE IF NOT EXISTS %s (
 				id TEXT PRIMARY KEY,
-				userid TEXT,
 				created_at TEXT,
 				last_modified TEXT,
 				last_author TEXT,
@@ -175,7 +206,6 @@ func CreateTabTableIfNotExists(userID uuid.UUID, tt foodlib.TabType) (*sql.DB, e
 	case foodlib.Earnings:
 		createTable = `CREATE TABLE IF NOT EXISTS %s (
 				id TEXT PRIMARY KEY,
-				userid TEXT,
 				created_at TEXT,
 				last_modified TEXT,
 				last_author TEXT,
