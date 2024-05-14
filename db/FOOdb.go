@@ -107,6 +107,7 @@ func CreateTabTableIfNotExists(userID uuid.UUID, tt foodlib.TabType) (*sql.DB, e
 	var field string
 	err = db.QueryRow("SELECT ? FROM user_meta_table WHERE id = ?", fieldname, userID).Scan(&field)
 	if err != nil && err != sql.ErrNoRows {
+		//TODO:
 		// no user row, create row for user, and a unique prefix for table names for this user.
 		// table names will be prefix_tabtype
 	} else if err != nil {
@@ -114,11 +115,13 @@ func CreateTabTableIfNotExists(userID uuid.UUID, tt foodlib.TabType) (*sql.DB, e
 	}
 
 	if field == "" {
+		//TODO:
 		// Field is empty
 		// create table name from user prefix and tab type
 		// insert the table name in the field in user meta table
 		// pass the name on to below to create the table
 	} else {
+		//TODO:
 		// Field is not empty, field is the table name to create below if not created
 	}
 
