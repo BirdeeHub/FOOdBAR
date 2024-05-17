@@ -80,6 +80,14 @@ func CreateTabTableIfNotExists(userID uuid.UUID, tt foodlib.TabType) (*sql.DB, s
 		return nil, "", err
 	}
 
+	if tableName == "" {
+		tableName = fmt.Sprintf("%s_%s", tt.String(), postfix)
+		_, err = db.Exec(fmt.Sprintf("UPDATE user_meta_table SET %s = ? WHERE id = ?", fieldname), tableName, userID)
+		if err != nil {
+			return nil, "", err
+		}
+	}
+
 	var createTable string
 	switch tt {
 	case foodlib.Recipe:
