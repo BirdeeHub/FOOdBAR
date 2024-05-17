@@ -19,12 +19,14 @@ func SubmitPantryItem(c echo.Context, pd *foodlib.PageData, td *foodlib.TabData,
 		return err
 	}
 	db, tableName, err := CreateTabTableIfNotExists(userID, td.Ttype)
-	defer db.Close()
 	if err != nil {
 		return err
 	}
+	defer db.Close()
+	// TODO: get multiple dietary somehow
+	// TODO: Check if row exists already, if so, do update instead?
 	name := c.FormValue("itemName")
-	dietary := c.FormValue("itemDietary")
+	dietary := c.FormValue("itemDietary_0")
 	amount := c.FormValue("itemAmount")
 	units := c.FormValue("itemUnits")
 	insertStmt, err := db.Prepare(fmt.Sprintf(`INSERT INTO %s (id, last_author, name, dietary, amount, units) VALUES (?, ?, ?, ?, ?, ?)`, tableName))

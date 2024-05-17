@@ -27,7 +27,7 @@ func CreateTabTableIfNotExists(userID uuid.UUID, tt foodlib.TabType) (*sql.DB, s
 
 	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS user_meta_table (
 		id TEXT PRIMARY KEY,
-		prefix TEXT UNIQUE,
+		postfix TEXT UNIQUE,
 		recipe_table TEXT DEFAULT "",
 		menu_table TEXT DEFAULT "",
 		pantry_table TEXT DEFAULT "",
@@ -61,16 +61,15 @@ func CreateTabTableIfNotExists(userID uuid.UUID, tt foodlib.TabType) (*sql.DB, s
 		fieldname = "earnings_table"
 	}
 	var tableName string
-	err = db.QueryRow("SELECT ? FROM user_meta_table WHERE id = ?", fieldname, userID).Scan(&tableName)
+	var postfix string
+	err = db.QueryRow(fmt.Sprintf("SELECT postfix, %s FROM user_meta_table WHERE id = ?", fieldname), userID).Scan(&postfix, &tableName)
 	if err != nil && err == sql.ErrNoRows {
 		for err != nil {
-			prefix := strings.ReplaceAll(uuid.New().String(), "-", "_")
-			tableName = fmt.Sprintf("%s_%s", prefix, tt.String())
-			_, err = db.Exec(fmt.Sprintf(`INSERT INTO user_meta_table (id, prefix, %s) VALUES (?, ?, ?)`, fieldname), userID, prefix, tableName)
+			postfix = strings.ReplaceAll(uuid.New().String(), "-", "_")
+			tableName = fmt.Sprintf("%s_%s", tt.String(), postfix)
+			_, err = db.Exec(fmt.Sprintf(`INSERT INTO user_meta_table (id, postfix, %s) VALUES (?, ?, ?)`, fieldname), userID, postfix, tableName)
 			if err != nil {
-				println(err.Error())
-				println("error 4")
-				// if not unique we make a new prefix and also tableName and try again
+				// if not unique we make a new postfix and also tableName and try again
 				// otherwise we just return an error
 				if !strings.Contains(err.Error(), "UNIQUE constraint failed") {
 					return nil, "", err
@@ -78,8 +77,6 @@ func CreateTabTableIfNotExists(userID uuid.UUID, tt foodlib.TabType) (*sql.DB, s
 			}
 		}
 	} else if err != nil {
-		println(err.Error())
-		println("error 5")
 		return nil, "", err
 	}
 
@@ -174,17 +171,15 @@ func CreateTabTableIfNotExists(userID uuid.UUID, tt foodlib.TabType) (*sql.DB, s
 				menu_id TEXT
 				)`
 	default:
-		println("error 6")
 		return nil, "", errors.New("invalid tab type")
 	}
-	_, err = db.Exec(fmt.Sprintf(createTable, tableName))
+	cmd := fmt.Sprintf(createTable, tableName)
+	_, err = db.Exec(cmd)
 	if err != nil {
-		println("error 7")
 		return nil, "", err
 	}
 	err = makeAuditTriggers(db, tableName)
 	if err != nil {
-		println("error 8")
 		return nil, "", err
 	}
 	return db, tableName, nil

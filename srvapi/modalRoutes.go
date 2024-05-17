@@ -48,8 +48,8 @@ func SetupModalAPIroutes(e *echo.Group) error {
 		case foodlib.Earnings:
 			err = db.SubmitPantryItem(c, pageData, td, ti)
 		}
-		c.Logger().Print(err)
 		if err != nil {
+			c.Logger().Print(err)
 			return echo.NewHTTPError(http.StatusUnprocessableEntity, errors.New("failed to submit item"))
 		}
 		return nil
