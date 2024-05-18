@@ -240,6 +240,8 @@ func (pd *PageData) GetTabButtonData() []TabButtonData {
 //TODO: Get this from db instead of cookie (cookie was a bad idea)
 // Luckily, all you need to change is this function, everything gets its pagaData via this function.
 // Because db depends on this module, you may need to move Get and Save page data to db module to avoid circular dependency
+// When you do so, make it able to have multiple sessions per browser
+// So that all tabs dont have the exact same view
 func GetPageData(c echo.Context) (*PageData, error) {
 	userID, err := GetUserFromClaims(GetClaimsFromContext(c))
 	if err != nil {
