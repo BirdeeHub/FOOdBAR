@@ -8,8 +8,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
-
-// TODO: Make this function work for new db scheme
 func SubmitPantryItem(c echo.Context, pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem) error {
 	if item.Ttype == foodlib.Invalid {
 		return errors.New("Invalid Tab Type")
@@ -23,12 +21,32 @@ func SubmitPantryItem(c echo.Context, pd *foodlib.PageData, td *foodlib.TabData,
 		return err
 	}
 	defer db.Close()
-	// TODO: get multiple dietary somehow
-	// TODO: Check if row exists already, if so, do update instead?
+
+	// TODO: implement getting more fields to fill in for dietary and then
+	// make this be able to recieve them all and make into json array for saving
 	name := c.FormValue("itemName")
 	dietary := c.FormValue("itemDietary_0")
 	amount := c.FormValue("itemAmount")
 	units := c.FormValue("itemUnits")
+	
+	// Check if row exists already, if so, do update instead
+	var exists bool
+	err = db.QueryRow("SELECT EXISTS(SELECT 1 FROM "+tableName+" WHERE id = ?)", item.ItemID).Scan(&exists)
+	if err != nil {
+		return err
+	}
+	
+	if exists {
+		updateStmt, err := db.Prepare(fmt.Sprintf("UPDATE %s SET name = ?, dietary = ?, amount = ?, units = ? WHERE id = ?", tableName))
+		if err != nil {
+			return err
+		}
+		defer updateStmt.Close()
+
+		_, err = updateStmt.Exec(name, dietary, amount, units, item.ItemID)
+		return err
+	}
+	
 	insertStmt, err := db.Prepare(fmt.Sprintf(`INSERT INTO %s (id, last_author, name, dietary, amount, units) VALUES (?, ?, ?, ?, ?, ?)`, tableName))
 	if err != nil {
 		return err
