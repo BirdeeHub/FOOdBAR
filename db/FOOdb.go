@@ -40,20 +40,20 @@ func SubmitPantryItem(c echo.Context, pd *foodlib.PageData, td *foodlib.TabData,
 }
 
 // TODO: This function
-func GetTabItemDataByUUID(c echo.Context, item foodlib.TabItem) error {
+func GetTabItemData(c echo.Context, item foodlib.TabItem) (interface{}, error) {
 	if item.Ttype == foodlib.Invalid {
-		return errors.New("Invalid Tab Type")
+		return nil, errors.New("Invalid Tab Type")
 	}
 	userID, err := foodlib.GetUserFromClaims(foodlib.GetClaimsFromContext(c))
 	if err != nil {
-		return err
+		return nil, err
 	}
 	db, tableName, err := CreateTabTableIfNotExists(userID, item.Ttype)
 	defer db.Close()
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return errors.New("not yet implemented"+tableName)
+	return nil, errors.New("not yet implemented"+tableName)
 }
 
 // TODO: should not fetch data, but instead, which tabItems to fetch data from
