@@ -267,6 +267,8 @@ func GetPageData(c echo.Context) (*PageData, error) {
 }
 
 //TODO: save to db insted of cookie
+// When you do so, make it able to have multiple sessions per browser
+// So that all tabs dont have the exact same view
 func (pd *PageData) SavePageData(c echo.Context) error {
 	pdmarshalled, err := json.Marshal(pd)
 	if err != nil {
