@@ -75,6 +75,9 @@ func SetupModalAPIroutes(e *echo.Group) error {
 		ti := td.GetTabItem(itemID)
 		c.Logger().Print(ti)
 		idx, err := strconv.Atoi(c.Param("index"))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusUnprocessableEntity, errors.New("Invalid index"))
+		}
 		return HTML(c, http.StatusOK, tabviews.ModalGetNewField(ti, c.Param("field"), idx))
 	})
 
