@@ -6,6 +6,7 @@ import (
 	"FOOdBAR/views/tabviews"
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -56,8 +57,25 @@ func SetupModalAPIroutes(e *echo.Group) error {
 	})
 
 	//TODO: this route
-	e.GET("/api/modalGetNewField/:type/:field/:index", func(c echo.Context) error {
-		return echo.NewHTTPError(http.StatusNotImplemented, errors.New("Route Not Yet Implemented"))
+	e.GET("/api/modalGetNewField/:type/:index/:field/:itemID", func(c echo.Context) error {
+		pageData, err := foodlib.GetPageData(c)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, err)
+		}
+		tt := foodlib.String2TabType(c.Param("type"))
+		if tt == foodlib.Invalid {
+			return echo.NewHTTPError(http.StatusUnprocessableEntity, errors.New("Invalid tab type"))
+		}
+		itemID, err := uuid.Parse(c.Param("itemID"))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusUnprocessableEntity, errors.New("itemID is not a valid UUID"))
+		}
+		td := pageData.GetTabDataByType(tt)
+		c.Logger().Print(td)
+		ti := td.GetTabItem(itemID)
+		c.Logger().Print(ti)
+		idx, err := strconv.Atoi(c.Param("index"))
+		return HTML(c, http.StatusOK, tabviews.ModalGetNewField(ti, c.Param("field"), idx))
 	})
 
 	e.GET("/api/itemEditModal/open/:type/:itemID", func(c echo.Context) error {
