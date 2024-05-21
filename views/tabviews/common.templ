@@ -28,6 +28,21 @@ templ ColorsCSS() {
 	</style>
 }
 
+templ OOBExtraField(field string) {
+	<div id={ string(templ.URL(field)) } hx-swap-oob="beforeend">
+		@ExtraField("", field)
+	</div>
+}
+
+templ ExtraField(val string, field string) {
+	<input
+		class="text-black"
+		value={ val }
+		type="text"
+		name={ fmt.Sprintf("%s[]", templ.URL(field)) }
+	/>
+}
+
 templ MaximizeTabButton(tt foodlib.TabType) {
 	<div
 		id={ fmt.Sprintf("tabButton_%s", tt) }

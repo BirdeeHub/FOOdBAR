@@ -49,9 +49,19 @@ templ ModalPantryContent(item *foodlib.TabItem, e error) {
 						Name:
 						<input class="text-black" value="" type="text" name="itemName"/>
 						Dietary:
-						//TODO: render list of current dietary inputs, with button to add more
 						<div style="display: flex; flex-direction: row; flex: 0 1;">
-							@ModalGetNewField(item, "dietary", 0)
+							<div id="dietary">
+								//TODO: render list of current dietary inputs at start
+								@ExtraField("", "dietary")
+							</div>
+							<div
+								hx-trigger={ "click" }
+								hx-get={ fmt.Sprintf("%s/api/modalGetNewField/%s/%s/%s", foodlib.PagePrefix, item.Ttype.String(), item.ItemID.String(), "dietary") }
+								hx-swap="none"
+								style="cursor: pointer; height: 100%; width: 1.5rem;"
+							>
+								@AddCircle()
+							</div>
 						</div>
 						Amount:
 						<input class="text-black" value="" type="text" name="itemAmount"/>
@@ -63,19 +73,4 @@ templ ModalPantryContent(item *foodlib.TabItem, e error) {
 			</div>
 		}
 	}
-}
-
-templ ModalGetNewField(item *foodlib.TabItem, field string, index int) {
-	<div id={ fmt.Sprintf("%s_%s", templ.URL(field), item.ItemID.String()) }>
-		<input class="text-black" value="" type="text" name={ fmt.Sprintf("item%s_%d", templ.URL(field), index) }/>
-	</div>
-	<div
-		hx-trigger={ "click" }
-		hx-get={ fmt.Sprintf("%s/api/modalGetNewField/%s/%d/%s/%s", foodlib.PagePrefix, item.Ttype.String(), index + 1, templ.URL(field), item.ItemID.String()) }
-		hx-swap="afterend"
-		hx-target={ fmt.Sprintf("#%s_%s", templ.URL(field), item.ItemID.String()) }
-		style="cursor: pointer; height: 100%; width: 1.5rem;"
-	>
-		@AddCircle()
-	</div>
 }

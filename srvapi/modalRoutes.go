@@ -6,7 +6,6 @@ import (
 	"FOOdBAR/views/tabviews"
 	"errors"
 	"net/http"
-	"strconv"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -57,7 +56,7 @@ func SetupModalAPIroutes(e *echo.Group) error {
 	})
 
 	//TODO: this route
-	e.GET("/api/modalGetNewField/:type/:index/:field/:itemID", func(c echo.Context) error {
+	e.GET("/api/modalGetNewField/:type/:itemID/:field", func(c echo.Context) error {
 		pageData, err := foodlib.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
@@ -74,11 +73,7 @@ func SetupModalAPIroutes(e *echo.Group) error {
 		c.Logger().Print(td)
 		ti := td.GetTabItem(itemID)
 		c.Logger().Print(ti)
-		idx, err := strconv.Atoi(c.Param("index"))
-		if err != nil {
-			return echo.NewHTTPError(http.StatusUnprocessableEntity, errors.New("Invalid index"))
-		}
-		return HTML(c, http.StatusOK, tabviews.ModalGetNewField(ti, c.Param("field"), idx))
+		return HTML(c, http.StatusOK, tabviews.OOBExtraField(c.Param("field")))
 	})
 
 	e.GET("/api/itemEditModal/open/:type/:itemID", func(c echo.Context) error {

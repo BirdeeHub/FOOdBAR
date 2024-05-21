@@ -2,6 +2,7 @@ package db
 
 import (
 	foodlib "FOOdBAR/FOOlib"
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -22,12 +23,21 @@ func SubmitPantryItem(c echo.Context, pd *foodlib.PageData, td *foodlib.TabData,
 	}
 	defer db.Close()
 
-	// TODO: implement getting more fields to fill in for dietary and then
-	// make this be able to recieve them all and make into json array for saving
+	params, err := c.FormParams()
+	if err != nil {
+		return err
+	}
+	c.Logger().Print(params)
 	name := c.FormValue("itemName")
-	dietary := c.FormValue("itemDietary_0")
+	rawdietary := params["dietary[]"]
 	amount := c.FormValue("itemAmount")
 	units := c.FormValue("itemUnits")
+
+	dietarybytes, err := json.Marshal(rawdietary)
+	if err != nil {
+		return err
+	}
+	dietary := string(dietarybytes)
 	
 	// Check if row exists already, if so, do update instead
 	var exists bool
