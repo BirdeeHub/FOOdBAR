@@ -35,7 +35,7 @@ templ RenderPantryTab(td *foodlib.TabData) {
 	</div>
 }
 
-templ ModalPantryContent(item *foodlib.TabItem, e error) {
+templ ModalPantryContent(pd *foodlib.PageData, item *foodlib.TabItem, e error) {
 	if item != nil {
 		//TODO: This should fetch the stuff from db based on item, and prepopulate with existing data
 		if itemData := item; itemData != nil {

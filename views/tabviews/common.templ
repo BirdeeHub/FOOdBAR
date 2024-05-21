@@ -67,24 +67,24 @@ templ AddTabItemButton(tt foodlib.TabType) {
 }
 
 
-templ RenderModalContent(item *foodlib.TabItem, e error) {
+templ RenderModalContent(pd *foodlib.PageData, item *foodlib.TabItem, e error) {
 	switch item.Ttype {
 		case foodlib.Recipe:
-			@ModalRecipeContent(item, e)
+			@ModalRecipeContent(pd, item, e)
 		case foodlib.Pantry:
-			@ModalPantryContent(item, e)
+			@ModalPantryContent(pd, item, e)
 		case foodlib.Menu:
-			@ModalMenuContent(item, e)
+			@ModalMenuContent(pd, item, e)
 		case foodlib.Shopping:
-			@ModalShoppingContent(item, e)
+			@ModalShoppingContent(pd, item, e)
 		case foodlib.Preplist:
-			@ModalPreplistContent(item, e)
+			@ModalPreplistContent(pd, item, e)
 		case foodlib.Earnings:
-			@ModalEarningsContent(item, e)
+			@ModalEarningsContent(pd, item, e)
 		case foodlib.Customer:
-			@ModalCustomerContent(item, e)
+			@ModalCustomerContent(pd, item, e)
 		case foodlib.Events:
-			@ModalEventsContent(item, e)
+			@ModalEventsContent(pd, item, e)
 	}
 }
 

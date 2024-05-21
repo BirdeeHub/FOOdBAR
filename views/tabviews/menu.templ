@@ -35,7 +35,7 @@ templ RenderMenuTab(td *foodlib.TabData) {
 	</div>
 }
 
-templ ModalMenuContent(item *foodlib.TabItem, e error) {
+templ ModalMenuContent(pd *foodlib.PageData, item *foodlib.TabItem, e error) {
 	if item != nil {
 		<div style="display: flex; flex-direction: column; flex: 0 1;">
 			Hello from { item.Ttype.String() }
