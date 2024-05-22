@@ -8,19 +8,20 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/jmoiron/sqlx"
 	"github.com/google/uuid"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 // returns open db handle, tablename for that user and tab type, and an error
-func CreateTabTableIfNotExists(userID uuid.UUID, tt foodlib.TabType) (*sql.DB, string, error) {
+func CreateTabTableIfNotExists(userID uuid.UUID, tt foodlib.TabType) (*sqlx.DB, string, error) {
 	var err error
 	fooDB := filepath.Join(dbpath, "FOOdBAR", "FOOdb.db")
 	fooDB, err = foodlib.CreateEmptyFileIfNotExists(fooDB)
 	if err != nil {
 		return nil, "", err
 	}
-	db, err := sql.Open("sqlite3", fooDB)
+	db, err := sqlx.Open("sqlite3", fooDB)
 	if err != nil {
 		return nil, "", err
 	}
@@ -88,6 +89,7 @@ func CreateTabTableIfNotExists(userID uuid.UUID, tt foodlib.TabType) (*sql.DB, s
 		}
 	}
 
+	// TODO: I think lists should be BLOBs as long as sql can order by the contents still.
 	var createTable string
 	switch tt {
 	case foodlib.Recipe:
@@ -193,7 +195,7 @@ func CreateTabTableIfNotExists(userID uuid.UUID, tt foodlib.TabType) (*sql.DB, s
 	return db, tableName, nil
 }
 
-func makeAuditTriggers(db *sql.DB, tableName string) error {
+func makeAuditTriggers(db *sqlx.DB, tableName string) error {
 
 	createTrigger := func(name string, method string, field string, old string) string {
 		trigger := `CREATE TRIGGER IF NOT EXISTS %s_%s_audit

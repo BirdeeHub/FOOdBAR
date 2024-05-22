@@ -22,7 +22,7 @@ templ PreplistItemContainer(item *foodlib.TabItem) {
 	</div>
 }
 
-templ RenderPreplistTab(td *foodlib.TabData) {
+templ RenderPreplistTab(pd *foodlib.PageData, td *foodlib.TabData) {
 	<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>
 		<div class={ TabHeaderTitleCSS() }>
 			Preplist!

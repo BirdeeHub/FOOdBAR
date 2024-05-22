@@ -3,6 +3,7 @@ package tabviews
 import (
 	"fmt"
 	foodlib "FOOdBAR/FOOlib"
+	"FOOdBAR/db"
 )
 
 templ PantryTabContents(td *foodlib.TabData) {
@@ -22,7 +23,7 @@ templ PantryItemContainer(item *foodlib.TabItem) {
 	</div>
 }
 
-templ RenderPantryTab(td *foodlib.TabData) {
+templ RenderPantryTab(pd *foodlib.PageData, td *foodlib.TabData) {
 	<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>
 		<div class={ TabHeaderTitleCSS() }>
 			Pantry!
@@ -38,7 +39,7 @@ templ RenderPantryTab(td *foodlib.TabData) {
 templ ModalPantryContent(pd *foodlib.PageData, item *foodlib.TabItem, e error) {
 	if item != nil {
 		//TODO: This should fetch the stuff from db based on item, and prepopulate with existing data
-		if itemData := item; itemData != nil {
+		if itemData, err := db.GetTabItemData(pd, item); err == nil {
 			<div style="display: flex; flex-direction: column; flex: 0 1;">
 				Hello from { item.Ttype.String() }
 				<form
@@ -48,12 +49,8 @@ templ ModalPantryContent(pd *foodlib.PageData, item *foodlib.TabItem, e error) {
 					<div style="display: flex; flex-direction: column; flex: 0 0;">
 						Name:
 						<input class="text-black" value="" type="text" name="itemName"/>
-						Dietary:
 						<div style="display: flex; flex-direction: row; flex: 0 1;">
-							<div id="dietary">
-								//TODO: render list of current dietary inputs at start
-								@ExtraField("", "dietary")
-							</div>
+							Dietary:
 							<div
 								hx-trigger={ "click" }
 								hx-get={ fmt.Sprintf("%s/api/modalGetNewField/%s/%s/%s", foodlib.PagePrefix, item.Ttype.String(), item.ItemID.String(), "dietary") }
@@ -61,6 +58,25 @@ templ ModalPantryContent(pd *foodlib.PageData, item *foodlib.TabItem, e error) {
 								style="cursor: pointer; height: 100%; width: 1.5rem;"
 							>
 								@AddCircle()
+							</div>
+						</div>
+						<div style="display: flex; flex-direction: row; flex: 0 1;">
+							<div id="dietary">
+								if itemData != nil {
+									if dietary, ok := itemData["dietary"]; ok {
+										if dietaries, ok := dietary.([]string); ok {
+											for _, v := range dietaries {
+												@ExtraField(v, "dietary")
+											}
+										} else {
+											@ExtraField("", "dietary")
+										}
+									} else {
+										@ExtraField("", "dietary")
+									}
+								} else {
+									@ExtraField("", "dietary")
+								}
 							</div>
 						</div>
 						Amount:

@@ -77,16 +77,16 @@ templ BodyContents(pd *foodlib.PageData) {
 		</div>
 		<div id="tabViewContainer" class={ TabViewContainerCSS() }>
 			for _, td := range pd.TabDatas {
-				@TabContainer(td)
+				@TabContainer(pd, td)
 			}
 		</div>
 	</div>
 }
 
-templ OOBtabViewContainer(tbd *foodlib.TabData) {
+templ OOBtabViewContainer(pd *foodlib.PageData, tbd *foodlib.TabData) {
 	if tbd != nil && tbd.Ttype != foodlib.Invalid {
 		<div id="tabViewContainer" hx-swap-oob="beforeend">
-			@TabContainer(tbd)
+			@TabContainer(pd, tbd)
 		</div>
 	}
 }
@@ -136,11 +136,11 @@ templ TabButton(tbd foodlib.TabButtonData) {
 	}
 }
 
-templ TabContainer(td *foodlib.TabData) {
+templ TabContainer(pd *foodlib.PageData, td *foodlib.TabData) {
 	if td != nil && td.Ttype != foodlib.Invalid {
 		<div id={ fmt.Sprintf("tabContainer_%s", td.Ttype) } style="display: flex; flex-direction: row; flex: 1;">
 			<div class={ TabContainerCSS() }>
-				@RenderTabContents(td)
+				@RenderTabContents(pd, td)
 			</div>
 			<div
 				id={ fmt.Sprintf("resizebar_%s", td.Ttype) }
@@ -183,24 +183,24 @@ css Resizebar() {
 	border-left: 2px dashed;
 }
 
-templ RenderTabContents(td *foodlib.TabData) {
+templ RenderTabContents(pd *foodlib.PageData, td *foodlib.TabData) {
 	switch td.Ttype {
 		case foodlib.Recipe:
-			@tabviews.RenderRecipeTab(td)
+			@tabviews.RenderRecipeTab(pd, td)
 		case foodlib.Pantry:
-			@tabviews.RenderPantryTab(td)
+			@tabviews.RenderPantryTab(pd, td)
 		case foodlib.Menu:
-			@tabviews.RenderMenuTab(td)
+			@tabviews.RenderMenuTab(pd, td)
 		case foodlib.Shopping:
-			@tabviews.RenderShoppingTab(td)
+			@tabviews.RenderShoppingTab(pd, td)
 		case foodlib.Preplist:
-			@tabviews.RenderPreplistTab(td)
+			@tabviews.RenderPreplistTab(pd, td)
 		case foodlib.Earnings:
-			@tabviews.RenderEarningsTab(td)
+			@tabviews.RenderEarningsTab(pd, td)
 		case foodlib.Customer:
-			@tabviews.RenderCustomerTab(td)
+			@tabviews.RenderCustomerTab(pd, td)
 		case foodlib.Events:
-			@tabviews.RenderEventsTab(td)
+			@tabviews.RenderEventsTab(pd, td)
 	}
 }
 

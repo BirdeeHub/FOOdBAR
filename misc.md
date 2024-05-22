@@ -364,6 +364,106 @@ WHERE JSON_EXTRACT(ingredients, '$[0]') = 'eggs'
 So in summary, use the SQLite JSON functions like JSON_ARRAY_LENGTH, JSON_EXTRACT and JSON_TYPE to query and sort by values within JSON columns.
 
 
+
+---
+
+
+> db is a sqlx db and I wish to read the rows directly into a map of rowname, value, where some of them may be json arrays
+> 
+> ```go
+> func GetTabItemData(pd *foodlib.PageData, item *foodlib.TabItem) (map[string]interface{}, error) {
+> 	if item.Ttype == foodlib.Invalid {
+> 		return nil, errors.New("Invalid Tab Type")
+> 	}
+> 	db, tableName, err := CreateTabTableIfNotExists(pd.UserID, item.Ttype)
+> 	if err != nil {
+> 		return nil, err
+> 	}
+> 	defer db.Close()
+> 	return nil, errors.New("not yet implemented"+tableName)
+> }
+> ```
+
+Here is one way to read the rows into a map with sqlx:
+
+```go
+func GetTabItemData(pd *foodlib.PageData, item *foodlib.TabItem) (map[string]interface{}, error) {
+	if item.Ttype == foodlib.Invalid {
+		return nil, errors.New("Invalid Tab Type")
+	}
+	db, tableName, err := CreateTabTableIfNotExists(pd.UserID, item.Ttype)
+	if err != nil {
+		return nil, err
+	}
+	defer db.Close()
+	
+	rows, err := db.Queryx("SELECT * FROM " + tableName)
+	if err != nil {
+		return nil, err
+	}
+
+	columns, err := rows.Columns()
+	if err != nil {
+		return nil, err
+	}
+
+	values := make([]interface{}, len(columns))
+	valuePtrs := make([]interface{}, len(columns))
+	for i := range columns {
+		valuePtrs[i] = &values[i]
+	}
+
+	results := make(map[string]interface{})
+	for rows.Next() {
+		err := rows.Scan(valuePtrs...)
+		if err != nil {
+			return nil, err
+		}
+
+		for i, col := range columns {
+			if b, ok := values[i].([]byte); ok {
+				err = json.Unmarshal(b, &results[col])
+				if err != nil {
+					results[col] = string(b)
+				}
+			} else {
+				results[col] = values[i]
+			}
+		}
+	}
+	
+	return results, nil
+}
+```
+
+This scans each row into a slice of interface{}, then iterates over the columns and inserts into the map, handling JSON parsing for []byte columns.
+
+> how do I make sure that a value in a table gets read as []byte type? do I make the type in the database BYTEARRAY? Is that a thing in sqlite?
+
+In SQLite, you can store binary data in a BLOB column type. This will be returned from sqlite as []byte when reading the data in Go.
+
+So in your table definition, you would specify the column that needs to store binary data as:
+
+```sql
+CREATE TABLE mytable (
+  id INTEGER PRIMARY KEY, 
+  name TEXT,
+  data BLOB
+)
+```
+
+And then when reading that back in Go with sqlx, the data column would be returned as []byte which you can then json.Unmarshal.
+
+Some key points:
+
+- BLOB is the column type for binary data in SQLite
+- sqlx will return BLOB columns as []byte 
+- You can then use json.Unmarshal to parse the []byte if it contains JSON
+
+So using BLOB columns and scanning into []byte is the way to handle JSON encoding/decoding when storing in SQLite from Go.
+
+
+
 ---
 
 ### notes

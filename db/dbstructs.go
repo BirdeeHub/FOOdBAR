@@ -10,11 +10,19 @@ import (
 	// _ "github.com/mattn/go-sqlite3"
 )
 
+type TableResult struct {
+	ID           uuid.UUID   `json:"id"`
+	CreatedAt    time.Time   `json:"createdat"`
+	LastModified time.Time   `json:"lastmodified"`
+	LastAuthor   string      `json:"lastauthor"`
+}
+
 type RecipeResult struct {
 	ID           uuid.UUID   `json:"id"`
 	CreatedAt    time.Time   `json:"createdat"`
 	LastModified time.Time   `json:"lastmodified"`
 	LastAuthor   string      `json:"lastauthor"`
+
 	Name         string      `json:"name"`
 	Category     []string    `json:"category"`
 	Dietary      []string    `json:"dietary"`
@@ -27,6 +35,7 @@ type MenuResult struct {
 	CreatedAt    time.Time `json:"createdat"`
 	LastModified time.Time `json:"lastmodified"`
 	LastAuthor   string    `json:"lastauthor"`
+
 	MenuID       uuid.UUID `json:"menuid"`
 	Name         string    `json:"name"`
 	Number       int       `json:"number"`
@@ -37,6 +46,7 @@ type PantryResult struct {
 	CreatedAt    time.Time `json:"createdat"`
 	LastModified time.Time `json:"lastmodified"`
 	LastAuthor   string    `json:"lastauthor"`
+
 	Name         string    `json:"name"`
 	Dietary      []string  `json:"dietary"`
 	Amount       float32   `json:"amount"`
@@ -48,6 +58,7 @@ type CustomerResult struct {
 	CreatedAt    time.Time `json:"createdat"`
 	LastModified time.Time `json:"lastmodified"`
 	LastAuthor   string    `json:"lastauthor"`
+
 	Email        string    `json:"email"`
 	Phone        string    `json:"phone"`
 	Name         string    `json:"name"`
@@ -59,6 +70,7 @@ type EventResult struct {
 	CreatedAt    time.Time `json:"createdat"`
 	LastModified time.Time `json:"lastmodified"`
 	LastAuthor   string    `json:"lastauthor"`
+
 	Name         string    `json:"name"`
 	MenuID       uuid.UUID `json:"menuid"`
 	Date         string    `json:"date"`
@@ -71,6 +83,7 @@ type PreplistResult struct {
 	CreatedAt    time.Time             `json:"createdat"`
 	LastModified time.Time             `json:"lastmodified"`
 	LastAuthor   string                `json:"lastauthor"`
+
 	EventID      uuid.UUID             `json:"eventid"`
 	MenuID       uuid.UUID             `json:"menuid"`
 	Ingredients  map[uuid.UUID]float32 `json:"ingredients"`
@@ -82,6 +95,7 @@ type ShoppingResult struct {
 	CreatedAt    time.Time   `json:"createdat"`
 	LastModified time.Time   `json:"lastmodified"`
 	LastAuthor   string      `json:"lastauthor"`
+
 	EventID      uuid.UUID   `json:"eventid"`
 	MenuID       uuid.UUID   `json:"menuid"`
 	Amount       float32     `json:"amount"`
@@ -94,6 +108,7 @@ type EarningsResult struct {
 	CreatedAt    time.Time `json:"createdat"`
 	LastModified time.Time `json:"lastmodified"`
 	LastAuthor   string    `json:"lastauthor"`
+
 	EventID      uuid.UUID `json:"eventid"`
 	MenuID       uuid.UUID `json:"menuid"`
 }

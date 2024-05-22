@@ -22,7 +22,7 @@ templ MenuItemContainer(item *foodlib.TabItem) {
 	</div>
 }
 
-templ RenderMenuTab(td *foodlib.TabData) {
+templ RenderMenuTab(pd *foodlib.PageData, td *foodlib.TabData) {
 	<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>
 		<div class={ TabHeaderTitleCSS() }>
 			Menu!

@@ -2,6 +2,7 @@ package db
 
 import (
 	foodlib "FOOdBAR/FOOlib"
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -67,21 +68,27 @@ func SubmitPantryItem(c echo.Context, pd *foodlib.PageData, td *foodlib.TabData,
 	return err
 }
 
-// TODO: This function
-func GetTabItemData(c echo.Context, item foodlib.TabItem) (interface{}, error) {
+func GetTabItemData(pd *foodlib.PageData, item *foodlib.TabItem) (map[string]interface{}, error) {
 	if item.Ttype == foodlib.Invalid {
 		return nil, errors.New("Invalid Tab Type")
 	}
-	userID, err := foodlib.GetUserFromClaims(foodlib.GetClaimsFromContext(c))
+	db, tableName, err := CreateTabTableIfNotExists(pd.UserID, item.Ttype)
 	if err != nil {
-		return nil, err
+		return nil, errors.New(tableName+err.Error())
 	}
-	db, tableName, err := CreateTabTableIfNotExists(userID, item.Ttype)
 	defer db.Close()
-	if err != nil {
+	
+	// TODO: Test that this works when you build an edit button for an item.
+	var data map[string]interface{}
+	err = db.QueryRow("SELECT * FROM "+tableName+" WHERE id = ?", item.ItemID).Scan(&data)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	} else if err != nil {
 		return nil, err
 	}
-	return nil, errors.New("not yet implemented"+tableName)
+	print(data)
+
+	return data, nil
 }
 
 // TODO: should not fetch data, but instead, which tabItems to fetch data from

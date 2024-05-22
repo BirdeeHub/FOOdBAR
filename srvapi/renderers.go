@@ -44,7 +44,7 @@ func TabActivateRenderer(c echo.Context, data *foodlib.PageData, td *foodlib.Tab
 	if err != nil {
 		echo.NewHTTPError(http.StatusTeapot, "Cannot unmarshal page data")
 	}
-	HTML(c, http.StatusOK, views.OOBtabViewContainer(td))
+	HTML(c, http.StatusOK, views.OOBtabViewContainer(data, td))
 	var tt foodlib.TabType
 	if td == nil {
 		tt = foodlib.Invalid
@@ -81,5 +81,5 @@ func TabMaximizeRenderer(c echo.Context, data *foodlib.PageData, td *foodlib.Tab
 		tt = td.Ttype
 	}
 	HTML(c, http.StatusOK, views.OOBtabButtonToggle(foodlib.TabButtonData{Ttype: tt, Active: true}))
-	return HTML(c, http.StatusOK, views.TabContainer(td))
+	return HTML(c, http.StatusOK, views.TabContainer(data, td))
 }

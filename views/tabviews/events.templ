@@ -22,7 +22,7 @@ templ EventsItemContainer(item *foodlib.TabItem) {
 	</div>
 }
 
-templ RenderEventsTab(td *foodlib.TabData) {
+templ RenderEventsTab(pd *foodlib.PageData, td *foodlib.TabData) {
 	<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>
 		<div class={ TabHeaderTitleCSS() }>
 			Events!

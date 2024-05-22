@@ -22,7 +22,7 @@ templ ShoppingItemContainer(item *foodlib.TabItem) {
 	</div>
 }
 
-templ RenderShoppingTab(td *foodlib.TabData) {
+templ RenderShoppingTab(pd *foodlib.PageData, td *foodlib.TabData) {
 	<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>
 		<div class={ TabHeaderTitleCSS() }>
 			Shopping!
