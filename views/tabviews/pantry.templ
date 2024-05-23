@@ -48,12 +48,24 @@ templ ModalPantryContent(pd *foodlib.PageData, item *foodlib.TabItem, e error) {
 				>
 					<div style="display: flex; flex-direction: column; flex: 0 0;">
 						Name:
-						<input class="text-black" value="" type="text" name="itemName"/>
+						if itemData != nil {
+							if name, ok := itemData["name"]; ok {
+								if namestr, ok := name.(string); ok {
+									<input class="text-black" value={ namestr } type="text" name="itemName"/>
+								} else {
+									<input class="text-black" value="" type="text" name="itemName"/>
+								}
+							} else {
+								<input class="text-black" value="" type="text" name="itemName"/>
+							}
+						} else {
+							<input class="text-black" value="" type="text" name="itemName"/>
+						}
 						<div style="display: flex; flex-direction: row; flex: 0 1;">
 							Dietary:
 							<div
-								hx-trigger={ "click" }
 								hx-get={ fmt.Sprintf("%s/api/modalGetNewField/%s/%s/%s", foodlib.PagePrefix, item.Ttype.String(), item.ItemID.String(), "dietary") }
+								hx-trigger="click"
 								hx-swap="none"
 								style="cursor: pointer; height: 100%; width: 1.5rem;"
 							>
@@ -80,9 +92,33 @@ templ ModalPantryContent(pd *foodlib.PageData, item *foodlib.TabItem, e error) {
 							</div>
 						</div>
 						Amount:
-						<input class="text-black" value="" type="text" name="itemAmount"/>
+						if itemData != nil {
+							if amount, ok := itemData["amount"]; ok {
+								if str, ok := amount.(string); ok {
+									<input class="text-black" value={ str } type="text" name="itemAmount"/>
+								} else {
+									<input class="text-black" value="" type="text" name="itemAmount"/>
+								}
+							} else {
+								<input class="text-black" value="" type="text" name="itemAmount"/>
+							}
+						} else {
+							<input class="text-black" value="" type="text" name="itemAmount"/>
+						}
 						Units:
-						<input class="text-black" value="" type="text" name="itemUnits"/>
+						if itemData != nil {
+							if units, ok := itemData["units"]; ok {
+								if str, ok := units.(string); ok {
+									<input class="text-black" value={ str } type="text" name="itemUnits"/>
+								} else {
+									<input class="text-black" value="" type="text" name="itemUnits"/>
+								}
+							} else {
+								<input class="text-black" value="" type="text" name="itemUnits"/>
+							}
+						} else {
+							<input class="text-black" value="" type="text" name="itemUnits"/>
+						}
 						<button action="submit" _="on click trigger closeModal">submit</button>
 					</div>
 				</form>
