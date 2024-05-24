@@ -4,14 +4,13 @@ import (
 	// "FOOdBAR/db"
 	"FOOdBAR/views"
 	foodlib "FOOdBAR/FOOlib"
-	"errors"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 )
 
 
-func SetupAPIroutes(e *echo.Group) error {
+func SetupTabCtlroutes(e *echo.Group) error {
 
 	mainPage := func(c echo.Context) error {
 		pd, err := foodlib.GetPageData(c)
@@ -72,14 +71,6 @@ func SetupAPIroutes(e *echo.Group) error {
 		}
 		return c.NoContent(http.StatusOK)
 	})
-
-	err := SetupModalAPIroutes(e)
-	if err != nil {
-		echo.NewHTTPError(
-			http.StatusTeapot,
-			errors.New("server api setup failed: "+err.Error()),
-		)
-	}
 	
 	return nil
 }

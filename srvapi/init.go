@@ -46,9 +46,17 @@ func InitServer(signingKey []byte, listenOn string) {
 	// 	return cssmiddleware
 	// }))
 
-	err = SetupAPIroutes(r)
+	err = SetupTabCtlroutes(r)
 	if err != nil {
 		e.Logger.Print(err)
+		echo.NewHTTPError(
+			http.StatusTeapot,
+			errors.New("server api setup failed: "+err.Error()),
+		)
+	}
+
+	err = SetupModalAPIroutes(r)
+	if err != nil {
 		echo.NewHTTPError(
 			http.StatusTeapot,
 			errors.New("server api setup failed: "+err.Error()),
