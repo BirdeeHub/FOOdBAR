@@ -20,7 +20,7 @@ func SetupModalAPIroutes(e *echo.Group) error {
 		}
 		tt := foodlib.String2TabType(c.Param("type"))
 		if tt == foodlib.Invalid {
-			return echo.NewHTTPError(http.StatusUnprocessableEntity, errors.New("Invalid tab type"))
+			return echo.NewHTTPError(http.StatusUnprocessableEntity, errors.New("invalid tab type"))
 		}
 		itemID, err := uuid.Parse(c.Param("itemID"))
 		if err != nil {
@@ -63,7 +63,7 @@ func SetupModalAPIroutes(e *echo.Group) error {
 		}
 		tt := foodlib.String2TabType(c.Param("type"))
 		if tt == foodlib.Invalid {
-			return echo.NewHTTPError(http.StatusUnprocessableEntity, errors.New("Invalid tab type"))
+			return echo.NewHTTPError(http.StatusUnprocessableEntity, errors.New("invalid tab type"))
 		}
 		itemID, err := uuid.Parse(c.Param("itemID"))
 		if err != nil {
@@ -87,15 +87,15 @@ func SetupModalAPIroutes(e *echo.Group) error {
 		}
 		tt := foodlib.String2TabType(c.Param("type"))
 		if tt == foodlib.Invalid {
-			return echo.NewHTTPError(http.StatusUnauthorized, errors.New("Invalid tab type"))
+			return echo.NewHTTPError(http.StatusUnauthorized, errors.New("invalid tab type"))
 		}
 		td := pageData.GetTabDataByType(tt)
 		if td.Items == nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, errors.New("Error: No tab open"))
+			return echo.NewHTTPError(http.StatusUnauthorized, errors.New("error: No tab open"))
 		}
 		item, ok := td.Items[itemID]
 		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, errors.New("Item with that ID not found in this tab"))
+			return echo.NewHTTPError(http.StatusUnauthorized, errors.New("item with that ID not found in this tab"))
 		}
 		return HTML(c, http.StatusOK, tabviews.ItemEditModal(tabviews.RenderModalContent(pageData, item, nil)))
 	})
@@ -107,7 +107,7 @@ func SetupModalAPIroutes(e *echo.Group) error {
 		}
 		tt := foodlib.String2TabType(c.Param("type"))
 		if tt == foodlib.Invalid {
-			return echo.NewHTTPError(http.StatusUnauthorized, errors.New("Invalid tab type"))
+			return echo.NewHTTPError(http.StatusUnauthorized, errors.New("invalid tab type"))
 		}
 		td := pageData.GetTabDataByType(tt)
 		item := td.AddTabItem(&foodlib.TabItem{Expanded: false})

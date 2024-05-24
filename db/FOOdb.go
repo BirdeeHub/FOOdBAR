@@ -10,9 +10,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
+
 func SubmitPantryItem(c echo.Context, pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem) error {
 	if item.Ttype == foodlib.Invalid {
-		return errors.New("Invalid Tab Type")
+		return errors.New("invalid Tab Type")
 	}
 	userID, err := foodlib.GetUserFromClaims(foodlib.GetClaimsFromContext(c))
 	if err != nil {
@@ -34,19 +35,18 @@ func SubmitPantryItem(c echo.Context, pd *foodlib.PageData, td *foodlib.TabData,
 	amount := c.FormValue("itemAmount")
 	units := c.FormValue("itemUnits")
 
-	dietarybytes, err := json.Marshal(rawdietary)
+	dietary, err := json.Marshal(rawdietary)
 	if err != nil {
 		return err
 	}
-	dietary := string(dietarybytes)
-	
+
 	// Check if row exists already, if so, do update instead
 	var exists bool
 	err = db.QueryRow("SELECT EXISTS(SELECT 1 FROM "+tableName+" WHERE id = ?)", item.ItemID).Scan(&exists)
 	if err != nil {
 		return err
 	}
-	
+
 	if exists {
 		updateStmt, err := db.Prepare(fmt.Sprintf("UPDATE %s SET name = ?, dietary = ?, amount = ?, units = ? WHERE id = ?", tableName))
 		if err != nil {
@@ -57,7 +57,7 @@ func SubmitPantryItem(c echo.Context, pd *foodlib.PageData, td *foodlib.TabData,
 		_, err = updateStmt.Exec(name, dietary, amount, units, item.ItemID)
 		return err
 	}
-	
+
 	insertStmt, err := db.Prepare(fmt.Sprintf(`INSERT INTO %s (id, last_author, name, dietary, amount, units) VALUES (?, ?, ?, ?, ?, ?)`, tableName))
 	if err != nil {
 		return err
@@ -68,17 +68,19 @@ func SubmitPantryItem(c echo.Context, pd *foodlib.PageData, td *foodlib.TabData,
 	return err
 }
 
-func GetTabItemData(pd *foodlib.PageData, item *foodlib.TabItem) (map[string]interface{}, error) {
-	if item.Ttype == foodlib.Invalid {
-		return nil, errors.New("Invalid Tab Type")
+func GetTabItemData(userID uuid.UUID, item *foodlib.TabItem) (map[string]interface{}, error) {
+	if item == nil {
+		return nil, errors.New("nil tab target")
 	}
-	db, tableName, err := CreateTabTableIfNotExists(pd.UserID, item.Ttype)
+	if item.Ttype == foodlib.Invalid {
+		return nil, errors.New("invalid Tab Type")
+	}
+	db, tableName, err := CreateTabTableIfNotExists(userID, item.Ttype)
 	if err != nil {
-		return nil, errors.New(tableName+err.Error())
+		return nil, err
 	}
 	defer db.Close()
-	
-	// TODO: Test that this works when you build an edit button for an item.
+
 	var data map[string]interface{}
 	err = db.QueryRow("SELECT * FROM "+tableName+" WHERE id = ?", item.ItemID).Scan(&data)
 	if err == sql.ErrNoRows {
@@ -86,9 +88,26 @@ func GetTabItemData(pd *foodlib.PageData, item *foodlib.TabItem) (map[string]int
 	} else if err != nil {
 		return nil, err
 	}
-	print(data)
 
 	return data, nil
+}
+
+func GetTabItemDataValue[T any](raw map[string]interface{}, key string, out *T) error {
+	if raw == nil {
+		return errors.New("no data to search")
+	}
+	if rawval, ok := raw[key]; ok && rawval != nil {
+		switch rawval.(type) {
+		case T:
+			outval := rawval.(T)
+			out = &outval
+		case []byte:
+			return json.Unmarshal(rawval.([]byte), out)
+		default:
+			return errors.New("value's type does not match out, nor is it unmarshalable to match the type of out")
+		}
+	}
+	return errors.New("lookup failed")
 }
 
 // TODO: should not fetch data, but instead, which tabItems to fetch data from

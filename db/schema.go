@@ -89,93 +89,94 @@ func CreateTabTableIfNotExists(userID uuid.UUID, tt foodlib.TabType) (*sqlx.DB, 
 		}
 	}
 
-	// TODO: I think lists should be BLOBs as long as sql can order by the contents still.
 	var createTable string
 	switch tt {
 	case foodlib.Recipe:
 		createTable = `CREATE TABLE IF NOT EXISTS %s (
 				id TEXT PRIMARY KEY,
-				created_at TEXT,
-				last_modified TEXT,
+				created_at DATETIME,
+				last_modified DATETIME,
 				last_author TEXT,
 				name TEXT,
-				category TEXT,
-				dietary TEXT,
-				ingredients TEXT,
+				category BLOB,
+				dietary BLOB,
+				ingredients BLOB,
 				instructions TEXT
 				)`
 	case foodlib.Menu:
 		createTable = `CREATE TABLE IF NOT EXISTS %s (
 				id TEXT PRIMARY KEY,
-				created_at TEXT,
-				last_modified TEXT,
+				created_at DATETIME,
+				last_modified DATETIME,
 				last_author TEXT,
 				menu_id TEXT,
+				event_id TEXT,
+				recipe_id TEXT,
 				name TEXT,
 				number INTEGER
 				)`
 	case foodlib.Pantry:
 		createTable = `CREATE TABLE IF NOT EXISTS %s (
 				id TEXT PRIMARY KEY,
-				created_at TEXT,
-				last_modified TEXT,
+				created_at DATETIME,
+				last_modified DATETIME,
 				last_author TEXT,
 				name TEXT,
-				dietary TEXT,
-				amount TEXT,
+				dietary BLOB,
+				amount FLOAT,
 				units TEXT
 				)`
 	case foodlib.Customer:
 		createTable = `CREATE TABLE IF NOT EXISTS %s (
 				id TEXT PRIMARY KEY,
-				created_at TEXT,
-				last_modified TEXT,
+				created_at DATETIME,
+				last_modified DATETIME,
 				last_author TEXT,
 				email TEXT,
 				phone TEXT,
 				name TEXT,
-				dietary TEXT
+				dietary BLOB
 				)`
 	case foodlib.Events:
 		createTable = `CREATE TABLE IF NOT EXISTS %s (
 				id TEXT PRIMARY KEY,
-				created_at TEXT,
-				last_modified TEXT,
+				created_at DATETIME,
+				last_modified DATETIME,
 				last_author TEXT,
 				name TEXT,
 				menu_id TEXT,
-				date TEXT,
+				date DATETIME,
 				location TEXT,
-				customer TEXT
+				customers BLOB
 				)`
 	case foodlib.Preplist:
 		createTable = `CREATE TABLE IF NOT EXISTS %s (
 				id TEXT PRIMARY KEY,
-				created_at TEXT,
-				last_modified TEXT,
+				created_at DATETIME,
+				last_modified DATETIME,
 				last_author TEXT,
 				event_id TEXT,
 				menu_id TEXT,
-				ingredients TEXT,
-				recipes TEXT
+				ingredients BLOB,
+				recipes BLOB
 				)`
 	case foodlib.Shopping:
 		createTable = `CREATE TABLE IF NOT EXISTS %s (
 				id TEXT PRIMARY KEY,
-				created_at TEXT,
-				last_modified TEXT,
+				created_at DATETIME,
+				last_modified DATETIME,
 				last_author TEXT,
 				event_id TEXT,
 				menu_id TEXT,
-				ingredients TEXT,
-				amount TEXT,
+				ingredients BLOB,
+				amount FLOAT,
 				units TEXT
 				)`
 	case foodlib.Earnings:
 		createTable = `CREATE TABLE IF NOT EXISTS %s (
 				id TEXT PRIMARY KEY,
-				created_at TEXT,
-				last_modified TEXT,
+				created_at DATETIME,
+				last_modified DATETIME,
 				last_author TEXT,
 				event_id TEXT,
 				menu_id TEXT
