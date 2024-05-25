@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -93,21 +94,64 @@ func GetTabItemData(userID uuid.UUID, item *foodlib.TabItem) (map[string]interfa
 }
 
 func GetTabItemDataValue[T any](raw map[string]interface{}, key string, out *T) error {
-	for k, v := range raw {
-		println("key: ", k, "value: ", v)
-	}
 	// TODO: fix this function (only currently works for []byte)
+	// NOTE: It only seems to see strings or []byte in the raw map
+	// and it doesnt want to rawval.(*T) for string case
+	// I may need to rethink how I am implementing generic typing here.
+	// Study implementation of json.Unmarshal maybe?
 	if raw == nil {
 		return errors.New("no data to search")
 	}
 	if rawval, ok := raw[key]; ok && rawval != nil {
+		print(rawval, " ")
 		switch rawval.(type) {
-		case T:
-			outval := rawval.(T)
-			out = &outval
+		case bool:
+			if outval, ok := rawval.(*T); ok {
+				out = outval
+			} else {
+				println("bool")
+				return errors.New("value's type does not match out, nor is it unmarshalable to match the type of out")
+			}
+		case float64:
+			if outval, ok := rawval.(*T); ok {
+				out = outval
+			} else {
+				println("float64")
+				return errors.New("value's type does not match out, nor is it unmarshalable to match the type of out")
+			}
+		case int64:
+			if outval, ok := rawval.(*T); ok {
+				out = outval
+			} else {
+				println("int64")
+				return errors.New("value's type does not match out, nor is it unmarshalable to match the type of out")
+			}
+		case int:
+			if outval, ok := rawval.(*T); ok {
+				out = outval
+			} else {
+				println("int")
+				return errors.New("value's type does not match out, nor is it unmarshalable to match the type of out")
+			}
+		case time.Time:
+			if outval, ok := rawval.(*T); ok {
+				out = outval
+			} else {
+				println("time")
+				return errors.New("value's type does not match out, nor is it unmarshalable to match the type of out")
+			}
+		case string:
+			if outval, ok := rawval.(*T); ok {
+				out = outval
+			} else {
+				println("string")
+				return errors.New("value's type does not match out, nor is it unmarshalable to match the type of out")
+			}
 		case []byte:
+			println("bytes")
 			return json.Unmarshal(rawval.([]byte), out)
 		default:
+			println("unknown")
 			return errors.New("value's type does not match out, nor is it unmarshalable to match the type of out")
 		}
 	}
