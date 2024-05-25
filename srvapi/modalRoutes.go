@@ -15,7 +15,7 @@ func SetupModalAPIroutes(e *echo.Group) error {
 
 	e.POST("/api/submitItemInfo/:type/:itemID", func(c echo.Context) error {
 		// TODO: This should return html with error message if failed submission
-		// TODO: This should refresh the tab it was added to.
+		// TODO: This should refresh the tab it was added to so it can get new values.
 		pageData, err := foodlib.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
