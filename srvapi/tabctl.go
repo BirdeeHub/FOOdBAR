@@ -39,8 +39,7 @@ func SetupTabCtlroutes(e *echo.Group) error {
 	})
 
 	e.GET("/api/tabButton/activate/:type", func(c echo.Context) error {
-		// TODO: fetch appropriate TabData.Items from database
-		// based on sort. Implement infinite scroll for them.
+		// TODO: Implement infinite scroll for these.
 		pageData, err := foodlib.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
@@ -55,8 +54,7 @@ func SetupTabCtlroutes(e *echo.Group) error {
 	})
 
 	e.POST("/api/tabButton/maximize/:type", func(c echo.Context) error {
-		// TODO: fetch appropriate TabData.Items from database
-		// based on sort. Implement infinite scroll for them.
+		// TODO: Implement infinite scroll for these.
 		pageData, err := foodlib.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)

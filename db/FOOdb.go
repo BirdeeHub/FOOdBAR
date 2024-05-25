@@ -172,14 +172,13 @@ func GetTabItemDataValue[T any](raw map[string]interface{}, key string, out *T) 
 	return errors.New("lookup failed")
 }
 
-// TODO: should not fetch data, but instead, which tabItems to fetch data from
 func FillXTabItems(userID uuid.UUID, tbd *foodlib.TabData, number int) error {
 	db, tableName, err := CreateTabTableIfNotExists(userID, tbd.Ttype)
 	defer db.Close()
 	if err != nil {
 		return err
 	}
-	// TODO: fill tbd.Items with X number of items based on SortMethod stored in TabData
+	// TODO: fill tbd.Items with X number of items based on SortMethods stored in TabData
 	rows, err := db.Query("SELECT id FROM " + tableName)
 	if err != nil {
 		return err
