@@ -135,7 +135,6 @@ func GetTabItemDataValue[T any](raw map[string]interface{}, key string, out *T) 
 		if r := recover(); r != nil {
 			// recover from panic if type convert fails and return error
 			err := fmt.Errorf("panic: %s", r) 
-			fmt.Printf("panic: %s", err.Error())
 			return err
 		} else {
 			return nil
