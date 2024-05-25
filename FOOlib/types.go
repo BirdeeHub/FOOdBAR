@@ -103,18 +103,6 @@ func String2TabType(str string) TabType {
 	return Invalid
 }
 
-type ColorScheme string
-
-const (
-	None  ColorScheme = ""
-	Dark              = "dark"
-	Light             = "light"
-)
-
-func GetColorSchemes() [3]ColorScheme {
-	return [...]ColorScheme{Dark, Light, None}
-}
-
 // PageData and its children
 
 type TabButtonData struct {
@@ -127,7 +115,6 @@ type PageData struct {
 	SessionID uuid.UUID   `json:"session_id"`
 	TabID     string      `json:"tab_id"`
 	TabDatas  []*TabData  `json:"tab_datas"`
-	Palette   ColorScheme `json:"palette"`
 }
 
 type TabData struct {
@@ -227,7 +214,6 @@ func InitPageData(userID uuid.UUID, sessionID uuid.UUID, tabID string) *PageData
 		SessionID: sessionID,
 		UserID:    userID,
 		TabID:     tabID,
-		Palette:   None,
 		TabDatas:  []*TabData{},
 	}
 	return pd
@@ -388,13 +374,11 @@ func (pd *PageData) MarshalJSON() ([]byte, error) {
 		TabID     string     `json:"tab_id"`
 		UserID    string     `json:"user_id"`
 		TabDatas  []*TabData `json:"tab_datas"`
-		Palette   string     `json:"palette"`
 	}{
 		SessionID: pd.SessionID.String(),
 		UserID:    pd.UserID.String(),
 		TabID:     pd.TabID,
 		TabDatas:  pd.TabDatas,
-		Palette:   string(pd.Palette),
 	}
 	marshalled, err := json.Marshal(configpre)
 	return marshalled, err
@@ -406,7 +390,6 @@ func (pd *PageData) UnmarshalJSON(data []byte) error {
 		UserID    string     `json:"user_id"`
 		TabID     string     `json:"tab_id"`
 		TabDatas  []*TabData `json:"tab_datas"`
-		Palette   string     `json:"palette"`
 	}
 	err := json.Unmarshal(data, &irJson)
 	if err != nil {
@@ -419,15 +402,5 @@ func (pd *PageData) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	pd.UserID, err = uuid.Parse(irJson.UserID)
-	if err != nil {
-		return err
-	}
-	err = errors.New("invalid color scheme")
-	for _, v := range GetColorSchemes() {
-		if irJson.Palette == string(v) {
-			pd.Palette = v
-			err = nil
-		}
-	}
 	return err
 }

@@ -67,21 +67,6 @@ func SetupTabCtlroutes(e *echo.Group) error {
 		}
 		return RenderTab(TabMaximizeRenderer, c, pageData, pageData.GetTabDataByType(foodlib.String2TabType(c.Param("type"))))
 	})
-
-	e.POST("/api/mediaQuery", func(c echo.Context) error {
-		pageData, err := foodlib.GetPageData(c)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, err)
-		}
-		if c.FormValue("query") == "(prefers-color-scheme: dark)" && c.FormValue("value") == "light" {
-			pageData.Palette = foodlib.Light
-			pageData.SavePageData(c)
-		} else {
-			pageData.Palette = foodlib.Dark
-			pageData.SavePageData(c)
-		}
-		return c.NoContent(http.StatusOK)
-	})
 	
 	return nil
 }

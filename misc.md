@@ -634,3 +634,68 @@ So in SQLite we can use `pragma_table_info` instead of `information_schema` to g
  	})
  }
 ```
+
+```go
+
+
+	e.POST("/api/mediaQuery", func(c echo.Context) error {
+		pageData, err := foodlib.GetPageData(c)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, err)
+		}
+		if c.FormValue("query") == "(prefers-color-scheme: dark)" && c.FormValue("value") == "light" {
+			pageData.Palette = foodlib.Light
+			pageData.SavePageData(c)
+		} else {
+			pageData.Palette = foodlib.Dark
+			pageData.SavePageData(c)
+		}
+		return c.NoContent(http.StatusOK)
+	})
+
+```
+
+```templ
+
+script getColorScheme(mediaQueryEndpoint string) {
+	// Function to send the media query value to the endpoint
+	function sendMediaQueryValue(querystring, value) {
+		// Define the endpoint URL
+		const endpoint = mediaQueryEndpoint;
+		const data = new URLSearchParams();
+		data.append('query', querystring);
+		data.append('value', value);
+		const options = {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded' // Specify the content type as JSON
+			},
+			body: data // Convert the data object to a JSON string
+		}
+		// Send a GET request to the endpoint
+		fetch(endpoint, options)
+			.then(response => {
+				if (response.ok) {
+					console.log('Media query value sent successfully');
+				} else {
+					console.error('Failed to send media query value');
+				}
+			})
+			.catch(error => {
+				console.error('Error occurred while sending media query value:', error);
+			});
+	}
+	function checkColorscheme() {
+		// Define your media query here
+		const querystring = '(prefers-color-scheme: dark)';
+		const mediaQuery = window.matchMedia(querystring);
+		if (mediaQuery.matches) {
+			sendMediaQueryValue(querystring, 'dark');
+		} else {
+			sendMediaQueryValue(querystring, 'light');
+		}
+	}
+
+	checkColorscheme()
+}
+```
