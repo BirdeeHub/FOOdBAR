@@ -3,6 +3,7 @@ package srvapi
 import (
 	"FOOdBAR/views"
 	foodlib "FOOdBAR/FOOlib"
+	"FOOdBAR/db"
 	"net/http"
 
 	"github.com/a-h/templ"
@@ -25,7 +26,7 @@ func RenderTab[TR TabRenderer](tr TR, c echo.Context, data *foodlib.PageData, td
 
 func TabDeactivateRenderer(c echo.Context, data *foodlib.PageData, td *foodlib.TabData) error {
 	data.SetActive(td, false)
-	err := data.SavePageData(c)
+	err := db.SavePageData(c, data)
 	if err != nil {
 		echo.NewHTTPError(http.StatusTeapot, "Cannot unmarshal page data")
 	}
@@ -40,7 +41,7 @@ func TabDeactivateRenderer(c echo.Context, data *foodlib.PageData, td *foodlib.T
 
 func TabActivateRenderer(c echo.Context, data *foodlib.PageData, td *foodlib.TabData) error {
 	data.SetActive(td, true)
-	err := data.SavePageData(c)
+	err := db.SavePageData(c, data)
 	if err != nil {
 		echo.NewHTTPError(http.StatusTeapot, "Cannot unmarshal page data")
 	}
@@ -67,7 +68,7 @@ func TabMaximizeRenderer(c echo.Context, data *foodlib.PageData, td *foodlib.Tab
 	for _, v := range toMin {
 		data.SetActive(v, false)
 	}
-	err := data.SavePageData(c)
+	err := db.SavePageData(c, data)
 	if err != nil {
 		echo.NewHTTPError(http.StatusTeapot, "Cannot unmarshal page data")
 	}

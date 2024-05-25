@@ -14,11 +14,11 @@ import (
 func SetupTabCtlroutes(e *echo.Group) error {
 
 	mainPage := func(c echo.Context) error {
-		pd, err := foodlib.GetPageData(c)
+		pd, err := db.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
-		pd.SavePageData(c)
+		db.SavePageData(c, pd)
 		return HTML(c, http.StatusOK, views.Homepage(pd))
 	}
 
@@ -31,7 +31,7 @@ func SetupTabCtlroutes(e *echo.Group) error {
 	e.POST("/", mainPage)
 
 	e.DELETE("/api/tabButton/deactivate/:type", func(c echo.Context) error {
-		pageData, err := foodlib.GetPageData(c)
+		pageData, err := db.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
@@ -40,7 +40,7 @@ func SetupTabCtlroutes(e *echo.Group) error {
 
 	e.GET("/api/tabButton/activate/:type", func(c echo.Context) error {
 		// TODO: Implement infinite scroll for these.
-		pageData, err := foodlib.GetPageData(c)
+		pageData, err := db.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
@@ -55,7 +55,7 @@ func SetupTabCtlroutes(e *echo.Group) error {
 
 	e.POST("/api/tabButton/maximize/:type", func(c echo.Context) error {
 		// TODO: Implement infinite scroll for these.
-		pageData, err := foodlib.GetPageData(c)
+		pageData, err := db.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}

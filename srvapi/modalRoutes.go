@@ -16,7 +16,7 @@ func SetupModalAPIroutes(e *echo.Group) error {
 	e.POST("/api/submitItemInfo/:type/:itemID", func(c echo.Context) error {
 		// TODO: This should return html with error message if failed submission
 		// TODO: This should refresh the tab it was added to so it can get new values.
-		pageData, err := foodlib.GetPageData(c)
+		pageData, err := db.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
@@ -58,7 +58,7 @@ func SetupModalAPIroutes(e *echo.Group) error {
 	})
 
 	e.GET("/api/modalGetNewField/:type/:itemID/:field", func(c echo.Context) error {
-		pageData, err := foodlib.GetPageData(c)
+		pageData, err := db.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
@@ -78,7 +78,7 @@ func SetupModalAPIroutes(e *echo.Group) error {
 	})
 
 	e.GET("/api/itemEditModal/open/:type/:itemID", func(c echo.Context) error {
-		pageData, err := foodlib.GetPageData(c)
+		pageData, err := db.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
@@ -102,7 +102,7 @@ func SetupModalAPIroutes(e *echo.Group) error {
 	})
 
 	e.GET("/api/itemCreateModal/open/:type", func(c echo.Context) error {
-		pageData, err := foodlib.GetPageData(c)
+		pageData, err := db.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
