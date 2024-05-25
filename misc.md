@@ -462,7 +462,157 @@ Some key points:
 
 So using BLOB columns and scanning into []byte is the way to handle JSON encoding/decoding when storing in SQLite from Go.
 
+> I want to get the sql types of the columns and cast the values of the map to the correct type before returning
+> 
+> ```go
+> func GetTabItemData(userID uuid.UUID, item *foodlib.TabItem) (map[string]interface{}, error) {
+> 	if item == nil {
+> 		return nil, errors.New("nil tab target")
+> 	}
+> 	if item.Ttype == foodlib.Invalid {
+> 		return nil, errors.New("invalid Tab Type")
+> 	}
+> 	db, tableName, err := CreateTabTableIfNotExists(userID, item.Ttype)
+> 	if err != nil {
+> 		return nil, err
+> 	}
+> 	defer db.Close()
+> 
+> 	data := make(map[string]interface{})
+> 	err = db.QueryRowx("SELECT * FROM "+tableName+" WHERE id = ?", item.ItemID).MapScan(data)
+> 	if err == sql.ErrNoRows {
+> 		return nil, nil
+> 	} else if err != nil {
+> 		return nil, err
+> 	}
+> 
+> 	return data, nil
+> }
+> ```
 
+Here is how you can get the column types and cast the values to the correct types:
+
+```go
+func GetTabItemData(userID uuid.UUID, item *foodlib.TabItem) (map[string]interface{}, error) {
+	if item == nil {
+		return nil, errors.New("nil tab target")
+	}
+	if item.Ttype == foodlib.Invalid {
+		return nil, errors.New("invalid Tab Type")
+	}
+
+	db, tableName, err := CreateTabTableIfNotExists(userID, item.Ttype)
+	if err != nil {
+		return nil, err
+	}
+	defer db.Close()
+
+	// Get column names and types
+	cols, err := db.Queryx("SELECT column_name, data_type FROM information_schema.columns WHERE table_name = ?", tableName)
+	if err != nil {
+		return nil, err
+	}
+
+	colTypes := make(map[string]string)
+	for cols.Next() {
+		var name, typ string
+		if err := cols.Scan(&name, &typ); err != nil {
+			return nil, err
+		}
+		colTypes[name] = typ
+	}
+
+	// Query data and cast values to correct types
+	data := make(map[string]interface{})
+	row := db.QueryRowx("SELECT * FROM "+tableName+" WHERE id = ?", item.ItemID)
+	err = row.MapScan(data)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+
+	for col, typ := range colTypes {
+		switch typ {
+		case "int":
+			val, _ := data[col].(int64)
+			data[col] = int(val)
+		case "float":
+			val, _ := data[col].(float64)
+			data[col] = float32(val)
+		// add cases for other types
+		}
+	}
+
+	return data, nil
+}
+```
+
+This queries the column information to get a mapping of column name to data type, uses that when scanning the result row to cast values to the correct types.
+
+> why did you convert the float64 into a float32?
+> 
+> 	for col, typ := range colTypes {
+> switch typ {
+> case "int":
+>     val, _ := data[col].(int64)
+>     data[col] = int(val)
+> case "float":
+>     val, _ := data[col].(float64)
+>     data[col] = float32(val)
+> // add cases for other types
+> }
+> }
+
+You're right, converting the float64 to float32 is not necessary in this case. I did that by default assuming the destination type would be float32, but since we are just storing into an interface{} map there is no need to convert the type.
+
+A better way to handle the floats would be:
+
+```go
+for col, typ := range colTypes {
+  switch typ {
+  case "int":
+    val, _ := data[col].(int64) 
+    data[col] = int(val)
+
+  case "float":
+    val := data[col].(float64)
+    data[col] = val
+
+  // add cases for other types
+  }
+}
+```
+
+So just leave floats as float64 rather than converting. Thanks for catching that!
+
+> im using sqlite. It says
+> 
+> no such table: information_schema.columns
+
+You're right, the `information_schema` tables are not present in SQLite by default. 
+
+Instead of querying `information_schema`, we can use the `sqlite_master` table to get column info:
+
+```go
+cols, err := db.Queryx("SELECT name, type FROM pragma_table_info(?)", tableName)
+if err != nil {
+  return nil, err 
+}
+
+colTypes := make(map[string]string)
+for cols.Next() {
+  var name, typ string
+  if err := cols.Scan(&name, &typ); err != nil {
+    return nil, err
+  }
+  colTypes[name] = typ
+}
+```
+
+The `pragma_table_info` pragma query returns the column name and type for a given table.
+
+So in SQLite we can use `pragma_table_info` instead of `information_schema` to get the column metadata.
 
 ---
 

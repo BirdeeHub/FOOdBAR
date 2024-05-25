@@ -90,14 +90,51 @@ func GetTabItemData(userID uuid.UUID, item *foodlib.TabItem) (map[string]interfa
 		return nil, err
 	}
 
+	cols, err := db.Queryx("SELECT name, type FROM pragma_table_info(?)", tableName)
+	if err != nil {
+		println(err.Error())
+		return nil, err 
+	}
+
+	colTypes := make(map[string]string)
+	for cols.Next() {
+		var name, typ string
+		if err := cols.Scan(&name, &typ); err != nil {
+			println(err.Error())
+			return nil, err
+		}
+		colTypes[name] = typ
+	}
+
+	for col, typ := range colTypes {
+		println(col, typ, data[col])
+		var ok bool
+		switch typ {
+		case "INTEGER":
+			data[col], ok = data[col].(int)
+		case "TEXT":
+			data[col], ok = data[col].(string)
+		case "FLOAT":
+			data[col], ok = data[col].(float64)
+		case "BLOB":
+			data[col], ok = data[col].([]byte)
+		case "DATETIME":
+			data[col], ok = data[col].(time.Time)
+		default:
+			data[col], ok = data[col].([]byte)
+		}
+		if !ok {
+			return nil, errors.New("column type does not match")
+		}
+	}
+
 	return data, nil
 }
 
 func GetTabItemDataValue[T any](raw map[string]interface{}, key string, out *T) error {
 	// TODO: fix this function (only currently works for []byte)
-	// NOTE: It only seems to see strings or []byte in the raw map
-	// and it doesnt want to rawval.(*T) for string case
-	// I may need to rethink how I am implementing generic typing here.
+	// NOTE: it doesnt want to rawval.(*T)
+	// I need to rethink how I am implementing generic typing here.
 	// Study implementation of json.Unmarshal maybe?
 	if raw == nil {
 		return errors.New("no data to search")
