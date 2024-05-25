@@ -130,7 +130,6 @@ func GetTabItemData(userID uuid.UUID, item *foodlib.TabItem) (map[string]interfa
 }
 
 func GetTabItemDataValue[T any](raw map[string]interface{}, key string, out *T) error {
-	// TODO: fix this function (only currently works for []byte)
 	defer func() error {
 		if r := recover(); r != nil {
 			// recover from panic if type convert fails and return error
