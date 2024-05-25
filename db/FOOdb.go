@@ -178,7 +178,8 @@ func FillXTabItems(userID uuid.UUID, tbd *foodlib.TabData, number int) error {
 	if err != nil {
 		return err
 	}
-	// TODO: fill tbd.Items with X number of items based on SortMethods stored in TabData
+	// TODO: fill tbd.Items with X number of items based on SortMethod numbers stored in slice in TabData
+	// get the actual SortMethod via GetSortMethodByNumber(k int)
 	rows, err := db.Query("SELECT id FROM " + tableName)
 	if err != nil {
 		return err
