@@ -55,7 +55,6 @@ func SetupModalAPIroutes(e *echo.Group) error {
 		return nil
 	})
 
-	//TODO: this route
 	e.GET("/api/modalGetNewField/:type/:itemID/:field", func(c echo.Context) error {
 		pageData, err := foodlib.GetPageData(c)
 		if err != nil {

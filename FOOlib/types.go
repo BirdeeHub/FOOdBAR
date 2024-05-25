@@ -63,6 +63,14 @@ func GetSortMethods() [8]SortMethod {
 	}
 }
 
+func GetSortMethodByNumber(k int) (SortMethod, error) {
+	list := GetSortMethods()
+	if k >= len(list) || k < 0 {
+		return Inactive, errors.New("sort method does not exist")
+	}
+	return list[k], nil
+}
+
 type TabType string
 
 const (
@@ -124,7 +132,7 @@ type PageData struct {
 type TabData struct {
 	Ttype   TabType                `json:"tab_type"`
 	Items   map[uuid.UUID]*TabItem `json:"items"`
-	OrderBy SortMethod             `json:"order_by"`
+	OrderBy []int             `json:"order_by"`
 }
 
 type TabItem struct {
@@ -207,7 +215,7 @@ func (pgd *PageData) GetTabDataByType(tt TabType) *TabData {
 	td := &TabData{
 		Ttype:   tt,
 		Items:   make(map[uuid.UUID]*TabItem),
-		OrderBy: Inactive,
+		OrderBy: []int{},
 	}
 	pgd.TabDatas = append(pgd.TabDatas, td)
 	return td
@@ -331,11 +339,11 @@ func (tbd *TabData) MarshalJSON() ([]byte, error) {
 	configpre := struct {
 		Ttype   string             `json:"tab_type"`
 		Items   map[string]TabItem `json:"items"`
-		OrderBy string             `json:"order_by"`
+		OrderBy []int             `json:"order_by"`
 	}{
 		Ttype:   tbd.Ttype.String(),
 		Items:   itemsmap,
-		OrderBy: string(tbd.OrderBy),
+		OrderBy: tbd.OrderBy,
 	}
 	marshalled, err := json.Marshal(configpre)
 	return marshalled, err
@@ -345,12 +353,13 @@ func (tbd *TabData) UnmarshalJSON(data []byte) error {
 	var irJson struct {
 		Ttype   string             `json:"tab_type"`
 		Items   map[string]TabItem `json:"items"`
-		OrderBy string             `json:"order_by"`
+		OrderBy []int             `json:"order_by"`
 	}
 	err := json.Unmarshal(data, &irJson)
 	if err != nil {
 		return err
 	}
+	tbd.OrderBy = irJson.OrderBy
 	tbd.Ttype = String2TabType(irJson.Ttype)
 	if tbd.Items == nil {
 		tbd.Items = make(map[uuid.UUID]*TabItem)
@@ -361,16 +370,6 @@ func (tbd *TabData) UnmarshalJSON(data []byte) error {
 			return err
 		}
 		tbd.Items[id] = &v
-	}
-	invalidSort := true
-	for _, x := range GetSortMethods() {
-		if irJson.OrderBy == string(x) {
-			tbd.OrderBy = x
-			invalidSort = false
-		}
-	}
-	if invalidSort {
-		return errors.New("invalid sort method")
 	}
 	return nil
 }
@@ -418,8 +417,5 @@ func (pd *PageData) UnmarshalJSON(data []byte) error {
 			err = nil
 		}
 	}
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
