@@ -616,35 +616,6 @@ So in SQLite we can use `pragma_table_info` instead of `information_schema` to g
 
 ---
 
-### CSS
-
-To apply a style to an element without cascading it to its children, you can use a combination of CSS properties to achieve the desired effect. One common approach is to use the `inherit` value for properties that you don't want to cascade down to the children.
-
-Here's how you can do it:
-
-```css
-/* Apply the style to the parent element */
-.parent {
-  /* Apply the desired style */
-  background-color: red;
-}
-
-/* Prevent the background color from cascading to the children */
-.parent > * {
-  background-color: inherit;
-}
-```
-
-In this example:
-
-- The `.parent` class applies the desired style, such as a background color.
-- The `.parent > *` selector targets all direct children of the `.parent` element.
-- The `background-color: inherit;` rule prevents the background color from cascading down to the children, effectively overriding any background color inherited from the parent.
-
-With this approach, the style will be applied to the parent element but will not cascade down to its children. Adjust the selectors and properties as needed to fit your specific requirements.
-
----
-
 ### notes
 
 
