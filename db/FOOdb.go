@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"reflect"
 	"time"
 
 	"github.com/google/uuid"
@@ -92,7 +93,6 @@ func GetTabItemData(userID uuid.UUID, item *foodlib.TabItem) (map[string]interfa
 
 	cols, err := db.Queryx("SELECT name, type FROM pragma_table_info(?)", tableName)
 	if err != nil {
-		println(err.Error())
 		return nil, err 
 	}
 
@@ -100,14 +100,12 @@ func GetTabItemData(userID uuid.UUID, item *foodlib.TabItem) (map[string]interfa
 	for cols.Next() {
 		var name, typ string
 		if err := cols.Scan(&name, &typ); err != nil {
-			println(err.Error())
 			return nil, err
 		}
 		colTypes[name] = typ
 	}
 
 	for col, typ := range colTypes {
-		println(col, typ, data[col])
 		var ok bool
 		switch typ {
 		case "INTEGER":
@@ -133,62 +131,42 @@ func GetTabItemData(userID uuid.UUID, item *foodlib.TabItem) (map[string]interfa
 
 func GetTabItemDataValue[T any](raw map[string]interface{}, key string, out *T) error {
 	// TODO: fix this function (only currently works for []byte)
-	// NOTE: it doesnt want to rawval.(*T)
-	// I need to rethink how I am implementing generic typing here.
-	// Study implementation of json.Unmarshal maybe?
+	defer func() error {
+		if r := recover(); r != nil {
+			// recover from panic if type convert fails and return error
+			err := fmt.Errorf("panic: %s", r) 
+			fmt.Printf("panic: %s", err.Error())
+			return err
+		} else {
+			return nil
+		}
+	}()
 	if raw == nil {
 		return errors.New("no data to search")
 	}
 	if rawval, ok := raw[key]; ok && rawval != nil {
-		print(rawval, " ")
 		switch rawval.(type) {
 		case bool:
-			if outval, ok := rawval.(*T); ok {
-				out = outval
-			} else {
-				println("bool")
-				return errors.New("value's type does not match out, nor is it unmarshalable to match the type of out")
-			}
+			reflect.ValueOf(out).Elem().Set(reflect.ValueOf(rawval))
+			return nil
 		case float64:
-			if outval, ok := rawval.(*T); ok {
-				out = outval
-			} else {
-				println("float64")
-				return errors.New("value's type does not match out, nor is it unmarshalable to match the type of out")
-			}
+			reflect.ValueOf(out).Elem().Set(reflect.ValueOf(rawval))
+			return nil
 		case int64:
-			if outval, ok := rawval.(*T); ok {
-				out = outval
-			} else {
-				println("int64")
-				return errors.New("value's type does not match out, nor is it unmarshalable to match the type of out")
-			}
+			reflect.ValueOf(out).Elem().Set(reflect.ValueOf(rawval))
+			return nil
 		case int:
-			if outval, ok := rawval.(*T); ok {
-				out = outval
-			} else {
-				println("int")
-				return errors.New("value's type does not match out, nor is it unmarshalable to match the type of out")
-			}
+			reflect.ValueOf(out).Elem().Set(reflect.ValueOf(rawval))
+			return nil
 		case time.Time:
-			if outval, ok := rawval.(*T); ok {
-				out = outval
-			} else {
-				println("time")
-				return errors.New("value's type does not match out, nor is it unmarshalable to match the type of out")
-			}
+			reflect.ValueOf(out).Elem().Set(reflect.ValueOf(rawval))
+			return nil
 		case string:
-			if outval, ok := rawval.(*T); ok {
-				out = outval
-			} else {
-				println("string")
-				return errors.New("value's type does not match out, nor is it unmarshalable to match the type of out")
-			}
+			reflect.ValueOf(out).Elem().Set(reflect.ValueOf(rawval))
+			return nil
 		case []byte:
-			println("bytes")
 			return json.Unmarshal(rawval.([]byte), out)
 		default:
-			println("unknown")
 			return errors.New("value's type does not match out, nor is it unmarshalable to match the type of out")
 		}
 	}
