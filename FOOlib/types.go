@@ -352,6 +352,9 @@ func (tbd *TabData) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	tbd.Ttype = String2TabType(irJson.Ttype)
+	if tbd.Items == nil {
+		tbd.Items = make(map[uuid.UUID]*TabItem)
+	}
 	for k, v := range irJson.Items {
 		id, err := uuid.Parse(k)
 		if err != nil {

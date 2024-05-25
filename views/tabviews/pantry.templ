@@ -6,19 +6,26 @@ import (
 	"FOOdBAR/db"
 )
 
-templ PantryTabContents(td *foodlib.TabData) {
+templ PantryTabContents(pd *foodlib.PageData, td *foodlib.TabData) {
 	for _, ti := range td.GetTabItems() {
-		@PantryItemContainer(ti)
+		@PantryItemContainer(pd, ti)
 	}
 }
 
-templ PantryItemContainer(item *foodlib.TabItem) {
+templ PantryItemContainer(pd *foodlib.PageData, item *foodlib.TabItem) {
 	<div id={ fmt.Sprintf("%s", item.ItemID.String()) } class={ TabListItemCSS() }>
 		<div class={ ListItemElementCSS() }>
 			{ item.ItemID.String() }
 		</div>
 		<div class={ ListItemElementCSS() }>
-			@Trashcan()
+			if itemData, _ := db.GetTabItemData(pd.UserID, item); item != nil {
+				if name := ""; db.GetTabItemDataValue(itemData, "name", &name) == nil {
+					{ name }
+				}
+			}
+		</div>
+		<div class={ ListItemElementCSS() }>
+			@EditTabItemButton(item)
 		</div>
 	</div>
 }
@@ -33,7 +40,7 @@ templ RenderPantryTab(pd *foodlib.PageData, td *foodlib.TabData) {
 		@MaximizeTabButton(td.Ttype)
 	</div>
 	<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
-		@PantryTabContents(td)
+		@PantryTabContents(pd, td)
 	</div>
 }
 

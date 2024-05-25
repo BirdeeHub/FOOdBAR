@@ -81,8 +81,8 @@ func GetTabItemData(userID uuid.UUID, item *foodlib.TabItem) (map[string]interfa
 	}
 	defer db.Close()
 
-	var data map[string]interface{}
-	err = db.QueryRow("SELECT * FROM "+tableName+" WHERE id = ?", item.ItemID).Scan(&data)
+	data := make(map[string]interface{})
+	err = db.QueryRowx("SELECT * FROM "+tableName+" WHERE id = ?", item.ItemID).MapScan(data)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	} else if err != nil {
@@ -93,6 +93,10 @@ func GetTabItemData(userID uuid.UUID, item *foodlib.TabItem) (map[string]interfa
 }
 
 func GetTabItemDataValue[T any](raw map[string]interface{}, key string, out *T) error {
+	for k, v := range raw {
+		println("key: ", k, "value: ", v)
+	}
+	// TODO: fix this function (only currently works for []byte)
 	if raw == nil {
 		return errors.New("no data to search")
 	}
@@ -112,13 +116,25 @@ func GetTabItemDataValue[T any](raw map[string]interface{}, key string, out *T) 
 
 // TODO: should not fetch data, but instead, which tabItems to fetch data from
 func FillXTabItems(userID uuid.UUID, tbd *foodlib.TabData, number int) error {
-	db, _, err := CreateTabTableIfNotExists(userID, tbd.Ttype)
+	db, tableName, err := CreateTabTableIfNotExists(userID, tbd.Ttype)
 	defer db.Close()
 	if err != nil {
 		return err
 	}
-	// TODO: fill tbd.Items with X number of items based on tbd.OrderBy: SortMethod
-	// where the key string is a column name
+	// TODO: fill tbd.Items with X number of items based on SortMethod stored in TabData
+	rows, err := db.Query("SELECT id FROM " + tableName)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var id uuid.UUID
+		if err := rows.Scan(&id); err != nil {
+			return err
+		}
+		tbd.AddTabItem(&foodlib.TabItem{ItemID: id})
+	}
 
 	return nil
 }

@@ -66,6 +66,17 @@ templ AddTabItemButton(tt foodlib.TabType) {
 	</div>
 }
 
+templ EditTabItemButton(ti *foodlib.TabItem) {
+	<div
+		id={ fmt.Sprintf("ItemEdit_%s", ti.Ttype.String()) }
+		hx-get={ fmt.Sprintf("%s/api/itemEditModal/open/%s/%s", foodlib.PagePrefix, ti.Ttype.String(), ti.ItemID.String()) }
+		hx-swap="beforeend"
+		hx-target="body"
+		class={ TabHeaderButtonCSS("0 0 1.5rem") }
+	>
+		@EditSVG()
+	</div>
+}
 
 templ RenderModalContent(pd *foodlib.PageData, item *foodlib.TabItem, e error) {
 	switch item.Ttype {

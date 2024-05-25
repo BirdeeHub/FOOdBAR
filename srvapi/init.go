@@ -63,6 +63,8 @@ func InitServer(signingKey []byte, listenOn string) {
 		)
 	}
 
+
+
 	// TODO: figure out how to HTTPS
 	// e.Logger.Fatal(e.StartTLS(":42069", "cert.pem", "key.pem"))
 	e.Logger.Fatal(e.Start(listenOn))

@@ -40,6 +40,8 @@ It's FU'd Beyond Any Recognition
 The FOOdBAR tracks the food in the FOOdb and tells you how much FOOd you have and sold and what it cost,
 and reminds you of recipes that fit those criteria best. Allowing you to cook more variety with less headache
 
+I also missed the chance to put dreambird in the name so I technically do not own this repo.
+
 ---
 
 ### Done so far:

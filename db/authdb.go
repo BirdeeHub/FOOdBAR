@@ -56,9 +56,7 @@ func AddToSessionBlacklist(sessionID uuid.UUID, expiration time.Time) error {
 		return err
 	}
 
-	expirationDATETIME := expiration.Format("2006-01-02 15:04:05")
-
-	_, err = db.Exec("INSERT INTO session_blacklist_table (sessionID, expires_at) VALUES (?, ?)", sessionID.String(), expirationDATETIME)
+	_, err = db.Exec("INSERT INTO session_blacklist_table (sessionID, expires_at) VALUES (?, ?)", sessionID.String(), expiration)
 	if err != nil {
 		// If the session is already in the blacklist, then I guess it worked...
 		if strings.Contains(err.Error(), "UNIQUE constraint failed") {
@@ -93,12 +91,8 @@ func QuerySessionBlacklist(sessionID uuid.UUID) (bool, error) {
 	}
 	defer rows.Close()
 
-	var expiresAt string
-	err = rows.Scan(&expiresAt)
-	if err != nil {
-		return false, nil
-	}
-	expiration, err := time.Parse("2006-01-02 15:04:05", expiresAt)
+	var expiration time.Time
+	err = rows.Scan(&expiration)
 	if err != nil {
 		return false, nil
 	}

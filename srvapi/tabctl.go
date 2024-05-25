@@ -2,8 +2,9 @@ package srvapi
 
 import (
 	// "FOOdBAR/db"
-	"FOOdBAR/views"
 	foodlib "FOOdBAR/FOOlib"
+	"FOOdBAR/db"
+	"FOOdBAR/views"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -44,13 +45,25 @@ func SetupTabCtlroutes(e *echo.Group) error {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
-		return RenderTab(TabActivateRenderer, c, pageData, pageData.GetTabDataByType(foodlib.String2TabType(c.Param("type"))))
+		tt := foodlib.String2TabType(c.Param("type"))
+		tabdata := pageData.GetTabDataByType(tt)
+		err = db.FillXTabItems(pageData.UserID, tabdata, 50)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, err)
+		}
+		return RenderTab(TabActivateRenderer, c, pageData, tabdata)
 	})
 
 	e.POST("/api/tabButton/maximize/:type", func(c echo.Context) error {
 		// TODO: fetch appropriate TabData.Items from database
 		// based on sort. Implement infinite scroll for them.
 		pageData, err := foodlib.GetPageData(c)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, err)
+		}
+		tt := foodlib.String2TabType(c.Param("type"))
+		tabdata := pageData.GetTabDataByType(tt)
+		err = db.FillXTabItems(pageData.UserID, tabdata, 50)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
