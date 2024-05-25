@@ -9,6 +9,7 @@ import (
 templ Homepage(pd *foodlib.PageData) {
 	<!DOCTYPE html>
 	<html lang="en">
+		@sendTabID()
 		@getColorScheme(fmt.Sprintf("%s/api/mediaQuery", foodlib.PagePrefix))
 		@tabviews.ColorsCSS()
 		@htmxAllowedCodes()
@@ -38,6 +39,18 @@ script htmxAllowedCodes() {
 			}
 		});
 	})
+}
+
+script sendTabID() {
+	document.addEventListener('htmx:beforeSend', (event) => {
+		function generateUniqueID() {
+			var id = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+			sessionStorage.setItem('tab_id', id);
+			return id;
+		}
+		var tabId = sessionStorage.getItem('tab_id') || generateUniqueID();
+		event.detail.xhr.setRequestHeader('tab_id', tabId);
+	});
 }
 
 css PageContainerCSS() {

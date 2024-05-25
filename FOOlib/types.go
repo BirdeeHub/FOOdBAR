@@ -125,6 +125,7 @@ type TabButtonData struct {
 type PageData struct {
 	UserID    uuid.UUID   `json:"user_id"`
 	SessionID uuid.UUID   `json:"session_id"`
+	TabID     string      `json:"tab_id"`
 	TabDatas  []*TabData  `json:"tab_datas"`
 	Palette   ColorScheme `json:"palette"`
 }
@@ -132,7 +133,7 @@ type PageData struct {
 type TabData struct {
 	Ttype   TabType                `json:"tab_type"`
 	Items   map[uuid.UUID]*TabItem `json:"items"`
-	OrderBy []int             `json:"order_by"`
+	OrderBy []int                  `json:"order_by"`
 }
 
 type TabItem struct {
@@ -221,10 +222,11 @@ func (pgd *PageData) GetTabDataByType(tt TabType) *TabData {
 	return td
 }
 
-func InitPageData(userID uuid.UUID, sessionID uuid.UUID) *PageData {
+func InitPageData(userID uuid.UUID, sessionID uuid.UUID, tabID string) *PageData {
 	pd := &PageData{
 		SessionID: sessionID,
 		UserID:    userID,
+		TabID:     tabID,
 		Palette:   None,
 		TabDatas:  []*TabData{},
 	}
@@ -245,7 +247,7 @@ func (pd *PageData) GetTabButtonData() []TabButtonData {
 	return retval
 }
 
-//TODO: Get this from db instead of cookie (cookie was a bad idea)
+// TODO: Get this from db instead of cookie (cookie was a bad idea)
 // Luckily, all you need to change is this function, everything gets its pagaData via this function.
 // Because db depends on this module, you may need to move Get and Save page data to db module to avoid circular dependency
 // When you do so, make it able to have multiple sessions per browser
@@ -259,9 +261,10 @@ func GetPageData(c echo.Context) (*PageData, error) {
 	if err != nil {
 		return nil, err
 	}
-	pdcookie, err := c.Cookie(userID.String())
+	tabID := c.Request().Header.Get("tab_id")
+	pdcookie, err := c.Cookie(tabID)
 	if err != nil {
-		pd := InitPageData(userID, SID)
+		pd := InitPageData(userID, SID, tabID)
 		return pd, nil
 	}
 	pd := &PageData{}
@@ -273,10 +276,14 @@ func GetPageData(c echo.Context) (*PageData, error) {
 	if err != nil {
 		return nil, err
 	}
+	if pd.UserID != userID || pd.SessionID != SID || pd.TabID != tabID {
+		pd := InitPageData(userID, SID, tabID)
+		return pd, nil
+	}
 	return pd, nil
 }
 
-//TODO: save to db insted of cookie
+// TODO: save to db insted of cookie
 // When you do so, make it able to have multiple sessions per browser
 // So that all tabs dont have the exact same view
 func (pd *PageData) SavePageData(c echo.Context) error {
@@ -285,10 +292,11 @@ func (pd *PageData) SavePageData(c echo.Context) error {
 		return err
 	}
 	cookie := &http.Cookie{
-		Name:     pd.UserID.String(),
+		Name:     pd.TabID,
 		Value:    base64.StdEncoding.EncodeToString(pdmarshalled),
 		Path:     fmt.Sprintf("%s", PagePrefix),
 		SameSite: http.SameSiteStrictMode,
+		HttpOnly: true,
 	}
 	c.SetCookie(cookie)
 	return nil
@@ -298,7 +306,7 @@ func (ti *TabItem) MarshalJSON() ([]byte, error) {
 	configpre := struct {
 		ItemID   string `json:"item_id"`
 		Ttype    string `json:"tab_type"`
-		Selected bool `json:"selected"`
+		Selected bool   `json:"selected"`
 		Expanded bool   `json:"expanded"`
 	}{
 		ItemID:   ti.ItemID.String(),
@@ -314,7 +322,7 @@ func (ti *TabItem) UnmarshalJSON(data []byte) error {
 	var irJson struct {
 		ItemID   string `json:"item_id"`
 		Ttype    string `json:"tab_type"`
-		Selected bool `json:"selected"`
+		Selected bool   `json:"selected"`
 		Expanded bool   `json:"expanded"`
 	}
 	err := json.Unmarshal(data, &irJson)
@@ -339,7 +347,7 @@ func (tbd *TabData) MarshalJSON() ([]byte, error) {
 	configpre := struct {
 		Ttype   string             `json:"tab_type"`
 		Items   map[string]TabItem `json:"items"`
-		OrderBy []int             `json:"order_by"`
+		OrderBy []int              `json:"order_by"`
 	}{
 		Ttype:   tbd.Ttype.String(),
 		Items:   itemsmap,
@@ -353,7 +361,7 @@ func (tbd *TabData) UnmarshalJSON(data []byte) error {
 	var irJson struct {
 		Ttype   string             `json:"tab_type"`
 		Items   map[string]TabItem `json:"items"`
-		OrderBy []int             `json:"order_by"`
+		OrderBy []int              `json:"order_by"`
 	}
 	err := json.Unmarshal(data, &irJson)
 	if err != nil {
@@ -377,12 +385,14 @@ func (tbd *TabData) UnmarshalJSON(data []byte) error {
 func (pd *PageData) MarshalJSON() ([]byte, error) {
 	configpre := struct {
 		SessionID string     `json:"session_id"`
+		TabID     string     `json:"tab_id"`
 		UserID    string     `json:"user_id"`
 		TabDatas  []*TabData `json:"tab_datas"`
 		Palette   string     `json:"palette"`
 	}{
 		SessionID: pd.SessionID.String(),
 		UserID:    pd.UserID.String(),
+		TabID:     pd.TabID,
 		TabDatas:  pd.TabDatas,
 		Palette:   string(pd.Palette),
 	}
@@ -394,6 +404,7 @@ func (pd *PageData) UnmarshalJSON(data []byte) error {
 	var irJson struct {
 		SessionID string     `json:"session_id"`
 		UserID    string     `json:"user_id"`
+		TabID     string     `json:"tab_id"`
 		TabDatas  []*TabData `json:"tab_datas"`
 		Palette   string     `json:"palette"`
 	}
@@ -401,6 +412,7 @@ func (pd *PageData) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
+	pd.TabID = irJson.TabID
 	pd.TabDatas = irJson.TabDatas
 	pd.SessionID, err = uuid.Parse(irJson.SessionID)
 	if err != nil {
