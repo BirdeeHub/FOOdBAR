@@ -36,6 +36,7 @@ func SubmitPantryItem(c echo.Context, pd *foodlib.PageData, td *foodlib.TabData,
 	rawdietary := params["dietary[]"]
 	amount := c.FormValue("itemAmount")
 	units := c.FormValue("itemUnits")
+	// TODO: validate types, return error if failed
 
 	dietary, err := json.Marshal(rawdietary)
 	if err != nil {

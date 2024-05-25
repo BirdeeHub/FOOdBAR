@@ -14,6 +14,7 @@ import (
 func SetupModalAPIroutes(e *echo.Group) error {
 
 	e.POST("/api/submitItemInfo/:type/:itemID", func(c echo.Context) error {
+		// TODO: This should return modal with error message if failed submission
 		pageData, err := foodlib.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
