@@ -191,6 +191,8 @@ templ ModalCSS() {
 }
 
 // requires above css to already be loaded (because otherwise we send it many many times)
+// TODO: make this into a flip thing where the tab flips over to reveal it?
+// Unsure, but it seems like it would be nice. It would have to make sure it opened the relevant tab though.
 templ ItemEditModal(component templ.Component) {
 	<div id="modal" _="on closeModal add .closing then wait for animationend then remove me">
 		<div class="modal-underlay" _="on click trigger closeModal"></div>
