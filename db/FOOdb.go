@@ -151,10 +151,10 @@ func GetTabItemDataValue[T any](raw map[string]interface{}, key string, out *T) 
 		case float64:
 			reflect.ValueOf(out).Elem().Set(reflect.ValueOf(rawval))
 			return nil
-		case int64:
+		case int:
 			reflect.ValueOf(out).Elem().Set(reflect.ValueOf(rawval))
 			return nil
-		case int:
+		case int64:
 			reflect.ValueOf(out).Elem().Set(reflect.ValueOf(rawval))
 			return nil
 		case time.Time:
