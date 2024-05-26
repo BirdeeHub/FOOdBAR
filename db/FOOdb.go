@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"strconv"
 	"time"
 
 	"github.com/google/uuid"
@@ -36,7 +37,10 @@ func SubmitPantryItem(c echo.Context, pd *foodlib.PageData, td *foodlib.TabData,
 	rawdietary := params["dietary[]"]
 	amount := c.FormValue("itemAmount")
 	units := c.FormValue("itemUnits")
-	// TODO: validate types, return error if failed
+	amountFloat, err := strconv.ParseFloat(amount, 64)
+	if err != nil {
+		return errors.New("amount is not a number")
+	}
 
 	dietary, err := json.Marshal(rawdietary)
 	if err != nil {
@@ -57,7 +61,7 @@ func SubmitPantryItem(c echo.Context, pd *foodlib.PageData, td *foodlib.TabData,
 		}
 		defer updateStmt.Close()
 
-		_, err = updateStmt.Exec(name, dietary, amount, units, item.ItemID)
+		_, err = updateStmt.Exec(name, dietary, amountFloat, units, item.ItemID)
 		return err
 	}
 
