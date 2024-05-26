@@ -94,6 +94,11 @@ templ ModalPantryContent(pd *foodlib.PageData, item *foodlib.TabItem, e error) {
 						<input class="text-black" value="" type="text" name="itemUnits"/>
 					}
 					<button action="submit" _="on click trigger closeModal">submit</button>
+					<div class="text-red-500">
+						if e != nil {
+							{ e.Error() }
+						}
+					</div>
 				</div>
 			</form>
 		</div>
