@@ -9,9 +9,7 @@ import (
 
 const PagePrefix = "/FOOdBAR"
 
-// TODO: I dont like this.....
-// find a better way to keep track of current sorting methods
-// and it should be able to accept multiple.
+// TODO: make sorting rules
 type SortMethod string
 
 const (
