@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
@@ -25,6 +26,9 @@ func GetPageData(c echo.Context) (*foodlib.PageData, error) {
 		return nil, err
 	}
 	tabID := c.Request().Header.Get("tab_id")
+	if tabID == "" {
+		tabID = uuid.New().String()
+	}
 	pdcookie, err := c.Cookie(tabID)
 	if err != nil {
 		pd := foodlib.InitPageData(userID, SID, tabID)
