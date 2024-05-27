@@ -13,9 +13,13 @@ import (
 
 // TODO: Get this from db instead of cookie (cookie was a bad idea, it doesnt hold the actual data but it's still too much)
 // Luckily, all you need to change is this function, everything gets its pagaData via this function.
-// Because db depends on this module, you will need to move Get and Save page data to db module to avoid circular dependency
 // When you do so, make it able to have multiple sessions per browser
 // So that all tabs dont have the exact same view
+
+// TODO: make db table creating function
+// db schema should be tab_id TEXT, user_id TEXT, session_id TEXT, page_data BLOB, last_modified DATETIME
+// A db trigger will be used to keep track of which is most recent,
+// any create, update, or delete will update last_modified
 func GetPageData(c echo.Context) (*foodlib.PageData, error) {
 	userID, err := foodlib.GetUserFromClaims(foodlib.GetClaimsFromContext(c))
 	if err != nil {
@@ -26,9 +30,14 @@ func GetPageData(c echo.Context) (*foodlib.PageData, error) {
 		return nil, err
 	}
 	tabID := c.Request().Header.Get("tab_id")
+	c.Logger().Printf("tabID: %s", tabID)
 	if tabID == "" {
 		tabID = uuid.New().String()
+		c.Logger().Printf("tabID: %s", tabID)
 	}
+	// TODO: replace with db query for pageData
+	// If tabID is not in db, search for the most recent
+	// pageData for that SessionID. If still not found, create a new one
 	pdcookie, err := c.Cookie(tabID)
 	if err != nil {
 		pd := foodlib.InitPageData(userID, SID, tabID)
@@ -65,6 +74,7 @@ func SavePageData(c echo.Context, pd *foodlib.PageData) error {
 		SameSite: http.SameSiteStrictMode,
 		HttpOnly: true,
 	}
+	c.Response().Header().Add("tab_id", pd.TabID)
 	c.SetCookie(cookie)
 	return nil
 }

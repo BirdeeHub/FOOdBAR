@@ -14,12 +14,7 @@ import (
 func SetupTabCtlroutes(e *echo.Group) error {
 
 	mainPage := func(c echo.Context) error {
-		pd, err := db.GetPageData(c)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, err)
-		}
-		db.SavePageData(c, pd)
-		return HTML(c, http.StatusOK, views.Homepage(pd))
+		return HTML(c, http.StatusOK, views.Homepage())
 	}
 
 	e.GET("", mainPage)
@@ -29,6 +24,15 @@ func SetupTabCtlroutes(e *echo.Group) error {
 	e.GET("/", mainPage)
 
 	e.POST("/", mainPage)
+
+	e.GET("/bodycontents", func(c echo.Context) error {
+		pd, err := db.GetPageData(c)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, err)
+		}
+		db.SavePageData(c, pd)
+		return HTML(c, http.StatusOK, views.BodyContents(pd))
+	})
 
 	e.DELETE("/api/tabButton/deactivate/:type", func(c echo.Context) error {
 		pageData, err := db.GetPageData(c)

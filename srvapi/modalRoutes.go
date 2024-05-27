@@ -14,7 +14,6 @@ import (
 func SetupModalAPIroutes(e *echo.Group) error {
 
 	e.POST("/api/submitItemInfo/:type/:itemID", func(c echo.Context) error {
-		// TODO: This should return html with error message if failed submission
 		// TODO: This should refresh the tab it was added to so it can get new values.
 		pageData, err := db.GetPageData(c)
 		if err != nil {
@@ -52,9 +51,9 @@ func SetupModalAPIroutes(e *echo.Group) error {
 		}
 		if err != nil {
 			c.Logger().Print(err)
-			return echo.NewHTTPError(http.StatusUnprocessableEntity, errors.New("failed to submit item"))
+			return HTML(c, http.StatusUnprocessableEntity, tabviews.OOBsendBackSubmitStatus(tt, "", err))
 		}
-		return nil
+		return HTML(c, http.StatusUnprocessableEntity, tabviews.OOBsendBackSubmitStatus(tt, "Item Saved Successfully!", nil))
 	})
 
 	e.GET("/api/modalGetNewField/:type/:itemID/:field", func(c echo.Context) error {

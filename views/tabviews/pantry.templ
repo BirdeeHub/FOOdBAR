@@ -44,6 +44,19 @@ templ RenderPantryTab(pd *foodlib.PageData, td *foodlib.TabData) {
 	</div>
 }
 
+templ OOBsendBackSubmitStatus(tt foodlib.TabType, message string, e error){
+	<div id={ fmt.Sprintf("modalsubmitMessage_%s", tt.String()) } hx-swap-oob="true">
+		<div class="text-green-500">
+			{ message }
+		</div>
+		<div class="text-red-500">
+			if e != nil {
+				{ e.Error() }
+			}
+		</div>
+	</div>
+}
+
 templ ModalPantryContent(pd *foodlib.PageData, item *foodlib.TabItem, e error) {
 	if itemData, _ := db.GetTabItemData(pd.UserID, item); item != nil {
 		<div style="display: flex; flex-direction: column; flex: 0 1;">
@@ -93,8 +106,8 @@ templ ModalPantryContent(pd *foodlib.PageData, item *foodlib.TabItem, e error) {
 					} else {
 						<input class="text-black" value="" type="text" name="itemUnits"/>
 					}
-					<button action="submit" _="on click trigger closeModal">submit</button>
-					<div class="text-red-500">
+					<button action="submit">submit</button>
+					<div id={ fmt.Sprintf("modalsubmitMessage_%s", item.Ttype.String()) }>
 						if e != nil {
 							{ e.Error() }
 						}

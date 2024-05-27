@@ -6,7 +6,7 @@ import (
 	"FOOdBAR/views/tabviews"
 )
 
-templ Homepage(pd *foodlib.PageData) {
+templ Homepage() {
 	<!DOCTYPE html>
 	<html lang="en">
 		@sendTabID()
@@ -23,8 +23,7 @@ templ Homepage(pd *foodlib.PageData) {
 			<link rel="icon" type="image/x-icon" href={ fmt.Sprintf("%s/static/foodbarfavicon.svg", foodlib.PagePrefix) }/>
 			//<link rel="stylesheet" href={ fmt.Sprintf("%s/styles/templ.css", foodlib.PagePrefix) }/>
 		</head>
-		<body class="bodycolors">
-			@BodyContents(pd)
+		<body hx-trigger="load" hx-get={ fmt.Sprintf("%s/bodycontents", foodlib.PagePrefix) } class="bodycolors">
 		</body>
 	</html>
 }
@@ -41,14 +40,20 @@ script htmxAllowedCodes() {
 }
 
 script sendTabID() {
-	document.addEventListener('htmx:beforeSend', (event) => {
+	document.addEventListener('htmx:configRequest', (event) => {
 		function generateUniqueID() {
 			var id = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
 			sessionStorage.setItem('tab_id', id);
 			return id;
 		}
 		var tabId = sessionStorage.getItem('tab_id') || generateUniqueID();
-		event.detail.xhr.setRequestHeader('tab_id', tabId);
+		event.detail.headers['tab_id'] = tabId;
+	});
+	document.addEventListener('htmx:afterRequest', (event) => {
+		const tabIdHeader = event.detail.xhr.getResponseHeader('tab_id');
+		if (tabIdHeader) {
+			sessionStorage.setItem('tab_id', tabIdHeader);
+		}
 	});
 }
 

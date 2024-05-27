@@ -37,9 +37,14 @@ func SubmitPantryItem(c echo.Context, pd *foodlib.PageData, td *foodlib.TabData,
 	rawdietary := params["dietary[]"]
 	amount := c.FormValue("itemAmount")
 	units := c.FormValue("itemUnits")
-	amountFloat, err := strconv.ParseFloat(amount, 64)
-	if err != nil {
-		return errors.New("amount is not a number")
+	var amountFloat float64
+	if amount == "" {
+		amountFloat = 0.0
+	} else {
+		amountFloat, err = strconv.ParseFloat(amount, 64)
+		if err != nil {
+			return errors.New("amount is not a number")
+		}
 	}
 
 	dietary, err := json.Marshal(rawdietary)
