@@ -11,15 +11,14 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// TODO: Get this from db instead of cookie (cookie was a bad idea, it doesnt hold the actual data but it's still too much)
-// Luckily, all you need to change is this function, everything gets its pagaData via this function.
-// When you do so, make it able to have multiple sessions per browser
-// So that all tabs dont have the exact same view
-
 // TODO: make db table creating function
 // db schema should be tab_id TEXT, user_id TEXT, session_id TEXT, page_data BLOB, last_modified DATETIME
 // A db trigger will be used to keep track of which is most recent,
 // any create, update, or delete will update last_modified
+// Clear pageData from db when they are too old like you do with the session blacklist
+
+// TODO: Get this from db instead of cookie (cookie was a bad idea, it doesnt hold the actual data but it's still too much)
+// Luckily, all you need to change is this function, everything gets its pagaData via this function.
 func GetPageData(c echo.Context) (*foodlib.PageData, error) {
 	userID, err := foodlib.GetUserFromClaims(foodlib.GetClaimsFromContext(c))
 	if err != nil {
@@ -36,7 +35,7 @@ func GetPageData(c echo.Context) (*foodlib.PageData, error) {
 		c.Logger().Printf("tabID: %s", tabID)
 	}
 	// TODO: replace with db query for pageData
-	// If tabID is not in db, search for the most recent
+	// If tabID is not in db, search for the most recently modified
 	// pageData for that SessionID. If still not found, create a new one
 	pdcookie, err := c.Cookie(tabID)
 	if err != nil {
@@ -60,8 +59,6 @@ func GetPageData(c echo.Context) (*foodlib.PageData, error) {
 }
 
 // TODO: save to db insted of cookie
-// When you do so, make it able to have multiple sessions per browser
-// So that all tabs dont have the exact same view
 func SavePageData(c echo.Context, pd *foodlib.PageData) error {
 	pdmarshalled, err := json.Marshal(pd)
 	if err != nil {
