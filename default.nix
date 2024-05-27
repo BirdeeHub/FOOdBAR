@@ -14,9 +14,6 @@
 , dbpath ? "/tmp"
 }: let
   templ = inputs.templ.packages.${pkgs.system}.templ;
-  # tailwindcss = pkgs.writeShellScriptBin "tailwindcss" ''
-  #   ${pkgs.tailwindcss}/bin/tailwindcss -c ${./tailwind.config.js}
-  # '';
 in
 buildGoApplication {
   pname = "FOOdBAR";
@@ -27,15 +24,14 @@ buildGoApplication {
   buildInputs = [ pkgs.sqlite ];
   nativeBuildInputs = [ templ pkgs.makeWrapper pkgs.tailwindcss ];
   # TODO: why does it not bundle the tailwind css?
-  # The pwd and ls -l * say it is in the right place at the right time...
+  # It is in the right place before build occurs...
   preBuild = ''
     mkdir -p ./static
-    tailwindcss -o ./static/tailwind.css --minify
-    pwd
-    ls -l *
     templ generate
+    tailwindcss -o ./static/tailwind.css --minify -c ${./tailwind.config.js}
     pwd
     ls -l *
+    cat ./static/tailwind.css
   '';
   postFixup = ''
     wrapProgram $out/bin/FOOdBAR \
