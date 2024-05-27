@@ -6,6 +6,8 @@ import (
 	"FOOdBAR/db"
 )
 
+// TODO: make this tab first
+
 templ PantryTabContents(pd *foodlib.PageData, td *foodlib.TabData) {
 	for _, ti := range td.GetTabItems() {
 		@PantryItemContainer(pd, ti)
@@ -31,7 +33,6 @@ templ PantryItemContainer(pd *foodlib.PageData, item *foodlib.TabItem) {
 }
 
 templ RenderPantryTab(pd *foodlib.PageData, td *foodlib.TabData) {
-	//TODO: This should fetch the stuff from db, and prepopulate with existing data
 	<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>
 		<div class={ TabHeaderTitleCSS() }>
 			Pantry!
