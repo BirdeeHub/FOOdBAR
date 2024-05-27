@@ -141,21 +141,20 @@ templ TabContainer(pd *foodlib.PageData, td *foodlib.TabData) {
 }
 
 // TODO: make this better
-
 script resizeTab(tabtarget string) {
 	let dragBar = document.getElementById("resizebar_"+tabtarget)
 	let div1 = document.getElementById("tabContainer_"+tabtarget)
-	dragStartWidth = div1.offsetWidth;
+	const dragStartWidth = div1.offsetWidth;
+	function resize(e) {
+		const widthDiff = e.clientX - dragBar.offsetLeft; 
+		div1.style.flex = `0 0 ${dragStartWidth + widthDiff}px`;
+	}
+
 	window.addEventListener('mousemove', resize);
 
 	window.addEventListener('mouseup', () => {
 		window.removeEventListener('mousemove', resize); 
 	});
-
-	function resize(e) {
-		const widthDiff = e.clientX - dragBar.offsetLeft; 
-		div1.style.flex = `0 0 ${dragStartWidth + widthDiff}px`;
-	}
 }
 
 css TabContainerCSS() {
