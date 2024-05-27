@@ -9,9 +9,7 @@ import (
 templ Homepage() {
 	<!DOCTYPE html>
 	<html lang="en">
-		@sendTabID()
 		@tabviews.ColorsCSS()
-		@htmxAllowedCodes()
 		@tabviews.ModalCSS()
 		<head>
 			<title>FOOd-BAR</title>
@@ -19,42 +17,17 @@ templ Homepage() {
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
 			<script src="https://unpkg.com/htmx.org/dist/htmx.min.js"></script>
 			<script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
+			<script src={ fmt.Sprintf("%s/static/events.js", foodlib.PagePrefix) }></script>
 			<link rel="stylesheet" href="/static/tailwind.css"/>
 			<link rel="icon" type="image/x-icon" href={ fmt.Sprintf("%s/static/foodbarfavicon.svg", foodlib.PagePrefix) }/>
 			//<link rel="stylesheet" href={ fmt.Sprintf("%s/styles/templ.css", foodlib.PagePrefix) }/>
 		</head>
-		<body hx-trigger="load" hx-get={ fmt.Sprintf("%s/bodycontents", foodlib.PagePrefix) } class="bodycolors">
-		</body>
+		<body
+			hx-trigger="load"
+			hx-get={ fmt.Sprintf("%s/bodycontents", foodlib.PagePrefix) }
+			class="bodycolors"
+		></body>
 	</html>
-}
-
-script htmxAllowedCodes() {
-	document.addEventListener("DOMContentLoaded", (event) => {
-		document.body.addEventListener("htmx:beforeSwap", function(evt) {
-			if (evt.detail.xhr.status === 422) {
-				evt.detail.shouldSwap = true;
-				evt.detail.isError = false;
-			}
-		});
-	})
-}
-
-script sendTabID() {
-	document.addEventListener('htmx:configRequest', (event) => {
-		function generateUniqueID() {
-			var id = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-			sessionStorage.setItem('tab_id', id);
-			return id;
-		}
-		var tabId = sessionStorage.getItem('tab_id') || generateUniqueID();
-		event.detail.headers['tab_id'] = tabId;
-	});
-	document.addEventListener('htmx:afterRequest', (event) => {
-		const tabIdHeader = event.detail.xhr.getResponseHeader('tab_id');
-		if (tabIdHeader) {
-			sessionStorage.setItem('tab_id', tabIdHeader);
-		}
-	});
 }
 
 css PageContainerCSS() {
@@ -127,7 +100,6 @@ css TabButtonItemCSS() {
 }
 
 // TODO: make this have a loading animation
-
 templ TabButton(tbd foodlib.TabButtonData) {
 	if tbd.Ttype != foodlib.Invalid {
 		if !tbd.Active {
@@ -169,6 +141,7 @@ templ TabContainer(pd *foodlib.PageData, td *foodlib.TabData) {
 }
 
 // TODO: make this better
+
 script resizeTab(tabtarget string) {
 	let dragBar = document.getElementById("resizebar_"+tabtarget)
 	let div1 = document.getElementById("tabContainer_"+tabtarget)
