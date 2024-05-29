@@ -128,6 +128,7 @@ templ TabButton(tbd foodlib.TabButtonData) {
 templ TabContainer(pd *foodlib.PageData, td *foodlib.TabData) {
 	if td != nil && td.Ttype != foodlib.Invalid {
 		<div id={ fmt.Sprintf("tabContainer_%s", td.Ttype) } style="display: flex; flex-direction: row; flex: 1;">
+			// TODO: make this div into the container for a flip card, so you can flip it to edit items in that tab.
 			<div class={ TabContainerCSS() }>
 				@RenderTabContents(pd, td)
 			</div>
