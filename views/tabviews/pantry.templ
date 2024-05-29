@@ -4,32 +4,34 @@ import (
 	"fmt"
 	foodlib "FOOdBAR/FOOlib"
 	"FOOdBAR/db"
+	"github.com/google/uuid"
 )
 
 // TODO: make this tab first
 
 templ PantryTabContents(pd *foodlib.PageData, td *foodlib.TabData) {
 	for _, ti := range td.GetTabItems() {
-		@PantryItemContainer(pd, ti)
+		@PantryItemContainer(pd, td, ti)
 	}
 }
 
-templ PantryItemContainer(pd *foodlib.PageData, item *foodlib.TabItem) {
-	<div id={ fmt.Sprintf("%s", item.ItemID.String()) } class={ TabListItemCSS() }>
-		<div class={ ListItemElementCSS() }>
-			{ item.ItemID.String() }
-		</div>
-		<div class={ ListItemElementCSS() }>
-			if itemData, _ := db.GetTabItemData(pd.UserID, item); item != nil {
+templ PantryItemContainer(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem) {
+	if itemData, _ := db.GetTabItemData(pd.UserID, item); itemData != nil && item != nil {
+		<div id={ fmt.Sprintf("%s", item.ItemID.String()) } class={ TabListItemCSS() }>
+			<div class={ ListItemElementCSS() }>
+				{ item.ItemID.String() }
+			</div>
+			<div class={ ListItemElementCSS() }>
 				if name := ""; db.GetTabItemDataValue(itemData, "name", &name) == nil {
 					{ name }
 				}
-			}
+			</div>
+			<div class={ ListItemElementCSS() }>
+				@EditTabItemButton(item)
+			</div>
 		</div>
-		<div class={ ListItemElementCSS() }>
-			@EditTabItemButton(item)
-		</div>
-	</div>
+	} else if td.Items[item.ItemID] = nil; true {
+	}
 }
 
 templ RenderPantryTab(pd *foodlib.PageData, td *foodlib.TabData) {
@@ -37,11 +39,21 @@ templ RenderPantryTab(pd *foodlib.PageData, td *foodlib.TabData) {
 		<div class={ TabHeaderTitleCSS() }>
 			Pantry!
 		</div>
-		@ModalAddItemButton(td.Ttype)
+		if td.Flipped == uuid.Nil {
+			@FlipAddItemButton(td.Ttype)
+		} else {
+			@CloseFlipButton(td.Ttype)
+		}
 		@MaximizeTabButton(td.Ttype)
 	</div>
 	<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
-		@PantryTabContents(pd, td)
+		if td.Flipped == uuid.Nil {
+			@CardFlipContainer(PantryTabContents(pd, td), nil)
+		} else if item, ok := td.Items[td.Flipped]; ok {
+			@CardFlipContainer(nil, SubmitPantryBlock(pd, item, nil))
+		} else {
+			@CardFlipContainer(PantryTabContents(pd, td), nil)
+		}
 	</div>
 }
 
@@ -63,7 +75,7 @@ templ SubmitPantryBlock(pd *foodlib.PageData, item *foodlib.TabItem, e error) {
 					<div style="display: flex; flex-direction: row; flex: 0 1;">
 						Dietary:
 						<div
-							hx-get={ fmt.Sprintf("%s/api/modalGetNewField/%s/%s/%s", foodlib.PagePrefix, item.Ttype.String(), item.ItemID.String(), "dietary") }
+							hx-get={ fmt.Sprintf("%s/api/submitGetNewField/%s/%s/%s", foodlib.PagePrefix, item.Ttype.String(), item.ItemID.String(), "dietary") }
 							hx-trigger="click"
 							hx-swap="none"
 							style="cursor: pointer; height: 100%; width: 1.5rem;"
@@ -95,7 +107,7 @@ templ SubmitPantryBlock(pd *foodlib.PageData, item *foodlib.TabItem, e error) {
 						<input class="text-black" value="" type="text" name="itemUnits"/>
 					}
 					<button action="submit">submit</button>
-					@modalSubmitStatus(item.Ttype, "", e)
+					@submitStatusMessage(item.ItemID, "", e)
 				</div>
 			</form>
 		</div>

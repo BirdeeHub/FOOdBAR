@@ -29,14 +29,14 @@ templ ColorsCSS() {
 	</style>
 }
 
-templ OOBsendBackSubmitStatus(tt foodlib.TabType, message string, e error){
-	<div id={ fmt.Sprintf("modalsubmitMessage_%s", tt.String()) } hx-swap-oob="true">
-		@modalSubmitStatus(tt, message, e)
+templ OOBsendBackSubmitStatus(id uuid.UUID, message string, e error){
+	<div id={ fmt.Sprintf("itemSubmitMessage_%s", id.String()) } hx-swap-oob="true">
+		@submitStatusMessage(id, message, e)
 	</div>
 }
 
-templ modalSubmitStatus(tt foodlib.TabType, message string, e error){
-	<div id={ fmt.Sprintf("modalsubmitMessage_%s", tt.String()) }>
+templ submitStatusMessage(id uuid.UUID, message string, e error){
+	<div id={ fmt.Sprintf("itemSubmitMessage_%s", id.String()) }>
 		<div class="text-green-500">
 			{ message }
 		</div>
@@ -83,6 +83,28 @@ templ ModalAddItemButton(tt foodlib.TabType) {
 		class={ TabHeaderButtonCSS("0 0 1.5rem") }
 	>
 		@AddCircle()
+	</div>
+}
+
+templ FlipAddItemButton(tt foodlib.TabType) {
+	<div
+		id={ fmt.Sprintf("tabItemAdd_%s", tt.String()) }
+		hx-get={ fmt.Sprintf("%s/api/itemCreateFlip/open/%s", foodlib.PagePrefix, tt.String()) }
+		hx-swap="none"
+		class={ TabHeaderButtonCSS("0 0 1.5rem") }
+	>
+		@AddCircle()
+	</div>
+}
+
+templ CloseFlipButton(tt foodlib.TabType) {
+	<div
+		id={ fmt.Sprintf("tabItemAdd_%s", tt.String()) }
+		hx-get={ fmt.Sprintf("%s/api/itemEditFlip/close/%s", foodlib.PagePrefix, tt.String()) }
+		hx-swap="none"
+		class={ TabHeaderButtonCSS("0 0 1.5rem") }
+	>
+		@MinusCircle()
 	</div>
 }
 

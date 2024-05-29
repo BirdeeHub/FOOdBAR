@@ -51,12 +51,12 @@ func SetupModalAPIroutes(e *echo.Group) error {
 		}
 		if err != nil {
 			c.Logger().Print(err)
-			return HTML(c, http.StatusUnprocessableEntity, tabviews.OOBsendBackSubmitStatus(tt, "", err))
+			return HTML(c, http.StatusUnprocessableEntity, tabviews.OOBsendBackSubmitStatus(itemID, "", err))
 		}
-		return HTML(c, http.StatusUnprocessableEntity, tabviews.OOBsendBackSubmitStatus(tt, "Item Saved Successfully!", nil))
+		return HTML(c, http.StatusUnprocessableEntity, tabviews.OOBsendBackSubmitStatus(itemID, "Item Saved Successfully!", nil))
 	})
 
-	e.GET("/api/modalGetNewField/:type/:itemID/:field", func(c echo.Context) error {
+	e.GET("/api/submitGetNewField/:type/:itemID/:field", func(c echo.Context) error {
 		pageData, err := db.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)

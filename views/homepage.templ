@@ -4,7 +4,6 @@ import (
 	"fmt"
 	foodlib "FOOdBAR/FOOlib"
 	"FOOdBAR/views/tabviews"
-	"github.com/google/uuid"
 )
 
 templ Homepage() {
@@ -172,32 +171,37 @@ css TabContainerCSS() {
 	flex: 1 1;
 }
 
+templ OOBflipTab(pd *foodlib.PageData, td *foodlib.TabData) {
+	<div
+		id={ fmt.Sprintf("tabContainerTarget_%s", td.Ttype.String()) }
+		hx-swap-oob="true"
+	>
+	@RenderTabContents(pd, td)
+	</div>
+}
+
 templ RenderTabContents(pd *foodlib.PageData, td *foodlib.TabData) {
 	<div
 		id={ fmt.Sprintf("tabContainerTarget_%s", td.Ttype.String()) }
 		class={ TabContainerCSS() }
 	>
-		if td.Flipped == uuid.Nil {
-			switch td.Ttype {
-			case foodlib.Recipe:
-				@tabviews.CardFlipContainer(tabviews.RenderRecipeTab(pd, td), nil)
-			case foodlib.Pantry:
-				@tabviews.CardFlipContainer(tabviews.RenderPantryTab(pd, td), nil)
-			case foodlib.Menu:
-				@tabviews.CardFlipContainer(tabviews.RenderMenuTab(pd, td), nil)
-			case foodlib.Shopping:
-				@tabviews.CardFlipContainer(tabviews.RenderShoppingTab(pd, td), nil)
-			case foodlib.Preplist:
-				@tabviews.CardFlipContainer(tabviews.RenderPreplistTab(pd, td), nil)
-			case foodlib.Earnings:
-				@tabviews.CardFlipContainer(tabviews.RenderEarningsTab(pd, td), nil)
-			case foodlib.Customer:
-				@tabviews.CardFlipContainer(tabviews.RenderCustomerTab(pd, td), nil)
-			case foodlib.Events:
-				@tabviews.CardFlipContainer(tabviews.RenderEventsTab(pd, td), nil)
-			}
-		} else if ti := td.Items[td.Flipped]; ti != nil {
-			@tabviews.CardFlipContainer(nil, tabviews.RenderFlipSubmitContent(pd, ti, nil))
+		switch td.Ttype {
+		case foodlib.Recipe:
+			@tabviews.RenderRecipeTab(pd, td)
+		case foodlib.Pantry:
+			@tabviews.RenderPantryTab(pd, td)
+		case foodlib.Menu:
+			@tabviews.RenderMenuTab(pd, td)
+		case foodlib.Shopping:
+			@tabviews.RenderShoppingTab(pd, td)
+		case foodlib.Preplist:
+			@tabviews.RenderPreplistTab(pd, td)
+		case foodlib.Earnings:
+			@tabviews.RenderEarningsTab(pd, td)
+		case foodlib.Customer:
+			@tabviews.RenderCustomerTab(pd, td)
+		case foodlib.Events:
+			@tabviews.RenderEventsTab(pd, td)
 		}
 	</div>
 }

@@ -63,6 +63,14 @@ func InitServer(signingKey []byte, listenOn string) {
 		)
 	}
 
+	err = SetupFlipAPIroutes(r)
+	if err != nil {
+		echo.NewHTTPError(
+			http.StatusTeapot,
+			errors.New("server api setup failed: "+err.Error()),
+		)
+	}
+
 
 
 	// TODO: figure out how to HTTPS
