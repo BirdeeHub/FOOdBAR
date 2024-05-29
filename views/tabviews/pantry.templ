@@ -72,7 +72,7 @@ templ SubmitPantryBlock(pd *foodlib.PageData, item *foodlib.TabItem, e error) {
 						</div>
 					</div>
 					<div style="display: flex; flex-direction: row; flex: 0 1;">
-						<div id="dietary">
+						<div id={ fmt.Sprintf("dietary_%s", item.ItemID.String()) }>
 							if dietaries := []string{}; db.GetTabItemDataValue(itemData, "dietary", &dietaries) == nil {
 								for _, v := range dietaries {
 									@ExtraField(v, "dietary")

@@ -30,9 +30,10 @@ func SetupFlipAPIroutes(e *echo.Group) error {
 		c.Logger().Print(td)
 		ti := td.GetTabItem(itemID)
 		c.Logger().Print(ti)
-		return HTML(c, http.StatusOK, tabviews.OOBExtraField(c.Param("field")))
+		return HTML(c, http.StatusOK, tabviews.OOBExtraField(c.Param("field"), itemID))
 	})
 
+	//TODO: make this render the flip
 	e.GET("/api/itemEditFlip/open/:type/:itemID", func(c echo.Context) error {
 		pageData, err := db.GetPageData(c)
 		if err != nil {
@@ -57,6 +58,7 @@ func SetupFlipAPIroutes(e *echo.Group) error {
 		return HTML(c, http.StatusOK, tabviews.ItemEditModal(tabviews.RenderSubmissionContent(pageData, item, nil)))
 	})
 
+	//TODO: make this render the flip
 	e.GET("/api/itemCreateFlip/open/:type", func(c echo.Context) error {
 		pageData, err := db.GetPageData(c)
 		if err != nil {

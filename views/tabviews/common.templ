@@ -2,6 +2,7 @@ package tabviews
 
 import (
 	"fmt"
+	"github.com/google/uuid"
 	foodlib "FOOdBAR/FOOlib"
 )
 
@@ -47,8 +48,8 @@ templ modalSubmitStatus(tt foodlib.TabType, message string, e error){
 	</div>
 }
 
-templ OOBExtraField(field string) {
-	<div id={ string(templ.URL(field)) } hx-swap-oob="beforeend">
+templ OOBExtraField(field string, itemid uuid.UUID) {
+	<div id={ string(templ.URL(fmt.Sprintf("%s_%s", field, itemid.String()))) } hx-swap-oob="beforeend">
 		@ExtraField("", field)
 	</div>
 }
@@ -98,6 +99,27 @@ templ EditTabItemButton(ti *foodlib.TabItem) {
 }
 
 templ RenderSubmissionContent(pd *foodlib.PageData, item *foodlib.TabItem, e error) {
+	switch item.Ttype {
+		case foodlib.Recipe:
+			@SubmitRecipeBlock(pd, item, e)
+		case foodlib.Pantry:
+			@SubmitPantryBlock(pd, item, e)
+		case foodlib.Menu:
+			@SubmitMenuBlock(pd, item, e)
+		case foodlib.Shopping:
+			@SubmitShoppingBlock(pd, item, e)
+		case foodlib.Preplist:
+			@SubmitPreplistBlock(pd, item, e)
+		case foodlib.Earnings:
+			@SubmitEarningsBlock(pd, item, e)
+		case foodlib.Customer:
+			@SubmitCustomerBlock(pd, item, e)
+		case foodlib.Events:
+			@SubmitEventsBlock(pd, item, e)
+	}
+}
+
+templ RenderFlipSubmitContent(pd *foodlib.PageData, item *foodlib.TabItem, e error) {
 	switch item.Ttype {
 		case foodlib.Recipe:
 			@SubmitRecipeBlock(pd, item, e)
@@ -254,7 +276,6 @@ templ CardFlipContainerCSS() {
 	</style>
 }
 
-// NOTE: requires containing div to have "perspective: <something>px;"
 templ CardFlipContainer(front templ.Component, back templ.Component) {
 	<div class="card_container">
 		if back == nil {

@@ -149,7 +149,6 @@ css Resizebar() {
 }
 
 // TODO: make this better
-
 script resizeTab(tabtarget string) {
 	let dragBar = document.getElementById("resizebar_"+tabtarget)
 	let div1 = document.getElementById("tabContainer_"+tabtarget)
@@ -198,7 +197,7 @@ templ RenderTabContents(pd *foodlib.PageData, td *foodlib.TabData) {
 				@tabviews.CardFlipContainer(tabviews.RenderEventsTab(pd, td), nil)
 			}
 		} else if ti := td.Items[td.Flipped]; ti != nil {
-			@tabviews.CardFlipContainer(nil, tabviews.RenderSubmissionContent(pd, ti, nil))
+			@tabviews.CardFlipContainer(nil, tabviews.RenderFlipSubmitContent(pd, ti, nil))
 		}
 	</div>
 }

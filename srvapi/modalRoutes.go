@@ -73,7 +73,7 @@ func SetupModalAPIroutes(e *echo.Group) error {
 		c.Logger().Print(td)
 		ti := td.GetTabItem(itemID)
 		c.Logger().Print(ti)
-		return HTML(c, http.StatusOK, tabviews.OOBExtraField(c.Param("field")))
+		return HTML(c, http.StatusOK, tabviews.OOBExtraField(c.Param("field"), itemID))
 	})
 
 	e.GET("/api/itemEditModal/open/:type/:itemID", func(c echo.Context) error {
