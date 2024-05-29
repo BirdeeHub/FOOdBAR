@@ -270,7 +270,7 @@ templ CardFlipContainerCSS() {
 	.card_container {
 		height: 100%;
 		width: 100%;
-		perspective: 600px;
+		perspective: 100px;
 	}
 	.card {
 		width: 100%;
@@ -298,6 +298,7 @@ templ CardFlipContainerCSS() {
 	</style>
 }
 
+// TODO: do flip with htmx indicator and events instead
 templ CardFlipContainer(front templ.Component, back templ.Component) {
 	<div class="card_container">
 		if back == nil {

@@ -59,7 +59,7 @@ templ RenderPantryTab(pd *foodlib.PageData, td *foodlib.TabData) {
 
 templ SubmitPantryBlock(pd *foodlib.PageData, item *foodlib.TabItem, e error) {
 	if itemData, _ := db.GetTabItemData(pd.UserID, item); item != nil {
-		<div style="display: flex; flex-direction: column; flex: 0 1;">
+		<div style="display: flex; height: 100%; width: 100%; flex-direction: column; flex: 1 1;">
 			Hello from { item.Ttype.String() }
 			<form
 				hx-post={ fmt.Sprintf("%s/api/submitItemInfo/%s/%s", foodlib.PagePrefix, item.Ttype.String(), item.ItemID.String()) }
