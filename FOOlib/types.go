@@ -105,16 +105,17 @@ type TabButtonData struct {
 }
 
 type PageData struct {
-	UserID    uuid.UUID   `json:"user_id"`
-	SessionID uuid.UUID   `json:"session_id"`
-	TabID     string      `json:"tab_id"`
-	TabDatas  []*TabData  `json:"tab_datas"`
+	UserID    uuid.UUID  `json:"user_id"`
+	SessionID uuid.UUID  `json:"session_id"`
+	TabID     string     `json:"tab_id"`
+	TabDatas  []*TabData `json:"tab_datas"`
 }
 
 type TabData struct {
 	Ttype   TabType                `json:"tab_type"`
 	Items   map[uuid.UUID]*TabItem `json:"items"`
 	OrderBy []int                  `json:"order_by"`
+	Flipped bool                   `json:"flipped"`
 }
 
 type TabItem struct {
@@ -198,6 +199,7 @@ func (pgd *PageData) GetTabDataByType(tt TabType) *TabData {
 		Ttype:   tt,
 		Items:   make(map[uuid.UUID]*TabItem),
 		OrderBy: []int{},
+		Flipped: false,
 	}
 	pgd.TabDatas = append(pgd.TabDatas, td)
 	return td
@@ -275,10 +277,12 @@ func (tbd *TabData) MarshalJSON() ([]byte, error) {
 		Ttype   string             `json:"tab_type"`
 		Items   map[string]TabItem `json:"items"`
 		OrderBy []int              `json:"order_by"`
+		Flipped bool               `json:"flipped"`
 	}{
 		Ttype:   tbd.Ttype.String(),
 		Items:   itemsmap,
 		OrderBy: tbd.OrderBy,
+		Flipped: tbd.Flipped,
 	}
 	marshalled, err := json.Marshal(configpre)
 	return marshalled, err
@@ -289,12 +293,14 @@ func (tbd *TabData) UnmarshalJSON(data []byte) error {
 		Ttype   string             `json:"tab_type"`
 		Items   map[string]TabItem `json:"items"`
 		OrderBy []int              `json:"order_by"`
+		Flipped bool               `json:"flipped"`
 	}
 	err := json.Unmarshal(data, &irJson)
 	if err != nil {
 		return err
 	}
 	tbd.OrderBy = irJson.OrderBy
+	tbd.Flipped = irJson.Flipped
 	tbd.Ttype = String2TabType(irJson.Ttype)
 	if tbd.Items == nil {
 		tbd.Items = make(map[uuid.UUID]*TabItem)

@@ -222,10 +222,58 @@ templ ItemEditModal(component templ.Component) {
 }
 
 templ CardFlipContainerCSS() {
+	<style type="text/css">
+	.card_container {
+		height: 100%;
+		width: 100%;
+		perspective: 600px;
+	}
+	.card {
+		width: 100%;
+		height: 100%;
+		position: relative;
+		transition: transform 1s;
+		transform-style: preserve-3d;
+		transform-origin: center right;
+	}
+	.card__face {
+		position: absolute;
+		height: 100%;
+		width: 100%;
+		backface-visibility: hidden;
+	}
+	.card.is-flipped {
+		transform: translateX(-100%) rotateY(-180deg);
+	}
+	.card__face--front {
+	}
+
+	.card__face--back {
+		transform: rotateY( 180deg );
+	}
+	</style>
 }
 
-templ CardFlipContainer(component templ.Component) {
-    <div class="card-flip-container">
-        @component
-    </div>
+// NOTE: requires containing div to have "perspective: <something>px;"
+templ CardFlipContainer(front *templ.Component, back *templ.Component) {
+	<div class="card_container">
+		<div class="card">
+			if front == nil {
+				<div class="card__face card__face--front">
+				</div>
+			} else if f := *front; true {
+				<div class="card__face card__face--front is-flipped">
+					@f
+				</div>
+			}
+			if back == nil {
+				<div class="card__face card__face--back">
+				</div>
+			} else if b := *back; true {
+				<div class="card__face card__face--back is-flipped">
+					@b
+				</div>
+			}
+		</div>
+	</div>
 }
