@@ -128,10 +128,7 @@ templ TabButton(tbd foodlib.TabButtonData) {
 templ TabContainer(pd *foodlib.PageData, td *foodlib.TabData) {
 	if td != nil && td.Ttype != foodlib.Invalid {
 		<div id={ fmt.Sprintf("tabContainer_%s", td.Ttype) } style="display: flex; flex-direction: row; flex: 1;">
-			// TODO: make this div into the container for a flip card, so you can flip it to edit items in that tab.
-			<div class={ TabContainerCSS() }>
-				@RenderTabContents(pd, td)
-			</div>
+			@RenderTabContents(pd, td)
 			<div
 				id={ fmt.Sprintf("resizebar_%s", td.Ttype) }
 				class={ Resizebar() }
@@ -174,22 +171,25 @@ css Resizebar() {
 }
 
 templ RenderTabContents(pd *foodlib.PageData, td *foodlib.TabData) {
-	switch td.Ttype {
-		case foodlib.Recipe:
-			@tabviews.RenderRecipeTab(pd, td)
-		case foodlib.Pantry:
-			@tabviews.RenderPantryTab(pd, td)
-		case foodlib.Menu:
-			@tabviews.RenderMenuTab(pd, td)
-		case foodlib.Shopping:
-			@tabviews.RenderShoppingTab(pd, td)
-		case foodlib.Preplist:
-			@tabviews.RenderPreplistTab(pd, td)
-		case foodlib.Earnings:
-			@tabviews.RenderEarningsTab(pd, td)
-		case foodlib.Customer:
-			@tabviews.RenderCustomerTab(pd, td)
-		case foodlib.Events:
-			@tabviews.RenderEventsTab(pd, td)
-	}
+	// TODO: make this div into the container for a flip card, so you can flip it to edit items in that tab.
+	<div class={ TabContainerCSS() }>
+		switch td.Ttype {
+			case foodlib.Recipe:
+				@tabviews.RenderRecipeTab(pd, td)
+			case foodlib.Pantry:
+				@tabviews.RenderPantryTab(pd, td)
+			case foodlib.Menu:
+				@tabviews.RenderMenuTab(pd, td)
+			case foodlib.Shopping:
+				@tabviews.RenderShoppingTab(pd, td)
+			case foodlib.Preplist:
+				@tabviews.RenderPreplistTab(pd, td)
+			case foodlib.Earnings:
+				@tabviews.RenderEarningsTab(pd, td)
+			case foodlib.Customer:
+				@tabviews.RenderCustomerTab(pd, td)
+			case foodlib.Events:
+				@tabviews.RenderEventsTab(pd, td)
+		}
+	</div>
 }
