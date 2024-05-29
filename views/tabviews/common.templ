@@ -254,8 +254,6 @@ templ ModalCSS() {
 }
 
 // requires above css to already be loaded (because otherwise we send it many many times)
-// TODO: swap the main edit modals to a card flip of the whole tab instead,
-// and use this for when you need to add things to other categories while already editing an item.
 templ ItemEditModal(component templ.Component) {
 	<div id="modal" _="on closeModal add .closing then wait for animationend then remove me">
 		<div class="modal-underlay" _="on click trigger closeModal"></div>
@@ -298,6 +296,7 @@ templ CardFlipContainerCSS() {
 	</style>
 }
 
+// requires above css to already be loaded (because otherwise we send it many many times)
 // TODO: do flip with htmx indicator and events instead
 templ CardFlipContainer(front templ.Component, back templ.Component) {
 	<div class="card_container">
