@@ -115,7 +115,7 @@ type TabData struct {
 	Ttype   TabType                `json:"tab_type"`
 	Items   map[uuid.UUID]*TabItem `json:"items"`
 	OrderBy []int                  `json:"order_by"`
-	Flipped bool                   `json:"flipped"`
+	Flipped uuid.UUID             `json:"flipped"`
 }
 
 type TabItem struct {
@@ -199,7 +199,7 @@ func (pgd *PageData) GetTabDataByType(tt TabType) *TabData {
 		Ttype:   tt,
 		Items:   make(map[uuid.UUID]*TabItem),
 		OrderBy: []int{},
-		Flipped: false,
+		Flipped: uuid.Nil,
 	}
 	pgd.TabDatas = append(pgd.TabDatas, td)
 	return td
@@ -273,16 +273,22 @@ func (tbd *TabData) MarshalJSON() ([]byte, error) {
 	for k, v := range tbd.Items {
 		itemsmap[k.String()] = *v
 	}
+	var flippedStr string
+	if tbd.Flipped == uuid.Nil {
+		flippedStr = ""
+	} else {
+		flippedStr = tbd.Flipped.String()
+	}
 	configpre := struct {
 		Ttype   string             `json:"tab_type"`
 		Items   map[string]TabItem `json:"items"`
 		OrderBy []int              `json:"order_by"`
-		Flipped bool               `json:"flipped"`
+		Flipped string             `json:"flipped"`
 	}{
 		Ttype:   tbd.Ttype.String(),
 		Items:   itemsmap,
 		OrderBy: tbd.OrderBy,
-		Flipped: tbd.Flipped,
+		Flipped: flippedStr,
 	}
 	marshalled, err := json.Marshal(configpre)
 	return marshalled, err
@@ -293,14 +299,23 @@ func (tbd *TabData) UnmarshalJSON(data []byte) error {
 		Ttype   string             `json:"tab_type"`
 		Items   map[string]TabItem `json:"items"`
 		OrderBy []int              `json:"order_by"`
-		Flipped bool               `json:"flipped"`
+		Flipped string             `json:"flipped"`
 	}
 	err := json.Unmarshal(data, &irJson)
 	if err != nil {
 		return err
 	}
 	tbd.OrderBy = irJson.OrderBy
-	tbd.Flipped = irJson.Flipped
+	var flippedID uuid.UUID
+	if irJson.Flipped == "" {
+		flippedID = uuid.Nil
+	} else {
+		flippedID, err = uuid.Parse(irJson.Flipped)
+	}
+	if err != nil {
+		return err
+	}
+	tbd.Flipped = flippedID
 	tbd.Ttype = String2TabType(irJson.Ttype)
 	if tbd.Items == nil {
 		tbd.Items = make(map[uuid.UUID]*TabItem)

@@ -255,25 +255,24 @@ templ CardFlipContainerCSS() {
 }
 
 // NOTE: requires containing div to have "perspective: <something>px;"
-templ CardFlipContainer(front *templ.Component, back *templ.Component) {
+templ CardFlipContainer(front templ.Component, back templ.Component) {
 	<div class="card_container">
-		<div class="card">
-			if front == nil {
+		if back == nil {
+			<div class="card">
 				<div class="card__face card__face--front">
+					@front
 				</div>
-			} else if f := *front; true {
-				<div class="card__face card__face--front is-flipped">
-					@f
-				</div>
-			}
-			if back == nil {
 				<div class="card__face card__face--back">
 				</div>
-			} else if b := *back; true {
-				<div class="card__face card__face--back is-flipped">
-					@b
+			</div>
+		} else {
+			<div class="card is-flipped">
+				<div class="card__face card__face--front">
 				</div>
-			}
-		</div>
+				<div class="card__face card__face--back">
+					@back
+				</div>
+			</div>
+		}
 	</div>
 }
