@@ -73,7 +73,7 @@ templ MaximizeTabButton(tt foodlib.TabType) {
 	</div>
 }
 
-templ AddTabItemButton(tt foodlib.TabType) {
+templ ModalAddItemButton(tt foodlib.TabType) {
 	<div
 		id={ fmt.Sprintf("tabItemAdd_%s", tt.String()) }
 		hx-get={ fmt.Sprintf("%s/api/itemCreateModal/open/%s", foodlib.PagePrefix, tt.String()) }
@@ -97,24 +97,24 @@ templ EditTabItemButton(ti *foodlib.TabItem) {
 	</div>
 }
 
-templ RenderModalContent(pd *foodlib.PageData, item *foodlib.TabItem, e error) {
+templ RenderSubmissionContent(pd *foodlib.PageData, item *foodlib.TabItem, e error) {
 	switch item.Ttype {
 		case foodlib.Recipe:
-			@ModalRecipeContent(pd, item, e)
+			@SubmitRecipeBlock(pd, item, e)
 		case foodlib.Pantry:
-			@ModalPantryContent(pd, item, e)
+			@SubmitPantryBlock(pd, item, e)
 		case foodlib.Menu:
-			@ModalMenuContent(pd, item, e)
+			@SubmitMenuBlock(pd, item, e)
 		case foodlib.Shopping:
-			@ModalShoppingContent(pd, item, e)
+			@SubmitShoppingBlock(pd, item, e)
 		case foodlib.Preplist:
-			@ModalPreplistContent(pd, item, e)
+			@SubmitPreplistBlock(pd, item, e)
 		case foodlib.Earnings:
-			@ModalEarningsContent(pd, item, e)
+			@SubmitEarningsBlock(pd, item, e)
 		case foodlib.Customer:
-			@ModalCustomerContent(pd, item, e)
+			@SubmitCustomerBlock(pd, item, e)
 		case foodlib.Events:
-			@ModalEventsContent(pd, item, e)
+			@SubmitEventsBlock(pd, item, e)
 	}
 }
 
@@ -221,5 +221,11 @@ templ ItemEditModal(component templ.Component) {
 	</div>
 }
 
-templ cardFlipContainer() {
+templ CardFlipContainerCSS() {
+}
+
+templ CardFlipContainer(component templ.Component) {
+    <div class="card-flip-container">
+        @component
+    </div>
 }

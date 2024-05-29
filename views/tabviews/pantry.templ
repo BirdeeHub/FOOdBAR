@@ -37,7 +37,7 @@ templ RenderPantryTab(pd *foodlib.PageData, td *foodlib.TabData) {
 		<div class={ TabHeaderTitleCSS() }>
 			Pantry!
 		</div>
-		@AddTabItemButton(td.Ttype)
+		@ModalAddItemButton(td.Ttype)
 		@MaximizeTabButton(td.Ttype)
 	</div>
 	<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
@@ -45,7 +45,7 @@ templ RenderPantryTab(pd *foodlib.PageData, td *foodlib.TabData) {
 	</div>
 }
 
-templ ModalPantryContent(pd *foodlib.PageData, item *foodlib.TabItem, e error) {
+templ SubmitPantryBlock(pd *foodlib.PageData, item *foodlib.TabItem, e error) {
 	if itemData, _ := db.GetTabItemData(pd.UserID, item); item != nil {
 		<div style="display: flex; flex-direction: column; flex: 0 1;">
 			Hello from { item.Ttype.String() }
