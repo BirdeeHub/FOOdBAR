@@ -3,6 +3,7 @@ package srvapi
 import (
 	"errors"
 	"fmt"
+	"io/fs"
 	"net/http"
 
 	foodlib "FOOdBAR/FOOlib"
@@ -11,14 +12,14 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func InitServer(signingKey []byte, listenOn string) {
+func InitServer(signingKey []byte, listenOn string, staticFilesystem fs.FS) {
 	e := echo.New()
 	e.Use(middleware.Logger())
 	// e.Use(middleware.Recover())
 	// TODO: figure out how to HTTPS
 	// e.Pre(middleware.HTTPSRedirect())
 
-	e.Static("/static", "static")
+	e.StaticFS("/static", echo.MustSubFS(staticFilesystem, "static"))
 
 	e.GET("/", func(c echo.Context) error {
 		return c.Redirect(http.StatusPermanentRedirect, fmt.Sprintf("%s", foodlib.PagePrefix))
@@ -39,7 +40,7 @@ func InitServer(signingKey []byte, listenOn string) {
 	r.Use(GetJWTmiddlewareWithConfig(signingKey))
 
 	r.Use(middleware.Logger())
-	r.Static("/static", "FOOstatic")
+	r.StaticFS("/static", echo.MustSubFS(staticFilesystem, "FOOstatic"))
 	// r.Use(echo.WrapMiddleware(func(hndl http.Handler) http.Handler {
 	// 	cssmiddleware := templ.NewCSSMiddleware(hndl, views.StaticStyles...)
 	// 	cssmiddleware.Path = fmt.Sprintf("%s/styles/templ.css", viewutils.PagePrefix)

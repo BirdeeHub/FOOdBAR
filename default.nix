@@ -18,22 +18,19 @@ in
 buildGoApplication {
   pname = "FOOdBAR";
   version = "0.1";
-  pwd = ./cmd/FOOdBAR;
+  pwd = ./.;
   src = ./.;
   modules = ./gomod2nix.toml;
   buildInputs = [ pkgs.sqlite ];
   nativeBuildInputs = [ templ pkgs.makeWrapper pkgs.tailwindcss ];
-  # TODO: why does it not bundle the tailwind css?
-  # It is in the right place before build occurs...
-  preBuild = ''
-    mkdir -p ./static
-    templ generate
-    tailwindcss -o ./static/tailwind.css --minify -c ${./tailwind.config.js}
-    pwd
-    ls -l *
-    cat ./static/tailwind.css
+  postUnpack = ''
+    targetStaticDir=$TEMPDIR/''${sourceRoot}/static
+    mkdir -p $targetStaticDir
+    tailwindcss -o $targetStaticDir/tailwind.css -c ${./tailwind.config.js} --minify
   '';
-  postFixup = ''
+  preBuild = ''
+    templ generate
+  '';  postFixup = ''
     wrapProgram $out/bin/FOOdBAR \
       --set FOOdBAR_STATE ${dbpath}
   '';
