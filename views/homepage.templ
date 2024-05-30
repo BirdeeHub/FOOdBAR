@@ -132,19 +132,12 @@ templ TabContainer(pd *foodlib.PageData, td *foodlib.TabData) {
 			@RenderTabContents(pd, td)
 			<div
 				id={ fmt.Sprintf("resizebar_%s", td.Ttype) }
-				class={ Resizebar() }
+				class="flex flex-row flex-grow-0 flex-shrink flex-none cursor-ew-resize"
+				style="border-left: 2px dashed;"
 				onmousedown={ resizeTab(td.Ttype.String()) }
 			></div>
 		</div>
 	}
-}
-
-css Resizebar() {
-	display: flex;
-	flex-direction: row;
-	flex: 0;
-	cursor: ew-resize;
-	border-left: 2px dashed;
 }
 
 // TODO: make this better
