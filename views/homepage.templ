@@ -164,13 +164,6 @@ script resizeTab(tabtarget string) {
 	});
 }
 
-css TabContainerCSS() {
-	display: flex;
-	align-self: stretch;
-	flex-direction: column;
-	flex: 1 1;
-}
-
 templ OOBflipTab(pd *foodlib.PageData, td *foodlib.TabData) {
 	<div
 		id={ fmt.Sprintf("tabContainerTarget_%s", td.Ttype.String()) }
@@ -183,7 +176,7 @@ templ OOBflipTab(pd *foodlib.PageData, td *foodlib.TabData) {
 templ RenderTabContents(pd *foodlib.PageData, td *foodlib.TabData) {
 	<div
 		id={ fmt.Sprintf("tabContainerTarget_%s", td.Ttype.String()) }
-		class={ TabContainerCSS() }
+		class="flex self-stretch flex-col flex-auto flex-grow"
 	>
 		switch td.Ttype {
 		case foodlib.Recipe:
