@@ -31,11 +31,11 @@ func main() {
 		err = fmt.Errorf("keypath not set")
 	}
 	if err != nil {
-		fmt.Println("Error: ", err)
 		keystring := os.Getenv("FOOdBAR_SIGNING_KEY")
 		if keystring != "" {
 			signingKey = []byte(os.Getenv(keystring))
 		} else {
+			fmt.Println("Error: ", err)
 			signingKey = []byte("secret-passphrase-willitwork")
 			fmt.Println("Danger: using default signing key. Use -keypath or FOOdBAR_SIGNING_KEY environment var to set it.")
 		}
