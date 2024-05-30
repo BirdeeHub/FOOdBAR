@@ -45,8 +45,7 @@ func SetupFlipAPIroutes(e *echo.Group) error {
 		return HTML(c, http.StatusOK, views.OOBflipTab(pageData, td))
 	})
 
-	//TODO: make this render the correct state of new/close tab header button
-	// The current add button should be updated to a close button
+	//TODO: the flip makes it shrink. It should not
 	e.GET("/api/itemEditFlip/close/:type", func(c echo.Context) error {
 		pageData, err := db.GetPageData(c)
 		if err != nil {
@@ -69,8 +68,7 @@ func SetupFlipAPIroutes(e *echo.Group) error {
 		return HTML(c, http.StatusOK, views.OOBflipTab(pageData, td))
 	})
 
-	//TODO: make this render the correct state of new/close tab header button
-	// The current add button should be updated to a close button
+	//TODO: the flip makes it shrink. It should not
 	e.GET("/api/itemCreateFlip/open/:type", func(c echo.Context) error {
 		pageData, err := db.GetPageData(c)
 		if err != nil {

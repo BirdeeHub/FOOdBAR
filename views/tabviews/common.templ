@@ -86,28 +86,6 @@ templ ModalAddItemButton(tt foodlib.TabType) {
 	</div>
 }
 
-templ FlipAddItemButton(tt foodlib.TabType) {
-	<div
-		id={ fmt.Sprintf("tabItemAdd_%s", tt.String()) }
-		hx-get={ fmt.Sprintf("%s/api/itemCreateFlip/open/%s", foodlib.PagePrefix, tt.String()) }
-		hx-swap="none"
-		class={ TabHeaderButtonCSS("0 0 1.5rem") }
-	>
-		@AddCircle()
-	</div>
-}
-
-templ CloseFlipButton(tt foodlib.TabType) {
-	<div
-		id={ fmt.Sprintf("tabItemAdd_%s", tt.String()) }
-		hx-get={ fmt.Sprintf("%s/api/itemEditFlip/close/%s", foodlib.PagePrefix, tt.String()) }
-		hx-swap="none"
-		class={ TabHeaderButtonCSS("0 0 1.5rem") }
-	>
-		@MinusCircle()
-	</div>
-}
-
 templ EditTabItemButton(ti *foodlib.TabItem) {
 	<div
 		id={ fmt.Sprintf("ItemEdit_%s", ti.Ttype.String()) }
@@ -263,6 +241,7 @@ templ ItemEditModal(component templ.Component) {
 	</div>
 }
 
+//TODO: the flip makes it shrink. It should not
 templ CardFlipContainerCSS() {
 	<style type="text/css">
 	.card_container {
@@ -318,5 +297,27 @@ templ CardFlipContainer(front templ.Component, back templ.Component) {
 				</div>
 			</div>
 		}
+	</div>
+}
+
+templ FlipAddItemButton(tt foodlib.TabType) {
+	<div
+		id={ fmt.Sprintf("tabItemAdd_%s", tt.String()) }
+		hx-get={ fmt.Sprintf("%s/api/itemCreateFlip/open/%s", foodlib.PagePrefix, tt.String()) }
+		hx-swap="none"
+		class={ TabHeaderButtonCSS("0 0 1.5rem") }
+	>
+		@AddCircle()
+	</div>
+}
+
+templ CloseFlipButton(tt foodlib.TabType) {
+	<div
+		id={ fmt.Sprintf("tabItemAdd_%s", tt.String()) }
+		hx-get={ fmt.Sprintf("%s/api/itemEditFlip/close/%s", foodlib.PagePrefix, tt.String()) }
+		hx-swap="none"
+		class={ TabHeaderButtonCSS("0 0 1.5rem") }
+	>
+		@MinusCircle()
 	</div>
 }
