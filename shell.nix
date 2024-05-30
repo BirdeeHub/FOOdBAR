@@ -31,7 +31,7 @@ pkgs.mkShell {
     templ
     pkgs.tailwindcss
   ];
-  FOOdBAR_STATE = "/home/birdee/.local/share";
+  FOOdBAR_STATE = "~/.local/share";
   shellHook = ''
     exec ${pkgs.zsh}/bin/zsh
   '';
