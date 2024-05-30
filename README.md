@@ -15,12 +15,20 @@ There will likely be some spaghetti that I will figure out how to handle better 
 
 For now it is packaged for nix only so install nix package manager, then clone the repo and cd into it
 
-Then to build or run use ```nix build --show-trace``` or ```nix run --show-trace```
+Then to build or run use
+
+```nix build --show-trace github:BirdeeHub/FOOdBAR```
+
+or ```nix run --show-trace github:BirdeeHub/FOOdBAR```
+
+or ```nix shell --show-trace github:BirdeeHub/FOOdBAR```
 
 and to hack around with it with hot reload run the following 2 commands:
 
 ```bash
-nix develop --show-trace
+git clone https://github.com/BirdeeHub/FOOdBAR
+cd FOOdBAR
+nix develop --show-trace .
 # then inside the shell:
 air
 ```
