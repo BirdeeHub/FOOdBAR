@@ -30,7 +30,8 @@ buildGoApplication {
   '';
   preBuild = ''
     templ generate
-  '';  postFixup = ''
+  '';
+  postFixup = ''
     wrapProgram $out/bin/FOOdBAR \
       --set FOOdBAR_STATE ${dbpath}
   '';
