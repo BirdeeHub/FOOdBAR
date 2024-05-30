@@ -27,11 +27,9 @@ templ PantryItemContainer(pd *foodlib.PageData, td *foodlib.TabData, item *foodl
 				}
 			</div>
 			<div class={ ListItemElementCSS() }>
-				@EditTabItemButton(item)
+				@FlipEditTabItemButton(item)
 			</div>
 		</div>
-	} else if td.Items[item.ItemID] = nil; true {
-		// templ code is not go code. You must use an if statement to set things
 	}
 }
 

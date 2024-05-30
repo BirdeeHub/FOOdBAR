@@ -13,8 +13,9 @@ import (
 
 func SetupModalAPIroutes(e *echo.Group) error {
 
+	// TODO: Somehow make this rerender the tab it was added to, but only if they are active and not flipped
+	// Maybe do it on modal close as a separate route?
 	e.POST("/api/submitItemInfo/:type/:itemID", func(c echo.Context) error {
-		// TODO: This should refresh the tab it was added to so it can get new values.
 		pageData, err := db.GetPageData(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
@@ -53,7 +54,8 @@ func SetupModalAPIroutes(e *echo.Group) error {
 			c.Logger().Print(err)
 			return HTML(c, http.StatusUnprocessableEntity, tabviews.OOBsendBackSubmitStatus(itemID, "", err))
 		}
-		return HTML(c, http.StatusUnprocessableEntity, tabviews.OOBsendBackSubmitStatus(itemID, "Item Saved Successfully!", nil))
+		db.SavePageData(c, pageData)
+		return HTML(c, http.StatusOK, tabviews.OOBsendBackSubmitStatus(itemID, "Item Saved Successfully!", nil))
 	})
 
 	e.GET("/api/submitGetNewField/:type/:itemID/:field", func(c echo.Context) error {

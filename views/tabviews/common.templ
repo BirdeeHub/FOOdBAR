@@ -86,7 +86,7 @@ templ ModalAddItemButton(tt foodlib.TabType) {
 	</div>
 }
 
-templ EditTabItemButton(ti *foodlib.TabItem) {
+templ ModalEditTabItemButton(ti *foodlib.TabItem) {
 	<div
 		id={ fmt.Sprintf("ItemEdit_%s", ti.Ttype.String()) }
 		hx-get={ fmt.Sprintf("%s/api/itemEditModal/open/%s/%s", foodlib.PagePrefix, ti.Ttype.String(), ti.ItemID.String()) }
@@ -241,7 +241,8 @@ templ ItemEditModal(component templ.Component) {
 	</div>
 }
 
-//TODO: the flip makes it shrink. It should not
+// TODO: Does not do the flippy.
+// Make it do the flippy.
 templ CardFlipContainerCSS() {
 	<style type="text/css">
 	.card_container {
@@ -275,8 +276,7 @@ templ CardFlipContainerCSS() {
 }
 
 // requires above css to already be loaded (because otherwise we send it many many times)
-// TODO: do flip with htmx indicator and events instead
-// Or, at least in some way that doesnt make it shrink instead of flipping.....
+// TODO: do flip with htmx indicator and events instead because this method of animation doesnt work.
 templ CardFlipContainer(front templ.Component, back templ.Component) {
 	<div class="card_container">
 		if back == nil {
@@ -299,7 +299,16 @@ templ CardFlipContainer(front templ.Component, back templ.Component) {
 	</div>
 }
 
-// TODO: make an edit button for flip like the modal one that takes a *TabItem
+templ FlipEditTabItemButton(ti *foodlib.TabItem) {
+	<div
+		id={ fmt.Sprintf("ItemEdit_%s", ti.Ttype.String()) }
+		hx-get={ fmt.Sprintf("%s/api/itemEditFlip/open/%s/%s", foodlib.PagePrefix, ti.Ttype.String(), ti.ItemID.String()) }
+		hx-swap="none"
+		class={ TabHeaderButtonCSS("0 0 1.5rem") }
+	>
+		@EditSVG()
+	</div>
+}
 
 templ FlipAddItemButton(tt foodlib.TabType) {
 	<div

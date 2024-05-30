@@ -1,6 +1,6 @@
 # This repo is an extreme work in progress, it is NOT EVEN CLOSE TO FINISHED!!!!
 
-## This is my first attempt at making a webpage,
+## This is my first attempt at making a webpage.
 ## It is also my first time using go, htmx, sql, js, html, css, templ, authentication, routing, etc.
 
 This program will be a tracker app for a friend's small catering/personal chef buisness when it is finished.
@@ -80,7 +80,7 @@ defined part of the skeleton for the tabs themselves
 
 ### TODO AND IDEAS:
 
-make the tab flip to edit work
+make the tab flip to edit work nicely
 
 expandable elements for tab items
 
@@ -90,9 +90,7 @@ infinite scroll for all list style tabs
 
 write some damn tests
 
-make it http*S*
-
-recipe list and entry
+make it forced http*S*
 
 suggestion based on stock
 
@@ -104,19 +102,14 @@ track what was bought and then used after the day to keep track of the total sto
 
 total workflow, 3 interaction stages. Generate menu, input orders and generate the lists, input actual stock bought and used to correct suggested values.
 
-6 tab interface? recipe database, menu tab where you have the menu and track orders, prep list, shopping list, stock list, profit review
-
 recipes will need category, dietary, ingredients, estimated cost, fields, ingredients should have an optional scaling factor for scaling recipes accurately
 
 ingredients will need amounts in stock, time since purchased, storage method, (last queried price?)
 
 when all data for stock and menu and orders have been finalized for the week, generate profit report, with option for adding extra incidental costs.
 
-Run the program, and then visit localhost:42069 (or other configured value)
-
 styling/animation?
 
 recipe entry should have completion for existing items in ingredients dietary, category, etc but not for name or instructions or amounts or prices.
 
 shopping price search feature?
-

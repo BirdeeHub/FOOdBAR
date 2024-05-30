@@ -13,7 +13,6 @@ import (
 
 func SetupFlipAPIroutes(e *echo.Group) error {
 
-	//TODO: Actually make a button that calls this
 	e.GET("/api/itemEditFlip/open/:type/:itemID", func(c echo.Context) error {
 		pageData, err := db.GetPageData(c)
 		if err != nil {
@@ -44,7 +43,6 @@ func SetupFlipAPIroutes(e *echo.Group) error {
 		return HTML(c, http.StatusOK, views.OOBflipTab(pageData, td))
 	})
 
-	//TODO: the flip makes it shrink. It should not
 	e.GET("/api/itemEditFlip/close/:type", func(c echo.Context) error {
 		pageData, err := db.GetPageData(c)
 		if err != nil {
@@ -67,7 +65,6 @@ func SetupFlipAPIroutes(e *echo.Group) error {
 		return HTML(c, http.StatusOK, views.OOBflipTab(pageData, td))
 	})
 
-	//TODO: the flip makes it shrink. It should not
 	e.GET("/api/itemCreateFlip/open/:type", func(c echo.Context) error {
 		pageData, err := db.GetPageData(c)
 		if err != nil {
