@@ -24,7 +24,7 @@ air
 ```
 Then go to localhost:42069 in a web browser
 
-If you dont want to install nix, the following should work, and the air command might work, assuming you have go, templ, and sqlite3 installed.
+If you dont want to install nix, the following should work, and the air command might work, assuming you have go, templ, tailwindcss, air, and sqlite3 installed.
 ```bash
 go mod tidy && templ generate && tailwindcss -o ./static/tailwind.css -c ./tailwind.config.js && go build -o bin/FOOdBAR main.go
 ```
