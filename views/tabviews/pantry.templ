@@ -69,11 +69,11 @@ templ SubmitPantryBlock(pd *foodlib.PageData, item *foodlib.TabItem, e error) {
 				<div class="flex flex-col flex-grow">
 					Name:
 					if name := ""; db.GetTabItemDataValue(itemData, "name", &name) == nil {
-						<input class="text-black" value={ name } type="text" name="itemName"/>
+						<input class="text-black w-full" value={ name } type="text" name="itemName"/>
 					} else {
-						<input class="text-black" value="" type="text" name="itemName"/>
+						<input class="text-black w-full" value="" type="text" name="itemName"/>
 					}
-					<div class="flex flex-row flex-auto">
+					<div class="flex flex-row flex-auto flex-grow">
 						Dietary:
 						<div
 							hx-get={ fmt.Sprintf("%s/api/submitGetNewField/%s/%s/%s", foodlib.PagePrefix, item.Ttype.String(), item.ItemID.String(), "dietary") }
@@ -84,7 +84,7 @@ templ SubmitPantryBlock(pd *foodlib.PageData, item *foodlib.TabItem, e error) {
 							@AddCircle()
 						</div>
 					</div>
-					<div class="flex flex-row flex-auto">
+					<div class="flex flex-row flex-auto flex-grow">
 						// Extra Field requires that you have a target for it of field_edit_ItemID
 						<div id={ fmt.Sprintf("dietary_edit_%s", item.ItemID.String()) }>
 							if dietaries := []string{}; db.GetTabItemDataValue(itemData, "dietary", &dietaries) == nil {
@@ -98,15 +98,15 @@ templ SubmitPantryBlock(pd *foodlib.PageData, item *foodlib.TabItem, e error) {
 					</div>
 					Amount:
 					if amount := 0.0; db.GetTabItemDataValue(itemData, "amount", &amount) == nil {
-						<input class="text-black" value={ fmt.Sprintf("%f", amount) } type="text" name="itemAmount"/>
+						<input class="text-black w-full" value={ fmt.Sprintf("%f", amount) } type="text" name="itemAmount"/>
 					} else {
-						<input class="text-black" value="" type="text" name="itemAmount"/>
+						<input class="text-black w-full" value="" type="text" name="itemAmount"/>
 					}
 					Units:
 					if units := ""; db.GetTabItemDataValue(itemData, "units", &units) == nil {
-						<input class="text-black" value={ units } type="text" name="itemUnits"/>
+						<input class="text-black w-full" value={ units } type="text" name="itemUnits"/>
 					} else {
-						<input class="text-black" value="" type="text" name="itemUnits"/>
+						<input class="text-black w-full" value="" type="text" name="itemUnits"/>
 					}
 					<button action="submit">submit</button>
 					@submitStatusMessage(item.ItemID, "", e)
