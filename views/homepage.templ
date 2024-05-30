@@ -31,42 +31,23 @@ templ Homepage() {
 	</html>
 }
 
-css PageContainerCSS() {
-	display: flex;
-	flex-direction: column;
-}
-
-css PageHeaderContainerCSS() {
-	display: flex;
-	flex-direction: row;
-	padding: 10px;
-	justify-content: center;
-	align-items: center;
-}
-
 css TabViewContainerCSS() {
 	display: flex;
 	flex-direction: row;
 	flex: 1;
 }
 
-css TabButtonContainerCSS() {
-	display: flex;
-	flex-direction: row;
-	cursor: pointer;
-}
-
 templ BodyContents(pd *foodlib.PageData) {
-	<div class={ PageContainerCSS() }>
-		<div id="pageHeader" class={ PageHeaderContainerCSS() }>
+	<div class="flex flex-col">
+		<div id="pageHeader" class="flex flex-row justify-center items-center" style="padding: 10px;">
 			Hello, chef! Welcome to FOOdBAR!
 		</div>
-		<div id="tabButtonContainer" class={ TabButtonContainerCSS() }>
+		<div id="tabButtonContainer" class="flex flex-row">
 			for _, tbd := range pd.GetTabButtonData() {
 				@TabButton(tbd)
 			}
 		</div>
-		<div id="tabViewContainer" class={ TabViewContainerCSS() }>
+		<div id="tabViewContainer" class="flex flex-row flex-1">
 			for _, td := range pd.TabDatas {
 				@TabContainer(pd, td)
 			}
