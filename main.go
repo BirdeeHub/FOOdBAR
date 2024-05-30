@@ -23,13 +23,21 @@ func main() {
 	flag.StringVar(&ip, "ip", "localhost", "IP address to bind to")
 	flag.Parse()
 
-	signingKey, err := os.ReadFile(signingKeyPath)
+	var signingKey []byte
+	var err error
+	if signingKeyPath != "" {
+		signingKey, err = os.ReadFile(signingKeyPath)
+	} else {
+		err = fmt.Errorf("keypath not set")
+	}
 	if err != nil {
+		fmt.Println("Error: ", err)
 		keystring := os.Getenv("FOOdBAR_SIGNING_KEY")
 		if keystring != "" {
 			signingKey = []byte(os.Getenv(keystring))
 		} else {
 			signingKey = []byte("secret-passphrase-willitwork")
+			fmt.Println("Danger: using default signing key. Use -keypath or FOOdBAR_SIGNING_KEY environment var to set it.")
 		}
 	}
 	listenOn := fmt.Sprintf("%s:%d", ip, port)
