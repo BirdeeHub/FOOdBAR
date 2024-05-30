@@ -81,7 +81,7 @@ func SetupFlipAPIroutes(e *echo.Group) error {
 			return echo.NewHTTPError(http.StatusUnauthorized, errors.New("invalid tab type"))
 		}
 		td := pageData.GetTabDataByType(tt)
-		item := td.AddTabItem(&foodlib.TabItem{Expanded: false})
+		item := td.AddTabItem(&foodlib.TabItem{})
 		td.Flipped = item.ItemID
 		pageData.SetActive(td, true)
 		err = db.SavePageData(c, pageData)

@@ -273,12 +273,6 @@ func (tbd *TabData) MarshalJSON() ([]byte, error) {
 	for k, v := range tbd.Items {
 		itemsmap[k.String()] = *v
 	}
-	var flippedStr string
-	if tbd.Flipped == uuid.Nil {
-		flippedStr = ""
-	} else {
-		flippedStr = tbd.Flipped.String()
-	}
 	configpre := struct {
 		Ttype   string             `json:"tab_type"`
 		Items   map[string]TabItem `json:"items"`
@@ -288,7 +282,7 @@ func (tbd *TabData) MarshalJSON() ([]byte, error) {
 		Ttype:   tbd.Ttype.String(),
 		Items:   itemsmap,
 		OrderBy: tbd.OrderBy,
-		Flipped: flippedStr,
+		Flipped: tbd.Flipped.String(),
 	}
 	marshalled, err := json.Marshal(configpre)
 	return marshalled, err
@@ -306,12 +300,7 @@ func (tbd *TabData) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	tbd.OrderBy = irJson.OrderBy
-	var flippedID uuid.UUID
-	if irJson.Flipped == "" {
-		flippedID = uuid.Nil
-	} else {
-		flippedID, err = uuid.Parse(irJson.Flipped)
-	}
+	flippedID, err := uuid.Parse(irJson.Flipped)
 	if err != nil {
 		return err
 	}
