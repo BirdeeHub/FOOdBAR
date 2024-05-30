@@ -300,6 +300,8 @@ templ CardFlipContainer(front templ.Component, back templ.Component) {
 	</div>
 }
 
+// TODO: make an edit button for flip like the modal one that takes a *TabItem
+
 templ FlipAddItemButton(tt foodlib.TabType) {
 	<div
 		id={ fmt.Sprintf("tabItemAdd_%s", tt.String()) }
