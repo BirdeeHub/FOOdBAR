@@ -36,12 +36,18 @@ Then go to localhost:42069 in a web browser
 
 #### nixless
 
-If you dont want to install nix, the following should work, and the air command might work, assuming you have go, templ, tailwindcss, air, and sqlite3 installed.
+If you dont want to install nix, the following should work, and the air command might work.
+
+Assuming you have go, templ, sqlite3, tailwindcss, and air installed already and in your PATH, run the following commands:
 ```bash
+git clone https://github.com/BirdeeHub/FOOdBAR
+cd FOOdBAR
 go mod tidy && templ generate && tailwindcss -o ./static/tailwind.css -c ./tailwind.config.js && go build -o bin/FOOdBAR main.go
 ```
 -OR-
 ```bash
+git clone https://github.com/BirdeeHub/FOOdBAR
+cd FOOdBAR
 air
 ```
 
