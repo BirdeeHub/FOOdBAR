@@ -13,7 +13,7 @@ There will likely be some spaghetti that I will figure out how to handle better 
 
 #### nix
 
-For now it is packaged for nix only so install nix package manager, then clone the repo and cd into it
+For now it is packaged for nix only so install nix package manager on linux, mac, or WSL, by following the instructions here [nixos.org/download](https://nixos.org/download/)
 
 Then to build or run use
 
