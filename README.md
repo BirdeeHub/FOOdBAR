@@ -11,6 +11,8 @@ There will likely be some spaghetti that I will figure out how to handle better 
 
 ### Install and development building instructions
 
+#### nix
+
 For now it is packaged for nix only so install nix package manager, then clone the repo and cd into it
 
 Then to build or run use ```nix build --show-trace``` or ```nix run --show-trace```
@@ -23,6 +25,8 @@ nix develop --show-trace
 air
 ```
 Then go to localhost:42069 in a web browser
+
+#### nixless
 
 If you dont want to install nix, the following should work, and the air command might work, assuming you have go, templ, tailwindcss, air, and sqlite3 installed.
 ```bash
