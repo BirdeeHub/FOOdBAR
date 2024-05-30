@@ -49,7 +49,7 @@ templ submitStatusMessage(id uuid.UUID, message string, e error){
 }
 
 templ OOBExtraField(field string, itemid uuid.UUID) {
-	<div id={ string(templ.URL(fmt.Sprintf("%s_%s", field, itemid.String()))) } hx-swap-oob="beforeend">
+	<div id={ string(templ.URL(fmt.Sprintf("%s_edit_%s", field, itemid.String()))) } hx-swap-oob="beforeend">
 		@ExtraField("", field)
 	</div>
 }
