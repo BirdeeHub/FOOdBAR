@@ -60,31 +60,31 @@ templ RenderPantryTab(pd *foodlib.PageData, td *foodlib.TabData) {
 
 templ SubmitPantryBlock(pd *foodlib.PageData, item *foodlib.TabItem, e error) {
 	if itemData, _ := db.GetTabItemData(pd.UserID, item); item != nil {
-		<div style="display: flex; height: 100%; width: 100%; flex-direction: column; flex: 1 1;">
+		<div class="flex h-full w-full flex-col flex-1 items-stretch">
 			Hello from { item.Ttype.String() }
 			<form
 				hx-post={ fmt.Sprintf("%s/api/submitItemInfo/%s/%s", foodlib.PagePrefix, item.Ttype.String(), item.ItemID.String()) }
 				hx-swap="none"
 			>
-				<div style="display: flex; flex-direction: column; flex: 0 0;">
+				<div class="flex flex-col flex-grow">
 					Name:
 					if name := ""; db.GetTabItemDataValue(itemData, "name", &name) == nil {
 						<input class="text-black" value={ name } type="text" name="itemName"/>
 					} else {
 						<input class="text-black" value="" type="text" name="itemName"/>
 					}
-					<div style="display: flex; flex-direction: row; flex: 0 1;">
+					<div class="flex flex-row flex-auto">
 						Dietary:
 						<div
 							hx-get={ fmt.Sprintf("%s/api/submitGetNewField/%s/%s/%s", foodlib.PagePrefix, item.Ttype.String(), item.ItemID.String(), "dietary") }
 							hx-trigger="click"
 							hx-swap="none"
-							style="cursor: pointer; height: 100%; width: 1.5rem;"
+							class="cursor-pointer h-full w-6"
 						>
 							@AddCircle()
 						</div>
 					</div>
-					<div style="display: flex; flex-direction: row; flex: 0 1;">
+					<div class="flex flex-row flex-auto">
 						<div id={ fmt.Sprintf("dietary_%s", item.ItemID.String()) }>
 							if dietaries := []string{}; db.GetTabItemDataValue(itemData, "dietary", &dietaries) == nil {
 								for _, v := range dietaries {

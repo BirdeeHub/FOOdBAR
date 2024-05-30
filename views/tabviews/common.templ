@@ -255,7 +255,6 @@ templ CardFlipContainerCSS() {
 		position: relative;
 		transition: transform 1s;
 		transform-style: preserve-3d;
-		transform-origin: center right;
 	}
 	.card__face {
 		position: absolute;
@@ -264,7 +263,7 @@ templ CardFlipContainerCSS() {
 		backface-visibility: hidden;
 	}
 	.card.is-flipped {
-		transform: translateX(-100%) rotateY(-180deg);
+		transform: rotateY(-180deg);
 	}
 	.card__face--front {
 	}
