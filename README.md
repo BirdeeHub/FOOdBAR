@@ -23,7 +23,7 @@ or ```nix run --show-trace github:BirdeeHub/FOOdBAR```
 
 or ```nix shell --show-trace github:BirdeeHub/FOOdBAR```
 
-and to hack around with it with hot reload run the following 2 commands:
+and to hack around with it with hot reload run the following 4 commands:
 
 ```bash
 git clone https://github.com/BirdeeHub/FOOdBAR
