@@ -35,7 +35,7 @@ templ RenderRecipeTab(pd *foodlib.PageData, td *foodlib.TabData) {
 	</div>
 }
 
-templ SubmitRecipeBlock(pd *foodlib.PageData, item *foodlib.TabItem, e error) {
+templ SubmitRecipeBlock(pd *foodlib.PageData, item *foodlib.TabItem, msg string, e error) {
 	if item != nil {
 		<div style="display: flex; flex-direction: column; flex: 0 1;">
 			Hello from { item.Ttype.String() }

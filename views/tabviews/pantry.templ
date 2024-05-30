@@ -49,14 +49,14 @@ templ RenderPantryTab(pd *foodlib.PageData, td *foodlib.TabData) {
 		if td.Flipped == uuid.Nil {
 			@CardFlipContainer(PantryTabContents(pd, td), nil)
 		} else if item, ok := td.Items[td.Flipped]; ok {
-			@CardFlipContainer(nil, SubmitPantryBlock(pd, item, nil))
+			@CardFlipContainer(nil, SubmitPantryBlock(pd, item, "", nil))
 		} else {
 			@CardFlipContainer(PantryTabContents(pd, td), nil)
 		}
 	</div>
 }
 
-templ SubmitPantryBlock(pd *foodlib.PageData, item *foodlib.TabItem, e error) {
+templ SubmitPantryBlock(pd *foodlib.PageData, item *foodlib.TabItem, msg string, e error) {
 	if itemData, _ := db.GetTabItemData(pd.UserID, item); item != nil {
 		<div class="flex h-full w-full flex-col flex-1 items-stretch">
 			Hello from { item.Ttype.String() }
@@ -107,7 +107,7 @@ templ SubmitPantryBlock(pd *foodlib.PageData, item *foodlib.TabItem, e error) {
 						<input class="text-black w-full" value="" type="text" name="itemUnits"/>
 					}
 					<button action="submit">submit</button>
-					@submitStatusMessage(item.ItemID, "", e)
+					@submitStatusMessage(item.ItemID, msg, e)
 				</div>
 			</form>
 		</div>
