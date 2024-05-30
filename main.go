@@ -23,6 +23,9 @@ func main() {
 	flag.StringVar(&ip, "ip", "localhost", "IP address to bind to")
 	flag.Parse()
 
+	listenOn := fmt.Sprintf("%s:%d", ip, port)
+	db.SetDBpath(dbpath)
+
 	var signingKey []byte
 	var err error
 	if signingKeyPath != "" {
@@ -40,7 +43,5 @@ func main() {
 			fmt.Println("Danger: using default signing key. Use -keypath or FOOdBAR_SIGNING_KEY environment var to set it.")
 		}
 	}
-	listenOn := fmt.Sprintf("%s:%d", ip, port)
-	db.SetDBpath(dbpath)
 	srvapi.InitServer(signingKey, listenOn, staticFiles)
 }
