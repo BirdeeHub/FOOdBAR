@@ -40,6 +40,7 @@ func InitServer(signingKey []byte, listenOn string, staticFilesystem fs.FS) {
 	r.Use(GetJWTmiddlewareWithConfig(signingKey))
 
 	r.Use(middleware.Logger())
+	// Authed static directory at /FOOdBAR/static
 	r.StaticFS("/static", echo.MustSubFS(staticFilesystem, "FOOstatic"))
 	// r.Use(echo.WrapMiddleware(func(hndl http.Handler) http.Handler {
 	// 	cssmiddleware := templ.NewCSSMiddleware(hndl, views.StaticStyles...)
