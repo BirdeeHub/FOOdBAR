@@ -13,7 +13,7 @@ import (
 
 func SetupFlipAPIroutes(e *echo.Group) error {
 
-	//TODO: The current add button should be updated to a close button
+	//TODO: Actually make a button that calls this
 	e.GET("/api/itemEditFlip/open/:type/:itemID", func(c echo.Context) error {
 		pageData, err := db.GetPageData(c)
 		if err != nil {
