@@ -14,7 +14,7 @@ var staticFiles embed.FS
 
 func main() {
 	var signingKeyPath string
-	flag.StringVar(&signingKeyPath, "keypath", "", "key file to use for signed cookies")
+	flag.StringVar(&signingKeyPath, "keypath", "", "key file to use for signed cookies (overrides FOOdBAR_SIGNING_KEY env var)")
 	var dbpath string
 	flag.StringVar(&dbpath, "dbpath", os.Getenv("FOOdBAR_STATE"), "path to database directory (overrides FOOdBAR_STATE env var)")
 	var port int
@@ -25,7 +25,12 @@ func main() {
 
 	signingKey, err := os.ReadFile(signingKeyPath)
 	if err != nil {
-		signingKey = []byte("secret-passphrase-willitwork")
+		keystring := os.Getenv("FOOdBAR_SIGNING_KEY")
+		if keystring != "" {
+			signingKey = []byte(os.Getenv(keystring))
+		} else {
+			signingKey = []byte("secret-passphrase-willitwork")
+		}
 	}
 	listenOn := fmt.Sprintf("%s:%d", ip, port)
 	db.SetDBpath(dbpath)
