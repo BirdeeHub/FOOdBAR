@@ -32,6 +32,7 @@ buildGoApplication {
     templ generate
   '';
   postFixup = ''
+    # https://github.com/NixOS/nixpkgs/blob/master/pkgs/build-support/setup-hooks/make-wrapper.sh
     wrapProgram $out/bin/FOOdBAR \
       --set FOOdBAR_STATE ${dbpath}
   '';
