@@ -73,7 +73,8 @@ defined part of the skeleton for the tabs themselves
 ---
 
 ### TODO AND IDEAS:
-database for tab items
+
+make the tab flip to edit work
 
 expandable elements for tab items
 
