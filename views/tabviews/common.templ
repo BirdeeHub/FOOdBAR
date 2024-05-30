@@ -298,6 +298,7 @@ templ CardFlipContainerCSS() {
 
 // requires above css to already be loaded (because otherwise we send it many many times)
 // TODO: do flip with htmx indicator and events instead
+// Or, at least in some way that doesnt make it shrink instead of flipping.....
 templ CardFlipContainer(front templ.Component, back templ.Component) {
 	<div class="card_container">
 		if back == nil {
