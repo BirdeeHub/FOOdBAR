@@ -16,7 +16,7 @@ func main() {
 	var signingKeyPath string
 	flag.StringVar(&signingKeyPath, "keypath", "", "key file to use for signed cookies (overrides FOOdBAR_SIGNING_KEY env var)")
 	var dbpath string
-	flag.StringVar(&dbpath, "dbpath", os.Getenv("FOOdBAR_STATE"), "path to database directory (overrides FOOdBAR_STATE env var)")
+	flag.StringVar(&dbpath, "dbpath", os.Getenv("FOOdBAR_STATE"), "path to database directory (overrides FOOdBAR_STATE env var), defaults to /tmp or windows temp folder if not set")
 	var port int
 	flag.IntVar(&port, "port", 42069, "port to listen on")
 	var ip string
