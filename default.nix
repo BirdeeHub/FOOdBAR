@@ -11,10 +11,10 @@
   )
 , buildGoApplication ? pkgs.buildGoApplication
 , inputs ? {}
-, dbpath ? ''""''
-, keypath ? ''""''
-, ip ? ''""''
-, port ? ''""''
+, dbpath ? "''"
+, keypath ? "''"
+, ip ? "''"
+, port ? "''"
 }: let
   templ = inputs.templ.packages.${pkgs.system}.templ;
 in
@@ -46,6 +46,6 @@ buildGoApplication {
     # wrapProgram $out/bin/FOOdBAR \
     #   --set FOOdBAR_STATE ${dbpath}\
     #   --set FOOdBAR_SIGNING_KEY ${dbpath}\
-    #   --add-flags '-port ${port} -ip ${ip} -dbpath ${dbpath} -keypath ${keypath}'
+    #   --add-flags "-port ${port} -ip ${ip} -dbpath ${dbpath} -keypath ${keypath}"
   '';
 }
