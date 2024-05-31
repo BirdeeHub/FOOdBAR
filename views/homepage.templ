@@ -33,7 +33,7 @@ templ Homepage() {
 
 templ BodyContents(pd *foodlib.PageData) {
 	<div class="flex flex-col">
-		<div id="pageHeader" class="flex flex-row justify-center items-center" style="padding: 10px;">
+		<div id="pageHeader" class="flex flex-row justify-center items-center px-10">
 			Hello, chef! Welcome to FOOdBAR!
 		</div>
 		<div id="tabButtonContainer" class="flex flex-row">
@@ -65,16 +65,6 @@ templ OOBtabButtonToggle(tbd foodlib.TabButtonData) {
 	}
 }
 
-css TabButtonItemCSS() {
-	display: flex;
-	flex-direction: row;
-	padding: 10px;
-	border-bottom: 1px solid;
-	border-top: 1px solid;
-	cursor: pointer;
-	border-radius: 10px;
-}
-
 // TODO: make this have a loading animation
 templ TabButton(tbd foodlib.TabButtonData) {
 	if tbd.Ttype != foodlib.Invalid {
@@ -83,7 +73,7 @@ templ TabButton(tbd foodlib.TabButtonData) {
 				hx-get={ fmt.Sprintf("%s/api/tabButton/activate/%s", foodlib.PagePrefix, tbd.Ttype.String()) }
 				hx-swap="outerHTML"
 				id={ fmt.Sprintf("tabButton_%s", tbd.Ttype.String()) }
-				class={ TabButtonItemCSS() }
+				class="flex flex-row flex-shrink items-center justify-center py-2 px-3 cursor-pointer border-t-2 border-b-2 rounded-xl"
 			>
 				{ fmt.Sprintf("🍜 %s",tbd.Ttype.String()) }
 			</div>
@@ -93,7 +83,7 @@ templ TabButton(tbd foodlib.TabButtonData) {
 				hx-target={ fmt.Sprintf("#tabContainer_%s", tbd.Ttype.String()) }
 				hx-swap="outerHTML"
 				id={ fmt.Sprintf("tabButton_%s", tbd.Ttype.String()) }
-				class={ TabButtonItemCSS() }
+				class="flex flex-row flex-shrink items-center justify-center py-2 px-3 cursor-pointer border-t-2 border-b-2 rounded-xl"
 			>
 				{ fmt.Sprintf("%s 🍜",tbd.Ttype.String()) }
 			</div>
@@ -103,12 +93,11 @@ templ TabButton(tbd foodlib.TabButtonData) {
 
 templ TabContainer(pd *foodlib.PageData, td *foodlib.TabData) {
 	if td != nil && td.Ttype != foodlib.Invalid {
-		<div id={ fmt.Sprintf("tabContainer_%s", td.Ttype) } style="display: flex; flex-direction: row; flex: 1;">
+		<div id={ fmt.Sprintf("tabContainer_%s", td.Ttype) } class="flex flex-row flex-1">
 			@RenderTabContents(pd, td)
 			<div
 				id={ fmt.Sprintf("resizebar_%s", td.Ttype) }
-				class="flex flex-row flex-grow-0 flex-shrink flex-none cursor-ew-resize"
-				style="border-left: 2px dashed;"
+				class="flex flex-row flex-grow-0 flex-shrink flex-none cursor-ew-resize border-dashed border-l-2"
 				onmousedown={ resizeTab(td.Ttype.String()) }
 			></div>
 		</div>

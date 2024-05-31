@@ -26,15 +26,6 @@ script htmxAllowedCodes() {
 			}
 		});
 	})
-	document.addEventListener('htmx:beforeSend', (event) => {
-		function generateUniqueID() {
-			var id = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
-			sessionStorage.setItem('tab_id', id);
-			return id;
-		}
-		var tabId = sessionStorage.getItem('tab_id') || generateUniqueID();
-		event.detail.xhr.setRequestHeader('tab_id', tabId);
-	});
 }
 
 templ LoginPage(formtype LoginFormType, e error) {
@@ -58,44 +49,33 @@ templ LoginPage(formtype LoginFormType, e error) {
 }
 
 templ LoginPageContents(formtype LoginFormType, e error) {
-	<div id="loginpage" class={ displayFlex("column") }>
+	<div id="loginpage" class="flex flex-col">
 		@FormTypeButton(formtype)
-		<div style="border-bottom: 1px solid;">
-		</div>
 		@LoginForm(formtype, e)
 	</div>
-}
-css modeButtonItemCSS() {
-	display: flex;
-	flex-direction: row;
-	padding: 10px;
-	border-bottom: 1px solid;
-	border-top: 1px solid;
-	cursor: pointer;
-	border-radius: 10px;
 }
 
 templ FormTypeButton(formtype LoginFormType) {
 	if formtype != "login" {
-		<div style="display: flex; flex: row;">
+		<div class="flex flex-row flex-shrink">
 			<div
 				hx-get={ fmt.Sprintf("%s/loginform/%s", foodlib.PagePrefix, "login") }
 				hx-swap="outerHTML"
 				hx-target="#loginpage"
 				id="loginbutton"
-				class={ modeButtonItemCSS() }
+				class="flex flex-row flex-shrink items-center justify-center py-2 px-3 cursor-pointer border-t-2 border-b-2 rounded-xl mb-3"
 			>
 				Log in!
 			</div>
 		</div>
 	} else {
-		<div style="display: flex; flex: row;">
+		<div class="flex flex-row flex-shrink">
 			<div
 				hx-get={ fmt.Sprintf("%s/loginform/%s", foodlib.PagePrefix, "signup") }
 				hx-swap="outerHTML"
 				hx-target="#loginpage"
 				id="signupbutton"
-				class={ modeButtonItemCSS() }
+				class="flex flex-row flex-shrink items-center justify-center py-2 px-3 cursor-pointer border-t-2 border-b-2 rounded-xl mb-3"
 			>
 				Sign up!
 			</div>
@@ -109,12 +89,10 @@ templ LoginForm(formtype LoginFormType, e error) {
 			action={ templ.URL(fmt.Sprintf("%s/submitlogin", foodlib.PagePrefix)) }
 			method="POST"
 			enctype="application/x-www-form-urlencoded"
-			class={ displayFlex("column") }
+			class="flex flex-col"
 		>
-			<div class={ displayFlex("row") } id="signupform">
+			<div class="flex flex-row flex-shrink" id="signupform">
 				@LoginFormContents(formtype, e)
-				<div style="flex: 1;">
-				</div>
 			</div>
 		</form>
 	} else {
@@ -122,37 +100,27 @@ templ LoginForm(formtype LoginFormType, e error) {
 			action={ templ.URL(fmt.Sprintf("%s/submitsignup", foodlib.PagePrefix)) }
 			method="POST"
 			enctype="application/x-www-form-urlencoded"
-			class={ displayFlex("column") }
+			class="flex flex-col"
 		>
-			<div class={ displayFlex("row") } id="signupform">
+			<div class="flex flex-row flex-shrink" id="signupform">
 				@LoginFormContents(formtype, e)
-				<div style="flex: 1;">
-				</div>
 			</div>
 		</form>
 	}
 }
 
-css beepboop() {
-	position: absolute;
-	left: -9999px;
-	width: 1px;
-	height: 1px;
-	overflow: hidden;
-}
-
 templ LoginFormContents(formtype LoginFormType, e error) {
-	<div class={ displayFlex("column") }>
+	<div class="flex flex-col">
 		if formtype == LoginType {
 			Username:
 			<input class="text-black" value="" type="text" name="username"/>
 			Password:
 			<input class="text-black" value="" type="password" name="password"/>
-			<input class={ beepboop() } value="" type="text" name="beepboop"/>
+			<input style="position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;" value="" type="text" name="beepboop"/>
 			if e != nil {
 				{ e.Error() }
 			}
-			<button class={ modeButtonItemCSS() } style="margin-top: 5px" type="submit">log in</button>
+			<button class="flex flex-row flex-shrink items-center justify-center py-2 px-3 cursor-pointer border-t-2 border-b-2 rounded-xl mt-2" type="submit">log in</button>
 		} else {
 			Username:
 			<input class="text-black" value="" type="text" name="username"/>
@@ -160,16 +128,11 @@ templ LoginFormContents(formtype LoginFormType, e error) {
 			<input class="text-black" value="" type="password" name="password"/>
 			Confirm password:
 			<input class="text-black" value="" type="password" name="confirmpassword"/>
-			<input class={ beepboop() } value="" type="text" name="beepboop"/>
+			<input style="position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;" value="" type="text" name="beepboop"/>
 			if e != nil {
 				{ e.Error() }
 			}
-			<button class={ modeButtonItemCSS() } style="margin-top: 5px" type="submit">sign up</button>
+			<button class="flex flex-row flex-shrink items-center justify-center py-2 px-3 cursor-pointer border-t-2 border-b-2 rounded-xl mt-2" type="submit">sign up</button>
 		}
 	</div>
-}
-
-css displayFlex(direction string) {
-	display: flex;
-	flex-direction: { direction };
 }
