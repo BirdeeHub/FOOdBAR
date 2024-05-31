@@ -1,19 +1,21 @@
 {
   description = "A basic gomod2nix flake";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-  inputs.flake-utils.url = "github:numtide/flake-utils";
-  inputs.gomod2nix.url = "github:nix-community/gomod2nix";
-  inputs.gomod2nix.inputs.nixpkgs.follows = "nixpkgs";
-  inputs.gomod2nix.inputs.flake-utils.follows = "flake-utils";
-  inputs.templ.url = "github:a-h/templ";
-  inputs.htmx = {
-    url = "github:bigskysoftware/htmx";
-    flake = false;
-  };
-  inputs.hyperscript = {
-    url = "github:bigskysoftware/_hyperscript";
-    flake = false;
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
+    gomod2nix.url = "github:nix-community/gomod2nix";
+    gomod2nix.inputs.nixpkgs.follows = "nixpkgs";
+    gomod2nix.inputs.flake-utils.follows = "flake-utils";
+    templ.url = "github:a-h/templ";
+    htmx = {
+      url = "github:bigskysoftware/htmx";
+      flake = false;
+    };
+    hyperscript = {
+      url = "github:bigskysoftware/_hyperscript";
+      flake = false;
+    };
   };
 
   outputs = { self, nixpkgs, flake-utils, gomod2nix, ... }@inputs: let
