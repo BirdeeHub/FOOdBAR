@@ -35,11 +35,12 @@ func getUseGZmiddleware(staticFilesystem fs.FS, prefix string) func(next echo.Ha
 							contentType = "text/html"
 						} else if filepath.Ext(requestPath) == ".svg" {
 							contentType = "image/svg+xml"
+						} else {
+							return next(c)
 						}
 						return GZIP(c, http.StatusOK, contentType, filebytes)
 					}
 				}
-				return next(c)
 			}
 			return next(c)
 		}
