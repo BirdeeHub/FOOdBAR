@@ -41,12 +41,11 @@ buildGoApplication {
   preBuild = ''
     templ generate
   '';
-  postFixup = let 
-  in (/*bash*/''
+  postFixup = ''
     # https://github.com/NixOS/nixpkgs/blob/master/pkgs/build-support/setup-hooks/make-wrapper.sh
     # wrapProgram $out/bin/FOOdBAR \
     #   --set FOOdBAR_STATE ${dbpath}\
     #   --set FOOdBAR_SIGNING_KEY ${dbpath}\
     #   --add-flags '-port ${port} -ip ${ip} -dbpath ${dbpath} -keypath ${keypath}'
-  '');
+  '';
 }
