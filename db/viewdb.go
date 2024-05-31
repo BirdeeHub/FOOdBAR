@@ -121,6 +121,7 @@ func GetPageData(c echo.Context) (*foodlib.PageData, error) {
 		return nil, err
 	}
 	if pd.UserID != userID || pd.SessionID != SID || pd.TabID != tabID {
+		tabID = uuid.New().String()
 		pd := foodlib.InitPageData(userID, SID, tabID)
 		return pd, nil
 	}
