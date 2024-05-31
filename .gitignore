@@ -5,3 +5,4 @@
 /views/**/*_templ.go
 /result
 /static/tailwind.css
+**.gz
