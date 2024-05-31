@@ -15,6 +15,16 @@ import (
 var staticFiles embed.FS
 
 func main() {
+	embeddedHTMX, err := isFilePresent(staticFiles, "htmx.min.js")
+	if embeddedHTMX && err == nil {
+		foodlib.HtmxPath = "/static/htmx.min.js"
+	}
+
+	embeddedHyperscript, err := isFilePresent(staticFiles, "_hyperscript.min.js")
+	if embeddedHyperscript && err == nil {
+		foodlib.HyperscriptPath = "/static/_hyperscript.min.js"
+	}
+
 	var signingKeyPath string
 	flag.StringVar(&signingKeyPath, "keypath", os.Getenv("FOOdBAR_SIGNING_KEY"), "key file to use for signed cookies (overrides FOOdBAR_SIGNING_KEY env var)")
 	var dbpath string
@@ -28,16 +38,6 @@ func main() {
 	listenOn := fmt.Sprintf("%s:%d", ip, port)
 	db.SetDBpath(dbpath)
 
-	embeddedHTMX, err := isFilePresent(staticFiles, "htmx.min.js")
-	if embeddedHTMX && err == nil {
-		foodlib.HtmxPath = "/static/htmx.min.js"
-	}
-
-	embeddedHyperscript, err := isFilePresent(staticFiles, "_hyperscript.min.js")
-	if embeddedHyperscript && err == nil {
-		foodlib.HyperscriptPath = "/static/_hyperscript.min.js"
-	}
-
 	var signingKey []byte
 	if signingKeyPath != "" {
 		signingKey, err = os.ReadFile(signingKeyPath)
@@ -49,6 +49,7 @@ func main() {
 		fmt.Println("Error: ", err)
 		fmt.Println("Danger: using default signing key. Use -keypath or FOOdBAR_SIGNING_KEY environment var to set it.")
 	}
+
 	srvapi.InitServer(signingKey, listenOn, staticFiles)
 }
 
