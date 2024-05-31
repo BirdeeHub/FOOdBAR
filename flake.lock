@@ -117,6 +117,38 @@
         "type": "github"
       }
     },
+    "htmx": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1717133662,
+        "narHash": "sha256-PAZN2TKo8yaln/HxNYOlwDnGnSdv3EgxRF9ObQfXUgM=",
+        "owner": "bigskysoftware",
+        "repo": "htmx",
+        "rev": "4eadc8f492bd90694455414d06f99801d950e94f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "bigskysoftware",
+        "repo": "htmx",
+        "type": "github"
+      }
+    },
+    "hyperscript": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1713371300,
+        "narHash": "sha256-HfZLZxAuER2lWvP8qC/IMr6sRTM6m875DMVoWt512cg=",
+        "owner": "bigskysoftware",
+        "repo": "_hyperscript",
+        "rev": "1e65fb101e2953f680ce958f7de31c266356ad87",
+        "type": "github"
+      },
+      "original": {
+        "owner": "bigskysoftware",
+        "repo": "_hyperscript",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1716948383,
@@ -153,6 +185,8 @@
       "inputs": {
         "flake-utils": "flake-utils",
         "gomod2nix": "gomod2nix",
+        "htmx": "htmx",
+        "hyperscript": "hyperscript",
         "nixpkgs": "nixpkgs",
         "templ": "templ"
       }

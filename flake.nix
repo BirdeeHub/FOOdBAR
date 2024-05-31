@@ -7,6 +7,14 @@
   inputs.gomod2nix.inputs.nixpkgs.follows = "nixpkgs";
   inputs.gomod2nix.inputs.flake-utils.follows = "flake-utils";
   inputs.templ.url = "github:a-h/templ";
+  inputs.htmx = {
+    url = "github:bigskysoftware/htmx";
+    flake = false;
+  };
+  inputs.hyperscript = {
+    url = "github:bigskysoftware/_hyperscript";
+    flake = false;
+  };
 
   outputs = { self, nixpkgs, flake-utils, gomod2nix, ... }@inputs:
     (flake-utils.lib.eachDefaultSystem

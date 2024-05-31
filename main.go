@@ -1,11 +1,13 @@
 package main
 
 import (
+	foodlib "FOOdBAR/FOOlib"
 	"FOOdBAR/db"
 	"FOOdBAR/srvapi"
 	"embed"
 	"flag"
 	"fmt"
+	"io/fs"
 	"os"
 )
 
@@ -26,8 +28,17 @@ func main() {
 	listenOn := fmt.Sprintf("%s:%d", ip, port)
 	db.SetDBpath(dbpath)
 
+	embeddedHTMX, err := isFilePresent(staticFiles, "htmx.min.js")
+	if embeddedHTMX && err == nil {
+		foodlib.HtmxPath = "/static/htmx.min.js"
+	}
+
+	embeddedHyperscript, err := isFilePresent(staticFiles, "_hyperscript.min.js")
+	if embeddedHyperscript && err == nil {
+		foodlib.HyperscriptPath = "/static/_hyperscript.min.js"
+	}
+
 	var signingKey []byte
-	var err error
 	if signingKeyPath != "" {
 		signingKey, err = os.ReadFile(signingKeyPath)
 	} else {
@@ -44,4 +55,23 @@ func main() {
 		}
 	}
 	srvapi.InitServer(signingKey, listenOn, staticFiles)
+}
+
+func isFilePresent(filesystem fs.FS, filename string) (bool, error) {
+	found := false
+	walkFn := func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.Name() == filename && !d.IsDir() {
+			found = true
+			return fs.SkipDir
+		}
+		return nil
+	}
+	err := fs.WalkDir(filesystem, ".", walkFn)
+	if err != nil {
+		return false, err
+	}
+	return found, nil
 }

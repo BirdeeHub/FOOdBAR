@@ -9,6 +9,9 @@ import (
 
 const PagePrefix = "/FOOdBAR"
 
+var HtmxPath = "https://unpkg.com/htmx.org/dist/htmx.min.js"
+var HyperscriptPath = "https://unpkg.com/hyperscript.org@0.9.12"
+
 // TODO: make sorting rules
 type SortMethod string
 
