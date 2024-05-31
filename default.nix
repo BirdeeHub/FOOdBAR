@@ -27,8 +27,9 @@ buildGoApplication {
   buildInputs = [ pkgs.sqlite ];
   nativeBuildInputs = [ templ pkgs.makeWrapper pkgs.tailwindcss ];
   postUnpack = ''
-    targetStaticDir=$TEMPDIR/$sourceRoot/static
-    targetFOOstaticDir=$TEMPDIR/$sourceRoot/FOOstatic
+    newsource=$TEMPDIR/''${sourceRoot}
+    targetStaticDir=$newsource/static
+    targetFOOstaticDir=$newsource/FOOstatic
     mkdir -p $targetStaticDir
     mkdir -p $targetFOOstaticDir
     tailwindcss -o $targetStaticDir/tailwind.css -c ${./tailwind.config.js} --minify
