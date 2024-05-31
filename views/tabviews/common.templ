@@ -63,6 +63,27 @@ templ ExtraField(val string, field string) {
 	/>
 }
 
+templ RenderTabContents(pd *foodlib.PageData, td *foodlib.TabData) {
+	switch td.Ttype {
+		case foodlib.Recipe:
+			@RenderRecipeTab(pd, td)
+		case foodlib.Pantry:
+			@RenderPantryTab(pd, td)
+		case foodlib.Menu:
+			@RenderMenuTab(pd, td)
+		case foodlib.Shopping:
+			@RenderShoppingTab(pd, td)
+		case foodlib.Preplist:
+			@RenderPreplistTab(pd, td)
+		case foodlib.Earnings:
+			@RenderEarningsTab(pd, td)
+		case foodlib.Customer:
+			@RenderCustomerTab(pd, td)
+		case foodlib.Events:
+			@RenderEventsTab(pd, td)
+	}
+}
+
 templ RenderSubmissionContent(pd *foodlib.PageData, item *foodlib.TabItem, msg string, e error) {
 	switch item.Ttype {
 		case foodlib.Recipe:
@@ -161,6 +182,15 @@ templ CardFlipContainer(front templ.Component, back templ.Component) {
 				</div>
 			</div>
 		}
+	</div>
+}
+
+templ OOBflipTab(pd *foodlib.PageData, td *foodlib.TabData) {
+	<div
+		id={ fmt.Sprintf("tabContainerTarget_%s", td.Ttype.String()) }
+		hx-swap-oob="innerHTML"
+	>
+		@RenderTabContents(pd, td)
 	</div>
 }
 

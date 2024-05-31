@@ -3,7 +3,7 @@ package srvapi
 import (
 	foodlib "FOOdBAR/FOOlib"
 	"FOOdBAR/db"
-	"FOOdBAR/views"
+	"FOOdBAR/views/tabviews"
 	"errors"
 	"net/http"
 
@@ -40,7 +40,7 @@ func SetupFlipAPIroutes(e *echo.Group) error {
 		if err != nil {
 			echo.NewHTTPError(http.StatusTeapot, "Cannot marshal page data")
 		}
-		return HTML(c, http.StatusOK, views.OOBflipTab(pageData, td))
+		return HTML(c, http.StatusOK, tabviews.OOBflipTab(pageData, td))
 	})
 
 	e.GET("/api/itemEditFlip/close/:type", func(c echo.Context) error {
@@ -62,7 +62,7 @@ func SetupFlipAPIroutes(e *echo.Group) error {
 		if err != nil {
 			echo.NewHTTPError(http.StatusTeapot, "Cannot marshal page data")
 		}
-		return HTML(c, http.StatusOK, views.OOBflipTab(pageData, td))
+		return HTML(c, http.StatusOK, tabviews.OOBflipTab(pageData, td))
 	})
 
 	e.GET("/api/itemCreateFlip/open/:type", func(c echo.Context) error {
@@ -82,7 +82,7 @@ func SetupFlipAPIroutes(e *echo.Group) error {
 		if err != nil {
 			echo.NewHTTPError(http.StatusTeapot, "Cannot marshal page data")
 		}
-		return HTML(c, http.StatusOK, views.OOBflipTab(pageData, td))
+		return HTML(c, http.StatusOK, tabviews.OOBflipTab(pageData, td))
 	})
 
 	return nil
