@@ -125,7 +125,7 @@ templ OOBflipTab(pd *foodlib.PageData, td *foodlib.TabData) {
 	<div
 		id={ fmt.Sprintf("tabContainerTarget_%s", td.Ttype.String()) }
 		class="flex self-stretch flex-col flex-auto flex-grow"
-		hx-swap-oob="true"
+		hx-swap-oob={ fmt.Sprintf("outerHTML #tabContainerTarget_%s", td.Ttype.String()) }
 		hx-swap="outerHTML"
 	>
 	@RenderTabContents(pd, td)
@@ -136,6 +136,7 @@ templ RenderTabContents(pd *foodlib.PageData, td *foodlib.TabData) {
 	<div
 		id={ fmt.Sprintf("tabContainerTarget_%s", td.Ttype.String()) }
 		class="flex self-stretch flex-col flex-auto flex-grow"
+		hx-swap="outerHTML"
 	>
 		switch td.Ttype {
 		case foodlib.Recipe:
