@@ -45,8 +45,7 @@ func main() {
 	}
 	if err != nil {
 		signingKey = []byte("secret-passphrase-willitwork")
-		fmt.Println("Error: ", err)
-		fmt.Println("Danger: using default signing key. Use -keypath or FOOdBAR_SIGNING_KEY environment var to set it.")
+		fmt.Println("Danger: using default signing key due to reason: " + err.Error() + "\n Use -keypath or FOOdBAR_SIGNING_KEY environment var to set it.")
 	}
 
 	srvapi.InitServer(signingKey, listenOn, staticFiles)
