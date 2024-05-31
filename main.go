@@ -25,6 +25,14 @@ func main() {
 	if embeddedHyperscript && err == nil {
 		foodlib.HyperscriptPath = "/static/_hyperscript.min.js"
 	}
+	embeddedHTMX, err = foodlib.IsFilePresent(staticFiles, "htmx.min.js.gz")
+	if embeddedHTMX && err == nil {
+		foodlib.HtmxPath = "/static/htmx.min.js"
+	}
+	embeddedHyperscript, err = foodlib.IsFilePresent(staticFiles, "_hyperscript.min.js.gz")
+	if embeddedHyperscript && err == nil {
+		foodlib.HyperscriptPath = "/static/_hyperscript.min.js"
+	}
 
 	var signingKeyPath string
 	flag.StringVar(&signingKeyPath, "keypath", os.Getenv("FOOdBAR_SIGNING_KEY"), "key file to use for signed cookies (overrides FOOdBAR_SIGNING_KEY env var)")

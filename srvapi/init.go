@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/fs"
 	"net/http"
+	"path/filepath"
 	"strings"
 
 	foodlib "FOOdBAR/FOOlib"
@@ -25,7 +26,17 @@ func getUseGZmiddleware(staticFilesystem fs.FS, prefix string) func(next echo.Ha
 					defer gzfile.Close()
 					filebytes, err := fs.ReadFile(staticFilesystem, gzippedFilePath)
 					if err == nil {
-						return GZscript(c, http.StatusOK, filebytes)
+						contentType := "application/gzip"
+						if filepath.Ext(requestPath) == ".js" {
+							contentType = "application/javascript"
+						} else if filepath.Ext(requestPath) == ".css" {
+							contentType = "text/css"
+						} else if filepath.Ext(requestPath) == ".html" {
+							contentType = "text/html"
+						} else if filepath.Ext(requestPath) == ".svg" {
+							contentType = "image/svg+xml"
+						}
+						return GZIP(c, http.StatusOK, contentType, filebytes)
 					}
 				}
 				return next(c)

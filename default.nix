@@ -24,10 +24,13 @@ buildGoApplication {
   nativeBuildInputs = [ templ pkgs.makeWrapper pkgs.tailwindcss ];
   postUnpack = ''
     targetStaticDir=$TEMPDIR/$sourceRoot/static
+    targetFOOstaticDir=$TEMPDIR/$sourceRoot/FOOstatic
     mkdir -p $targetStaticDir
     tailwindcss -o $targetStaticDir/tailwind.css -c ${./tailwind.config.js} --minify
-    cp ${inputs.htmx}/dist/htmx.min.js $targetStaticDir
-    cp ${inputs.hyperscript}/dist/_hyperscript.min.js $targetStaticDir
+    # cp ${inputs.htmx}/dist/htmx.min.js $targetStaticDir
+    # cp ${inputs.hyperscript}/dist/_hyperscript.min.js $targetStaticDir
+    gzip -k -c $targetFOOstaticDir/foodbarfavicon.svg > $targetFOOstaticDir/foodbarfavicon.svg.gz
+    gzip -k -c $targetStaticDir/foodbarloginfavicon.svg > $targetStaticDir/foodbarloginfavicon.svg.gz
     gzip -k -c ${inputs.htmx}/dist/htmx.min.js > $targetStaticDir/htmx.min.js.gz
     gzip -k -c ${inputs.hyperscript}/dist/_hyperscript.min.js > $targetStaticDir/_hyperscript.min.js.gz
   '';
