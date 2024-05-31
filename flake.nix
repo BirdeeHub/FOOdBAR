@@ -16,8 +16,10 @@
     flake = false;
   };
 
-  outputs = { self, nixpkgs, flake-utils, gomod2nix, ... }@inputs:
-    (flake-utils.lib.eachDefaultSystem
+  outputs = { self, nixpkgs, flake-utils, gomod2nix, ... }@inputs: let
+    forEachSystem = flake-utils.lib.eachSystem inputs.flake-utils.lib.allSystems;
+  in
+  (forEachSystem
       (system:
         let
           pkgs = nixpkgs.legacyPackages.${system};
