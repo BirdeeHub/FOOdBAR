@@ -40,11 +40,13 @@ buildGoApplication {
   # postFixup = let 
   #   dbpath = "/tmp";
   #   keypath = "/tmp/notafile";
+  #   ip = "localhost";
+  #   port = "42069";
   # in (/*bash*/''
   #   # https://github.com/NixOS/nixpkgs/blob/master/pkgs/build-support/setup-hooks/make-wrapper.sh
   #   wrapProgram $out/bin/FOOdBAR \
   #     --set FOOdBAR_STATE ${dbpath}\
   #     --set FOOdBAR_SIGNING_KEY ${dbpath}\
-  #     --add-flags "-port 42069 -ip localhost -dbpath ${dbpath} -keypath ${keypath}"
+  #     --add-flags "-port ${port} -ip ${ip} -dbpath ${dbpath} -keypath ${keypath}"
   # '');
 }
