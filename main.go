@@ -19,7 +19,6 @@ func main() {
 	if embeddedHTMX && err == nil {
 		foodlib.HtmxPath = "/static/htmx.min.js"
 	}
-
 	embeddedHyperscript, err := isFilePresent(staticFiles, "_hyperscript.min.js")
 	if embeddedHyperscript && err == nil {
 		foodlib.HyperscriptPath = "/static/_hyperscript.min.js"
