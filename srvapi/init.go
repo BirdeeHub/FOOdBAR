@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/fs"
 	"net/http"
+	"strings"
 
 	foodlib "FOOdBAR/FOOlib"
 
@@ -12,16 +13,11 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func InitServer(signingKey []byte, listenOn string, staticFilesystem fs.FS) {
-	e := echo.New()
-	e.Use(middleware.Logger())
-	// e.Use(middleware.Recover())
-	// TODO: figure out how to force HTTPS
-	// e.Pre(middleware.HTTPSRedirect())
-	// Custom handler to serve pre-compressed files if they exist
-	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+func getUseGZmiddleware(staticFilesystem fs.FS, prefix string) func(next echo.HandlerFunc) echo.HandlerFunc {
+	return func (next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			requestPath := c.Request().URL.Path[1:]
+			requestPath := c.Request().URL.Path
+			requestPath = strings.TrimPrefix(requestPath, prefix)[1:]
 			gzippedFilePath := requestPath + ".gz"
 			if _, err := fs.Stat(staticFilesystem, gzippedFilePath); err == nil {
 				gzfile, err := staticFilesystem.Open(gzippedFilePath)
@@ -36,7 +32,17 @@ func InitServer(signingKey []byte, listenOn string, staticFilesystem fs.FS) {
 			}
 			return next(c)
 		}
-	})
+	}
+}
+
+func InitServer(signingKey []byte, listenOn string, staticFilesystem fs.FS, staticFilesAuthed fs.FS) {
+	e := echo.New()
+	e.Use(middleware.Logger())
+	// e.Use(middleware.Recover())
+	// TODO: figure out how to force HTTPS
+	// e.Pre(middleware.HTTPSRedirect())
+	// Custom handler to serve pre-compressed files if they exist
+	e.Use(getUseGZmiddleware(staticFilesystem, ""))
 
 	e.StaticFS("/static", echo.MustSubFS(staticFilesystem, "static"))
 
@@ -59,8 +65,9 @@ func InitServer(signingKey []byte, listenOn string, staticFilesystem fs.FS) {
 	r.Use(GetJWTmiddlewareWithConfig(signingKey))
 
 	r.Use(middleware.Logger())
+	r.Use(getUseGZmiddleware(echo.MustSubFS(staticFilesAuthed, "FOOstatic"), "/FOOdBAR/static"))
 	// Authed static directory at /FOOdBAR/static
-	r.StaticFS("/static", echo.MustSubFS(staticFilesystem, "FOOstatic"))
+	r.StaticFS("/static", echo.MustSubFS(staticFilesAuthed, "FOOstatic"))
 	// r.Use(echo.WrapMiddleware(func(hndl http.Handler) http.Handler {
 	// 	cssmiddleware := templ.NewCSSMiddleware(hndl, views.StaticStyles...)
 	// 	cssmiddleware.Path = fmt.Sprintf("%s/styles/templ.css", viewutils.PagePrefix)

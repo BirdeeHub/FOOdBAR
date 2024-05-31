@@ -10,8 +10,11 @@ import (
 	"os"
 )
 
-//go:embed static/* FOOstatic/*
+//go:embed static/*
 var staticFiles embed.FS
+
+//go:embed FOOstatic/*
+var staticFilesAuthed embed.FS
 
 func main() {
 	embeddedHTMX, err := foodlib.IsFilePresent(staticFiles, "htmx.min.js")
@@ -47,5 +50,5 @@ func main() {
 		fmt.Println("Danger: using default signing key due to reason: " + err.Error() + "\n Use -keypath or FOOdBAR_SIGNING_KEY environment var to set it.")
 	}
 
-	srvapi.InitServer(signingKey, listenOn, staticFiles)
+	srvapi.InitServer(signingKey, listenOn, staticFiles, staticFilesAuthed)
 }
