@@ -28,9 +28,8 @@ buildGoApplication {
     tailwindcss -o $targetStaticDir/tailwind.css -c ${./tailwind.config.js} --minify
     cp ${inputs.htmx}/dist/htmx.min.js $targetStaticDir
     cp ${inputs.hyperscript}/dist/_hyperscript.min.js $targetStaticDir
-    # TODO: Figure out how to get browser to unpack this.
-    gzip -c ${inputs.htmx}/dist/htmx.min.js > $targetStaticDir/htmx.min.js.gz
-    gzip -c ${inputs.hyperscript}/dist/_hyperscript.min.js > $targetStaticDir/_hyperscript.min.js.gz
+    gzip -k -c ${inputs.htmx}/dist/htmx.min.js > $targetStaticDir/htmx.min.js.gz
+    gzip -k -c ${inputs.hyperscript}/dist/_hyperscript.min.js > $targetStaticDir/_hyperscript.min.js.gz
   '';
   preBuild = ''
     templ generate

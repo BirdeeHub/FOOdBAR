@@ -2,6 +2,7 @@ package foodlib
 
 import (
 	"errors"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"time"
@@ -10,6 +11,26 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
+
+func IsFilePresent(filesystem fs.FS, filename string) (bool, error) {
+	found := false
+	walkFn := func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.Name() == filename && !d.IsDir() {
+			found = true
+			return fs.SkipAll
+			// return fs.SkipDir
+		}
+		return nil
+	}
+	err := fs.WalkDir(filesystem, ".", walkFn)
+	if err != nil {
+		return false, err
+	}
+	return found, nil
+}
 
 func CreateEmptyFileIfNotExists(filename string) (string, error) {
 	// Create the directory if it doesn't exist

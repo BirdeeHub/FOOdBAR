@@ -18,6 +18,25 @@ func InitServer(signingKey []byte, listenOn string, staticFilesystem fs.FS) {
 	// e.Use(middleware.Recover())
 	// TODO: figure out how to force HTTPS
 	// e.Pre(middleware.HTTPSRedirect())
+	// Custom handler to serve pre-compressed files if they exist
+	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			requestPath := c.Request().URL.Path[1:]
+			gzippedFilePath := requestPath + ".gz"
+			if _, err := fs.Stat(staticFilesystem, gzippedFilePath); err == nil {
+				gzfile, err := staticFilesystem.Open(gzippedFilePath)
+				if err == nil {
+					defer gzfile.Close()
+					filebytes, err := fs.ReadFile(staticFilesystem, gzippedFilePath)
+					if err == nil {
+						return GZscript(c, http.StatusOK, filebytes)
+					}
+				}
+				return next(c)
+			}
+			return next(c)
+		}
+	})
 
 	e.StaticFS("/static", echo.MustSubFS(staticFilesystem, "static"))
 

@@ -7,7 +7,6 @@ import (
 	"embed"
 	"flag"
 	"fmt"
-	"io/fs"
 	"os"
 )
 
@@ -15,11 +14,11 @@ import (
 var staticFiles embed.FS
 
 func main() {
-	embeddedHTMX, err := isFilePresent(staticFiles, "htmx.min.js")
+	embeddedHTMX, err := foodlib.IsFilePresent(staticFiles, "htmx.min.js")
 	if embeddedHTMX && err == nil {
 		foodlib.HtmxPath = "/static/htmx.min.js"
 	}
-	embeddedHyperscript, err := isFilePresent(staticFiles, "_hyperscript.min.js")
+	embeddedHyperscript, err := foodlib.IsFilePresent(staticFiles, "_hyperscript.min.js")
 	if embeddedHyperscript && err == nil {
 		foodlib.HyperscriptPath = "/static/_hyperscript.min.js"
 	}
@@ -49,24 +48,4 @@ func main() {
 	}
 
 	srvapi.InitServer(signingKey, listenOn, staticFiles)
-}
-
-func isFilePresent(filesystem fs.FS, filename string) (bool, error) {
-	found := false
-	walkFn := func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if d.Name() == filename && !d.IsDir() {
-			found = true
-			return fs.SkipAll
-			// return fs.SkipDir
-		}
-		return nil
-	}
-	err := fs.WalkDir(filesystem, ".", walkFn)
-	if err != nil {
-		return false, err
-	}
-	return found, nil
 }

@@ -16,6 +16,13 @@ func HTML(c echo.Context, code int, cmp templ.Component) error {
 	return cmp.Render(c.Request().Context(), c.Response().Writer)
 }
 
+func GZscript(c echo.Context, code int, filebytes []byte) error {
+	c.Response().Header().Set(echo.HeaderContentEncoding, "gzip")
+	c.Response().Header().Set("Content-Encoding", "gzip")
+	c.Response().Status = code
+	return c.Blob(code, "application/javascript", filebytes)
+}
+
 type TabRenderer interface {
 	func(echo.Context, *foodlib.PageData, *foodlib.TabData) error
 }
