@@ -11,7 +11,6 @@
   )
 , buildGoApplication ? pkgs.buildGoApplication
 , inputs ? {}
-, dbpath ? "/tmp"
 }: let
   templ = inputs.templ.packages.${pkgs.system}.templ;
 in
@@ -33,9 +32,14 @@ buildGoApplication {
   preBuild = ''
     templ generate
   '';
-  postFixup = ''
-    # https://github.com/NixOS/nixpkgs/blob/master/pkgs/build-support/setup-hooks/make-wrapper.sh
-    wrapProgram $out/bin/FOOdBAR \
-      --set FOOdBAR_STATE ${dbpath}
-  '';
+  # postFixup = let 
+  #   dbpath = "/tmp";
+  #   keypath = "/tmp/notafile";
+  # in (/*bash*/''
+  #   # https://github.com/NixOS/nixpkgs/blob/master/pkgs/build-support/setup-hooks/make-wrapper.sh
+  #   wrapProgram $out/bin/FOOdBAR \
+  #     --set FOOdBAR_STATE ${dbpath}\
+  #     --set FOOdBAR_SIGNING_KEY ${dbpath}\
+  #     --add-flags "-port 42069 -ip localhost -dbpath ${dbpath} -keypath ${keypath}"
+  # '');
 }
