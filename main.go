@@ -65,7 +65,8 @@ func isFilePresent(filesystem fs.FS, filename string) (bool, error) {
 		}
 		if d.Name() == filename && !d.IsDir() {
 			found = true
-			return fs.SkipDir
+			return fs.SkipAll
+			// return fs.SkipDir
 		}
 		return nil
 	}
