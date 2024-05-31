@@ -27,8 +27,8 @@ buildGoApplication {
     targetStaticDir=$TEMPDIR/$sourceRoot/static
     mkdir -p $targetStaticDir
     tailwindcss -o $targetStaticDir/tailwind.css -c ${./tailwind.config.js} --minify
-    cp ${inputs.htmx}/dist/htmx.min.js $targetStaticDir
-    cp ${inputs.hyperscript}/dist/_hyperscript.min.js $targetStaticDir
+    gzip -c ${inputs.htmx}/dist/htmx.min.js > $targetStaticDir/htmx.min.js.gz
+    gzip -c ${inputs.hyperscript}/dist/_hyperscript.min.js > $targetStaticDir/_hyperscript.min.js.gz
   '';
   preBuild = ''
     templ generate
