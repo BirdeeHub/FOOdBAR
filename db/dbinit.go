@@ -33,4 +33,14 @@ func init() {
 			time.Sleep(time.Hour - (time.Second * 10))
 		}
 	}()
+	go func() {
+		for {
+			time.Sleep(time.Second * 10)
+			err := CleanPageDataDB()
+			if err != nil {
+				fmt.Print(err)
+			}
+			time.Sleep((time.Minute * 5) - (time.Second * 10))
+		}
+	}()
 }

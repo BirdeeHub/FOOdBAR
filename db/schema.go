@@ -220,9 +220,9 @@ func makeAuditTriggers(db *sqlx.DB, tableName string) error {
 		return err
 	}
 	_, err = db.Exec(createTrigger("update_modified_update", "AFTER UPDATE", "last_modified", "OLD"))
-	if err != nil {
-		return err
-	}
-	_, err = db.Exec(createTrigger("update_modified_delete", "AFTER DELETE", "last_modified", "OLD"))
+	// if err != nil {
+	// 	return err
+	// }
+	// _, err = db.Exec(createTrigger("update_modified_delete", "AFTER DELETE", "last_modified", "OLD"))
 	return err
 }

@@ -2,30 +2,92 @@ package db
 
 import (
 	foodlib "FOOdBAR/FOOlib"
-	"encoding/base64"
+	"database/sql"
 	"encoding/json"
-	"fmt"
-	"net/http"
+	"path/filepath"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
-// TODO: make db table creating function
-// db schema should be tab_id TEXT, user_id TEXT, session_id TEXT, page_data BLOB, last_modified DATETIME
-// A db trigger will be used to keep track of which is most recent,
-// any create, update, or delete will update last_modified
-// Clear pageData from db when they are too old like you do with the session blacklist
+// NOTE: This should probably honestly be something like redis,
+// but the database will do fine for this app most likely.
 
-// TODO: Get this from db instead of cookie (cookie was a bad idea, it doesnt hold the actual data but it's still too much)
-// Luckily, all you need to change is this function, everything gets its pagaData via this function.
+func GetPageDataDB() (*sql.DB, error) {
+	viewDB := filepath.Join(dbpath, "FOOdBAR", "views.db")
+	viewdbpath, err := foodlib.CreateEmptyFileIfNotExists(viewDB)
+	if err != nil {
+		print(err)
+		return nil, err
+	}
+	db, err := sql.Open("sqlite3", viewdbpath)
+	if err != nil {
+		print(err)
+		return nil, err
+	}
+
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS viewstates (
+						tab_id TEXT,
+						user_id TEXT,
+						session_id TEXT,
+						page_data BLOB,
+						last_modified DATETIME
+					)`)
+	if err != nil {
+		db.Close()
+		print(err)
+		return nil, err
+	}
+	_, err = db.Exec(`CREATE TRIGGER IF NOT EXISTS last_insert
+			AFTER INSERT ON viewstates
+			FOR EACH ROW  
+			BEGIN
+				UPDATE viewstates
+				SET last_modified = CURRENT_TIMESTAMP
+				WHERE tab_id = NEW.tab_id;
+			END;`)
+	if err != nil {
+		db.Close()
+		print(err)
+		return nil, err
+	}
+	_, err = db.Exec(`CREATE TRIGGER IF NOT EXISTS last_update
+			AFTER UPDATE ON viewstates
+			FOR EACH ROW  
+			BEGIN
+				UPDATE viewstates
+				SET last_modified = CURRENT_TIMESTAMP
+				WHERE tab_id = NEW.tab_id;
+			END;`)
+	if err != nil {
+		db.Close()
+		print(err)
+		return nil, err
+	}
+	return db, nil
+}
+
+func CleanPageDataDB() error {
+	db, err := GetPageDataDB()
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	// TODO: make timeout value configurable when running from command line
+	_, err = db.Exec("DELETE FROM viewstates WHERE last_modified < DATETIME('now', '-1 hours')")
+	return err
+}
+
 func GetPageData(c echo.Context) (*foodlib.PageData, error) {
 	userID, err := foodlib.GetUserFromClaims(foodlib.GetClaimsFromContext(c))
 	if err != nil {
+		c.Logger().Print(err)
 		return nil, err
 	}
 	SID, err := foodlib.GetSessionIDFromClaims(foodlib.GetClaimsFromContext(c))
 	if err != nil {
+		c.Logger().Print(err)
 		return nil, err
 	}
 	tabID := c.Request().Header.Get("tab_id")
@@ -34,44 +96,87 @@ func GetPageData(c echo.Context) (*foodlib.PageData, error) {
 		tabID = uuid.New().String()
 		c.Logger().Printf("tabID: %s", tabID)
 	}
-	// TODO: replace with db query for pageData
-	// If tabID is not in db, search for the most recently modified
-	// pageData for that SessionID. If still not found, create a new one
-	pdcookie, err := c.Cookie(tabID)
+	db, err := GetPageDataDB()
 	if err != nil {
-		pd := foodlib.InitPageData(userID, SID, tabID)
-		return pd, nil
-	}
-	pd := &foodlib.PageData{}
-	pdmarshalled, err := base64.StdEncoding.DecodeString(pdcookie.Value)
-	if err != nil {
+		c.Logger().Print(err)
 		return nil, err
 	}
-	err = json.Unmarshal(pdmarshalled, pd)
+	defer db.Close()
+
+	var pageDataBlob []byte
+	err = db.QueryRow("SELECT page_data FROM viewstates WHERE tab_id = ?", tabID).Scan(&pageDataBlob)
 	if err != nil {
+		// If tabID is not in db, db.QueryRow for SessionID sorted by last_modified
+		c.Logger().Print(err)
+		err = db.QueryRow("SELECT page_data FROM viewstates WHERE session_id = ? ORDER BY last_modified DESC LIMIT 1", SID).Scan(&pageDataBlob)
+		if err != nil {
+		c.Logger().Print(err)
+			// If still not found, create a new one and add it to the db
+			pd := foodlib.InitPageData(userID, SID, tabID)
+			pageDataBlob, err = json.Marshal(pd)
+			if err != nil {
+		c.Logger().Print(err)
+				return nil, err
+			}
+			_, err = db.Exec("INSERT INTO viewstates (tab_id, session_id, user_id, page_data) VALUES (?, ?, ?, ?)", tabID, SID, userID, pageDataBlob)
+			if err != nil {
+		c.Logger().Print(err)
+				return nil, err
+			}
+			return pd, nil
+		}
+	}
+
+	pd := &foodlib.PageData{}
+	err = json.Unmarshal(pageDataBlob, pd)
+	if err != nil {
+		c.Logger().Print(err)
 		return nil, err
 	}
 	if pd.UserID != userID || pd.SessionID != SID || pd.TabID != tabID {
 		pd := foodlib.InitPageData(userID, SID, tabID)
+		c.Logger().Print(err)
 		return pd, nil
 	}
 	return pd, nil
 }
 
-// TODO: save to db insted of cookie
 func SavePageData(c echo.Context, pd *foodlib.PageData) error {
-	pdmarshalled, err := json.Marshal(pd)
+	db, err := GetPageDataDB()
 	if err != nil {
+		c.Logger().Print(err)
 		return err
 	}
-	cookie := &http.Cookie{
-		Name:     pd.TabID,
-		Value:    base64.StdEncoding.EncodeToString(pdmarshalled),
-		Path:     fmt.Sprintf("%s", foodlib.PagePrefix),
-		SameSite: http.SameSiteStrictMode,
-		HttpOnly: true,
+	defer db.Close()
+
+	pdmarshalled, err := json.Marshal(pd)
+	if err != nil {
+		c.Logger().Print(err)
+		return err
 	}
+
+	// Check if the row exists, if so, update it; otherwise, insert a new row
+	var exists bool
+	err = db.QueryRow("SELECT EXISTS(SELECT 1 FROM viewstates WHERE tab_id = ?)", pd.TabID).Scan(&exists)
+	if err != nil {
+		c.Logger().Print(err)
+		return err
+	}
+
+	if exists {
+		_, err = db.Exec("UPDATE viewstates SET page_data = ? WHERE tab_id = ?", pdmarshalled, pd.TabID)
+		if err != nil {
+		c.Logger().Print(err)
+			return err
+		}
+	} else {
+		_, err = db.Exec("INSERT INTO viewstates (tab_id, user_id, session_id, page_data) VALUES (?, ?, ?, ?)", pd.TabID, pd.UserID, pd.SessionID, pdmarshalled)
+		if err != nil {
+		c.Logger().Print(err)
+			return err
+		}
+	}
+
 	c.Response().Header().Add("tab_id", pd.TabID)
-	c.SetCookie(cookie)
 	return nil
 }
