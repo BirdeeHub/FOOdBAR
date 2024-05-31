@@ -16,7 +16,7 @@ func InitServer(signingKey []byte, listenOn string, staticFilesystem fs.FS) {
 	e := echo.New()
 	e.Use(middleware.Logger())
 	// e.Use(middleware.Recover())
-	// TODO: figure out how to HTTPS
+	// TODO: figure out how to force HTTPS
 	// e.Pre(middleware.HTTPSRedirect())
 
 	e.StaticFS("/static", echo.MustSubFS(staticFilesystem, "static"))
@@ -75,7 +75,7 @@ func InitServer(signingKey []byte, listenOn string, staticFilesystem fs.FS) {
 
 
 
-	// TODO: figure out how to HTTPS
+	// TODO: figure out how to force HTTPS
 	// e.Logger.Fatal(e.StartTLS(":42069", "cert.pem", "key.pem"))
 	e.Logger.Fatal(e.Start(listenOn))
 }
