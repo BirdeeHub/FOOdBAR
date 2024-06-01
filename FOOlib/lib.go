@@ -108,6 +108,16 @@ func FilterMap[T comparable, V any](m map[T]V, f func(T, V) bool) map[T]V {
 	return ret
 }
 
+func FilterMapMap[T comparable, V any, R any](m map[T]V, function func(T, V) R, filter func(T, V) bool) map[T]R {
+	ret := make(map[T]R)
+	for k, v := range m {
+		if filter(k, v) {
+			ret[k] = function(k, v)
+		}
+	}
+	return ret
+}
+
 func GetClaimsFromContext(c echo.Context) map[string]interface{} {
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
