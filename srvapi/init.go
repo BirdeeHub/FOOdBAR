@@ -14,14 +14,14 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func getUseGZmiddleware(staticFilesystem fs.FS, prefix string) func(next echo.HandlerFunc) echo.HandlerFunc {
+func getUseGZmiddleware(static fs.FS, prefix string) func(next echo.HandlerFunc) echo.HandlerFunc {
 	return func (next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			requestPath := c.Request().URL.Path
 			requestPath = strings.TrimPrefix(requestPath, prefix)[1:]
 			gzippedFilePath := requestPath + ".gz"
-			if _, err := fs.Stat(staticFilesystem, gzippedFilePath); err == nil {
-				filebytes, err := fs.ReadFile(staticFilesystem, gzippedFilePath)
+			if _, err := fs.Stat(static, gzippedFilePath); err == nil {
+				filebytes, err := fs.ReadFile(static, gzippedFilePath)
 				if err == nil {
 					contentType := "application/gzip"
 					if filepath.Ext(requestPath) == ".js" {
