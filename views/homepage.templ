@@ -73,7 +73,7 @@ templ TabButton(tbd foodlib.TabButtonData) {
 				hx-get={ fmt.Sprintf("%s/api/tabButton/activate/%s", foodlib.PagePrefix, tbd.Ttype.String()) }
 				hx-swap="outerHTML"
 				id={ fmt.Sprintf("tabButton_%s", tbd.Ttype.String()) }
-				class="flex flex-row flex-shrink items-center justify-center py-2 px-3 cursor-pointer border-t-2 border-b-2 rounded-xl"
+				class="flex flex-row flex-shrink items-center justify-center py-2 px-3 cursor-pointer border-t-2 border-b-2 rounded-xl border-gray-700 dark:border-white"
 			>
 				{ fmt.Sprintf("🍜 %s",tbd.Ttype.String()) }
 			</div>
@@ -83,7 +83,7 @@ templ TabButton(tbd foodlib.TabButtonData) {
 				hx-target={ fmt.Sprintf("#tabContainer_%s", tbd.Ttype.String()) }
 				hx-swap="outerHTML"
 				id={ fmt.Sprintf("tabButton_%s", tbd.Ttype.String()) }
-				class="flex flex-row flex-shrink items-center justify-center py-2 px-3 cursor-pointer border-t-2 border-b-2 rounded-xl"
+				class="flex flex-row flex-shrink items-center justify-center py-2 px-3 cursor-pointer border-t-2 border-b-2 rounded-xl border-gray-700 dark:border-white"
 			>
 				{ fmt.Sprintf("%s 🍜",tbd.Ttype.String()) }
 			</div>
