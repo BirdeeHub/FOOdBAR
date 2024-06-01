@@ -448,6 +448,8 @@ This query retrieves 31 rows (rows 20 through 50) after skipping the first 19 ro
 
 ### notes
 
+Non-AI notes
+
 
 ```go
 // render all items in a list with a component
