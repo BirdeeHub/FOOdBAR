@@ -62,7 +62,7 @@ func CreateEmptyFileIfNotExists(filename string) (string, error) {
 	return absPath, nil
 }
 
-func MapSlice[T any, V any](f func(T) V, list []T) []V {
+func MapSlice[T any, V any](list []T, f func(T) V) []V {
 	var ret []V
 	for _, item := range list {
 		ret = append(ret, f(item))
@@ -70,7 +70,17 @@ func MapSlice[T any, V any](f func(T) V, list []T) []V {
 	return ret
 }
 
-func FilterSlice[T any](f func(T) bool, list []T) []T {
+func MapFilterSlice[T any, V any](list []T, m func(T) V, f func(T) bool) []V {
+	var ret []V
+	for _, item := range list {
+		if f(item) {
+			ret = append(ret, m(item))
+		}
+	}
+	return ret
+}
+
+func FilterSlice[T any](list []T, f func(T) bool) []T {
 	var ret []T
 	for _, item := range list {
 		if f(item) {
@@ -80,7 +90,7 @@ func FilterSlice[T any](f func(T) bool, list []T) []T {
 	return ret
 }
 
-func MapMap[T comparable, V any, R any](f func(T, V) R, m map[T]V) map[T]R {
+func MapMap[T comparable, V any, R any](m map[T]V, f func(T, V) R) map[T]R {
 	ret := make(map[T]R)
 	for k, v := range m {
 		ret[k] = f(k, v)
@@ -88,7 +98,7 @@ func MapMap[T comparable, V any, R any](f func(T, V) R, m map[T]V) map[T]R {
 	return ret
 }
 
-func FilterMap[T comparable, V any](f func(T, V) bool, m map[T]V) map[T]V {
+func FilterMap[T comparable, V any](m map[T]V, f func(T, V) bool) map[T]V {
 	ret := make(map[T]V)
 	for k, v := range m {
 		if f(k, v) {

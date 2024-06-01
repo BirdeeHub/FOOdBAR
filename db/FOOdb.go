@@ -12,7 +12,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func FillXTabItems(userID uuid.UUID, tbd *foodlib.TabData, number int) error {
+func FillXTabItems(userID uuid.UUID, tbd *foodlib.TabData, limit int, offset int) error {
 	db, tableName, err := CreateTabTableIfNotExists(userID, tbd.Ttype)
 	defer db.Close()
 	if err != nil {
@@ -21,7 +21,7 @@ func FillXTabItems(userID uuid.UUID, tbd *foodlib.TabData, number int) error {
 	// TODO: fill tbd.Items with X number of items based on
 	// SortMethod numbers stored in slice in TabData
 	// get the actual SortMethod via GetSortMethodByNumber(k int)
-	rows, err := db.Query("SELECT id FROM " + tableName)
+	rows, err := db.Query(fmt.Sprintf(`SELECT id FROM %s ORDER BY id DESC LIMIT %d OFFSET %d`, tableName, limit, offset))
 	if err != nil {
 		return err
 	}

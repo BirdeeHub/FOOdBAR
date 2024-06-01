@@ -30,7 +30,10 @@ func SetupModalAPIroutes(e *echo.Group) error {
 		}
 		td := pageData.GetTabDataByType(tt)
 		c.Logger().Print(td)
-		ti := td.GetTabItem(itemID)
+		ti, err := td.GetTabItem(itemID)
+		if err != nil {
+			td.AddTabItem(&foodlib.TabItem{ItemID: itemID})
+		}
 		c.Logger().Print(ti)
 		switch tt {
 		case foodlib.Recipe:
@@ -73,7 +76,10 @@ func SetupModalAPIroutes(e *echo.Group) error {
 		}
 		td := pageData.GetTabDataByType(tt)
 		c.Logger().Print(td)
-		ti := td.GetTabItem(itemID)
+		ti, err := td.GetTabItem(itemID)
+		if err != nil {
+			td.AddTabItem(&foodlib.TabItem{ItemID: itemID})
+		}
 		c.Logger().Print(ti)
 		return HTML(c, http.StatusOK, tabviews.OOBExtraField(c.Param("field"), itemID))
 	})
@@ -95,8 +101,8 @@ func SetupModalAPIroutes(e *echo.Group) error {
 		if td.Items == nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, errors.New("error: No tab open"))
 		}
-		item, ok := td.Items[itemID]
-		if !ok {
+		item, err := td.GetTabItem(itemID)
+		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, errors.New("item with that ID not found in this tab"))
 		}
 		return HTML(c, http.StatusOK, tabviews.ItemEditModal(tabviews.RenderSubmissionContent(pageData, item, "", nil)))

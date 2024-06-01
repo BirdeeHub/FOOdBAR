@@ -51,7 +51,7 @@ func SetupTabCtlroutes(e *echo.Group) error {
 		tabdata := pageData.GetTabDataByType(tt)
 		// TODO: Implement infinite scroll for these.
 		// after the following function actually only returns X number of items
-		err = db.FillXTabItems(pageData.UserID, tabdata, 50)
+		err = db.FillXTabItems(pageData.UserID, tabdata, 50, 0)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
@@ -65,9 +65,11 @@ func SetupTabCtlroutes(e *echo.Group) error {
 		}
 		tt := foodlib.String2TabType(c.Param("type"))
 		tabdata := pageData.GetTabDataByType(tt)
-		// TODO: Implement infinite scroll for these.
-		// after the following function actually only returns X number of items
-		err = db.FillXTabItems(pageData.UserID, tabdata, 50)
+		if !pageData.IsActive(tt) {
+			// TODO: Implement infinite scroll for these.
+			// after the following function actually only returns X number of items
+			err = db.FillXTabItems(pageData.UserID, tabdata, 50, 0)
+		}
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}

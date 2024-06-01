@@ -9,7 +9,7 @@ import (
 
 // TODO: make this tab first
 templ PantryTabContents(pd *foodlib.PageData, td *foodlib.TabData) {
-	for _, ti := range td.GetTabItems() {
+	for _, ti := range td.Items {
 		@PantryItemContainer(pd, td, ti)
 	}
 }
@@ -47,7 +47,7 @@ templ RenderPantryTab(pd *foodlib.PageData, td *foodlib.TabData) {
 	<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
 		if td.Flipped == uuid.Nil {
 			@CardFlipContainer(PantryTabContents(pd, td), nil)
-		} else if item, ok := td.Items[td.Flipped]; ok {
+		} else if item, err := td.GetTabItem(td.Flipped); err == nil {
 			@CardFlipContainer(nil, SubmitPantryBlock(pd, item, "", nil))
 		} else {
 			@CardFlipContainer(PantryTabContents(pd, td), nil)

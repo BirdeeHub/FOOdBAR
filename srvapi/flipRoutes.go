@@ -30,8 +30,8 @@ func SetupFlipAPIroutes(e *echo.Group) error {
 		if td.Items == nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, errors.New("error: No tab open"))
 		}
-		_, ok := td.Items[itemID]
-		if !ok {
+		_, err = td.GetTabItem(itemID)
+		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, errors.New("item with that ID not found in this tab"))
 		}
 		td.Flipped = itemID

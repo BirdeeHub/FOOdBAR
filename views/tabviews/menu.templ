@@ -6,7 +6,7 @@ import (
 )
 
 templ MenuTabContents(td *foodlib.TabData) {
-	for _, ti := range td.GetTabItems() {
+	for _, ti := range td.Items {
 		@MenuItemContainer(ti)
 	}
 }

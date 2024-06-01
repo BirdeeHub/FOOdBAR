@@ -116,7 +116,7 @@ type PageData struct {
 
 type TabData struct {
 	Ttype   TabType                `json:"tab_type"`
-	Items   map[uuid.UUID]*TabItem `json:"items"`
+	Items   []*TabItem `json:"items"`
 	OrderBy []int                  `json:"order_by"`
 	Flipped uuid.UUID             `json:"flipped"`
 }
@@ -136,30 +136,23 @@ func (tbd *TabData) AddTabItem(ti *TabItem) *TabItem {
 		ti.ItemID = uuid.New()
 	}
 	if tbd.Items == nil {
-		tbd.Items = make(map[uuid.UUID]*TabItem)
+		tbd.Items = []*TabItem{}
 	}
-	tbd.Items[ti.ItemID] = ti
+	tbd.Items = append([]*TabItem{ti}, tbd.Items...)
 	return ti
 }
 
-func (tbd *TabData) GetTabItem(itemID uuid.UUID) *TabItem {
-	var ti *TabItem
+func (tbd *TabData) GetTabItem(itemID uuid.UUID) (*TabItem, error) {
 	if tbd.Items == nil {
-		tbd.Items = make(map[uuid.UUID]*TabItem)
+		tbd.Items = []*TabItem{}
+	} else {
+		for _, v := range tbd.Items {
+			if v.ItemID == itemID {
+				return v, nil
+			}
+		}
 	}
-	ti, ok := tbd.Items[itemID]
-	if !ok || ti == nil {
-		return tbd.AddTabItem(&TabItem{ItemID: itemID})
-	}
-	return ti
-}
-
-func (tbd *TabData) GetTabItems() []*TabItem {
-	var tis []*TabItem
-	for _, ti := range tbd.Items {
-		tis = append(tis, ti)
-	}
-	return tis
+	return nil, errors.New("no item found")
 }
 
 func (pd *PageData) IsActive(tt TabType) bool {
@@ -200,7 +193,7 @@ func (pgd *PageData) GetTabDataByType(tt TabType) *TabData {
 	}
 	td := &TabData{
 		Ttype:   tt,
-		Items:   make(map[uuid.UUID]*TabItem),
+		Items:   []*TabItem{},
 		OrderBy: []int{},
 		Flipped: uuid.Nil,
 	}
@@ -265,25 +258,22 @@ func (ti *TabItem) UnmarshalJSON(data []byte) error {
 	ti.Selected = irJson.Selected
 	ti.Ttype = String2TabType(irJson.Ttype)
 	ti.ItemID, err = uuid.Parse(irJson.ItemID)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 func (tbd *TabData) MarshalJSON() ([]byte, error) {
-	itemsmap := make(map[string]TabItem)
-	for k, v := range tbd.Items {
-		itemsmap[k.String()] = *v
-	}
+	items := MapFilterSlice(tbd.Items,
+		func(t *TabItem) TabItem { return *t },
+		func(t *TabItem) bool { return t != nil },
+	)
 	configpre := struct {
 		Ttype   string             `json:"tab_type"`
-		Items   map[string]TabItem `json:"items"`
+		Items   []TabItem `json:"items"`
 		OrderBy []int              `json:"order_by"`
 		Flipped string             `json:"flipped"`
 	}{
 		Ttype:   tbd.Ttype.String(),
-		Items:   itemsmap,
+		Items:   items,
 		OrderBy: tbd.OrderBy,
 		Flipped: tbd.Flipped.String(),
 	}
@@ -294,7 +284,7 @@ func (tbd *TabData) MarshalJSON() ([]byte, error) {
 func (tbd *TabData) UnmarshalJSON(data []byte) error {
 	var irJson struct {
 		Ttype   string             `json:"tab_type"`
-		Items   map[string]TabItem `json:"items"`
+		Items   []*TabItem `json:"items"`
 		OrderBy []int              `json:"order_by"`
 		Flipped string             `json:"flipped"`
 	}
@@ -309,16 +299,7 @@ func (tbd *TabData) UnmarshalJSON(data []byte) error {
 	}
 	tbd.Flipped = flippedID
 	tbd.Ttype = String2TabType(irJson.Ttype)
-	if tbd.Items == nil {
-		tbd.Items = make(map[uuid.UUID]*TabItem)
-	}
-	for k, v := range irJson.Items {
-		id, err := uuid.Parse(k)
-		if err != nil {
-			return err
-		}
-		tbd.Items[id] = &v
-	}
+	tbd.Items = irJson.Items
 	return nil
 }
 
