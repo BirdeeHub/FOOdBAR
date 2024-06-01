@@ -187,6 +187,8 @@ templ CardFlipContainer(front templ.Component, back templ.Component) {
 	</div>
 }
 
+// called by views/homepage.go during rendering or removing old tabs
+// this div moved here because its counterpart OOB templates are here.
 templ MainTabContents(pd *foodlib.PageData, td *foodlib.TabData) {
 	<div
 		id={ fmt.Sprintf("tabContainerTarget_%s", td.Ttype.String()) }
