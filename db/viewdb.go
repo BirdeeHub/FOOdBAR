@@ -126,8 +126,8 @@ func GetPageData(c echo.Context) (*foodlib.PageData, error) {
 		c.Logger().Print(err)
 		return nil, err
 	}
-	if pd.UserID != userID || pd.SessionID != SID || pd.TabID != tabID {
-		c.Logger().Print(fmt.Sprintf("info mismatched attempting: user: %s session: %s tab: %s", userID, SID, tabID))
+	if pd.UserID != userID || pd.SessionID != SID {
+		c.Logger().Print(fmt.Sprintf("input: user: %s session: %s invalid", userID, SID))
 		tabID = uuid.New().String()
 		pd := foodlib.InitPageData(userID, SID, tabID)
 		return pd, nil
