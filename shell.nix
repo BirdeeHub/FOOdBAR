@@ -42,8 +42,8 @@ pkgs.mkShell {
   ];
   FOOdBAR_STATE = "./tmp";
   shellHook = ''
-    cp ${embeddedDeps}/htmx.min.js.gz ./static
-    cp ${embeddedDeps}/_hyperscript.min.js.gz ./static
+    cp -f ${embeddedDeps}/htmx.min.js.gz ./static
+    cp -f ${embeddedDeps}/_hyperscript.min.js.gz ./static
     exec ${pkgs.zsh}/bin/zsh
   '';
 }
