@@ -26,12 +26,12 @@ func getUseGZmiddleware(static fs.FS, prefix string) func(next echo.HandlerFunc)
 					contentType := "application/gzip"
 					if filepath.Ext(requestPath) == ".js" {
 						contentType = "application/javascript"
+					} else if filepath.Ext(requestPath) == ".svg" {
+						contentType = "image/svg+xml"
 					} else if filepath.Ext(requestPath) == ".css" {
 						contentType = "text/css"
 					} else if filepath.Ext(requestPath) == ".html" {
 						contentType = "text/html"
-					} else if filepath.Ext(requestPath) == ".svg" {
-						contentType = "image/svg+xml"
 					} else {
 						return next(c)
 					}
