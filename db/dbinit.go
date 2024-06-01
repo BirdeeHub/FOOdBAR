@@ -25,7 +25,6 @@ func init() {
 	SetDBpath("")
 	go func() {
 		for range time.Tick(time.Hour) {
-			println("Cleaning up blacklisted sessions")
 			if err := CleanSessionBlacklist(); err != nil {
 				fmt.Print(err)
 			}
@@ -33,7 +32,6 @@ func init() {
 	}()
 	go func() {
 		for range time.Tick(time.Minute * 5) {
-			println("Cleaning up page data")
 			if err := CleanPageDataDB(); err != nil {
 				fmt.Print(err)
 			}
