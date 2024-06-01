@@ -32,11 +32,20 @@ buildGoApplication {
     targetFOOstaticDir=$newsource/FOOstatic
     mkdir -p $targetStaticDir
     mkdir -p $targetFOOstaticDir
+
+    echo "generate tailwind.css"
     tailwindcss -o $targetStaticDir/tailwind.css -c ${./tailwind.config.js} --minify
+    ls -l $targetStaticDir/tailwind.css
+
+    echo "gzipping select files"
     gzip -k -c $targetFOOstaticDir/foodbarfavicon.svg > $targetFOOstaticDir/foodbarfavicon.svg.gz
     gzip -k -c $targetStaticDir/foodbarloginfavicon.svg > $targetStaticDir/foodbarloginfavicon.svg.gz
+    ls -l $targetStaticDir/foodbarloginfavicon.svg.gz $targetFOOstaticDir/foodbarfavicon.svg.gz
+
+    echo "bundling client side dependencies"
     gzip -k -c ${inputs.htmx}/dist/htmx.min.js > $targetStaticDir/htmx.min.js.gz
     gzip -k -c ${inputs.hyperscript}/dist/_hyperscript.min.js > $targetStaticDir/_hyperscript.min.js.gz
+    ls -l $targetStaticDir/htmx.min.js.gz $targetStaticDir/_hyperscript.min.js.gz
   '';
   preBuild = ''
     templ generate
