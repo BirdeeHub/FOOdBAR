@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"path/filepath"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -77,20 +78,21 @@ func CleanPageDataDB() error {
 func GetPageData(c echo.Context) (*foodlib.PageData, error) {
 	userID, err := foodlib.GetUserFromClaims(foodlib.GetClaimsFromContext(c))
 	if err != nil {
+		c.Logger().Print(err)
 		return nil, err
 	}
 	SID, err := foodlib.GetSessionIDFromClaims(foodlib.GetClaimsFromContext(c))
 	if err != nil {
+		c.Logger().Print(err)
 		return nil, err
 	}
 	tabID := c.Request().Header.Get("tab_id")
-	c.Logger().Printf("tabID: %s", tabID)
 	if tabID == "" {
 		tabID = uuid.New().String()
-		c.Logger().Printf("tabID: %s", tabID)
 	}
 	db, err := GetPageDataDB()
 	if err != nil {
+		c.Logger().Print(err)
 		return nil, err
 	}
 	defer db.Close()
@@ -101,14 +103,17 @@ func GetPageData(c echo.Context) (*foodlib.PageData, error) {
 		// If tabID is not in db, db.QueryRow for SessionID sorted by last_modified
 		err = db.QueryRow("SELECT page_data FROM viewstates WHERE session_id = ? ORDER BY last_modified DESC LIMIT 1", SID).Scan(&pageDataBlob)
 		if err != nil {
+			c.Logger().Print(err)
 			// If still not found, create a new one and add it to the db
 			pd := foodlib.InitPageData(userID, SID, tabID)
 			pageDataBlob, err = json.Marshal(pd)
 			if err != nil {
+				c.Logger().Print(err)
 				return nil, err
 			}
 			_, err = db.Exec("INSERT INTO viewstates (tab_id, session_id, user_id, page_data) VALUES (?, ?, ?, ?)", tabID, SID, userID, pageDataBlob)
 			if err != nil {
+				c.Logger().Print(err)
 				return nil, err
 			}
 			return pd, nil
@@ -118,9 +123,11 @@ func GetPageData(c echo.Context) (*foodlib.PageData, error) {
 	pd := &foodlib.PageData{}
 	err = json.Unmarshal(pageDataBlob, pd)
 	if err != nil {
+		c.Logger().Print(err)
 		return nil, err
 	}
 	if pd.UserID != userID || pd.SessionID != SID || pd.TabID != tabID {
+		c.Logger().Print(fmt.Sprintf("info mismatched attempting: user: %s session: %s tab: %s", userID, SID, tabID))
 		tabID = uuid.New().String()
 		pd := foodlib.InitPageData(userID, SID, tabID)
 		return pd, nil
@@ -131,12 +138,14 @@ func GetPageData(c echo.Context) (*foodlib.PageData, error) {
 func SavePageData(c echo.Context, pd *foodlib.PageData) error {
 	db, err := GetPageDataDB()
 	if err != nil {
+		c.Logger().Print(err)
 		return err
 	}
 	defer db.Close()
 
 	pdmarshalled, err := json.Marshal(pd)
 	if err != nil {
+		c.Logger().Print(err)
 		return err
 	}
 
@@ -144,17 +153,20 @@ func SavePageData(c echo.Context, pd *foodlib.PageData) error {
 	var exists bool
 	err = db.QueryRow("SELECT EXISTS(SELECT 1 FROM viewstates WHERE tab_id = ?)", pd.TabID).Scan(&exists)
 	if err != nil {
+		c.Logger().Print(err)
 		return err
 	}
 
 	if exists {
 		_, err = db.Exec("UPDATE viewstates SET page_data = ? WHERE tab_id = ?", pdmarshalled, pd.TabID)
 		if err != nil {
+			c.Logger().Print(err)
 			return err
 		}
 	} else {
 		_, err = db.Exec("INSERT INTO viewstates (tab_id, user_id, session_id, page_data) VALUES (?, ?, ?, ?)", pd.TabID, pd.UserID, pd.SessionID, pdmarshalled)
 		if err != nil {
+			c.Logger().Print(err)
 			return err
 		}
 	}
