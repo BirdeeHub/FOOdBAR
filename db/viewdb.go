@@ -25,11 +25,11 @@ func GetPageDataDB() (*sql.DB, error) {
 	}
 
 	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS viewstates (
-						tab_id TEXT,
+						tab_id PRIMARY KEY,
 						user_id TEXT,
 						session_id TEXT,
 						page_data BLOB,
-						last_modified DATETIME
+						last_modified DATETIME DEFAULT CURRENT_TIMESTAMP
 					)`)
 	if err != nil {
 		db.Close()

@@ -37,8 +37,20 @@
       inherit inputs;
     };
 
+    # not tested fully
+    docked = pkgs.dockerTools.buildLayeredImage {
+      name = "birdee.io/FOOdBAR";
+      tag = "latest";
+      # contents = with pkgs; [ cacert ];
+      config = {
+        Cmd = "${default}/bin/FOOdBAR -dbpath /var/db";
+        Volumes = { "/var/db" = {}; };
+      };
+    };
+
   in
   {
+    docker.default = docked;    
     packages.default = default;
     devShells.default = devShellDefault;
   }) ;

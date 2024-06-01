@@ -20,6 +20,15 @@ let
     export PATH=${pkgs.lib.makeBinPath [ templ gomod2nix goEnv pkgs.tailwindcss ]}:$PATH
     ${pkgs.air}/bin/air -c ${pkgs.writeText "air-toml" (builtins.readFile ./.air.toml)}
   '';
+  embeddedDeps = pkgs.stdenv.mkDerivation {
+    name = "embedded_static_deps";
+    builder = pkgs.writeText "embedded_static_deps" (/*bash*/ ''
+      source $stdenv/setup
+      mkdir -p $out
+      gzip -k -c ${inputs.htmx}/dist/htmx.min.js > $out/htmx.min.js.gz
+      gzip -k -c ${inputs.hyperscript}/dist/_hyperscript.min.js > $out/_hyperscript.min.js.gz
+    '');
+  };
   goEnv = mkGoEnv { pwd = ./.; };
 in
 pkgs.mkShell {
@@ -33,6 +42,8 @@ pkgs.mkShell {
   ];
   FOOdBAR_STATE = "./tmp";
   shellHook = ''
+    cp ${embeddedDeps}/htmx.min.js.gz ./static
+    cp ${embeddedDeps}/_hyperscript.min.js.gz ./static
     exec ${pkgs.zsh}/bin/zsh
   '';
 }
