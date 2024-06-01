@@ -6,6 +6,9 @@ import (
 	foodlib "FOOdBAR/FOOlib"
 )
 
+templ OOBmoreTabItems() {
+}
+
 templ ColorsCSS() {
 	<style type="text/css">
 		@media (prefers-color-scheme: dark) {
@@ -181,6 +184,15 @@ templ CardFlipContainer(front templ.Component, back templ.Component) {
 				</div>
 			</div>
 		}
+	</div>
+}
+
+templ MainTabContents(pd *foodlib.PageData, td *foodlib.TabData) {
+	<div
+		id={ fmt.Sprintf("tabContainerTarget_%s", td.Ttype.String()) }
+		class="flex self-stretch flex-col flex-auto flex-grow"
+	>
+		@RenderTabContents(pd, td)
 	</div>
 }
 

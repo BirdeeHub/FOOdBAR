@@ -94,12 +94,7 @@ templ TabButton(tbd foodlib.TabButtonData) {
 templ TabContainer(pd *foodlib.PageData, td *foodlib.TabData) {
 	if td != nil && td.Ttype != foodlib.Invalid {
 		<div id={ fmt.Sprintf("tabContainer_%s", td.Ttype) } class="flex flex-row flex-1">
-			<div
-				id={ fmt.Sprintf("tabContainerTarget_%s", td.Ttype.String()) }
-				class="flex self-stretch flex-col flex-auto flex-grow"
-			>
-				@tabviews.RenderTabContents(pd, td)
-			</div>
+			@tabviews.MainTabContents(pd, td)
 			<div
 				id={ fmt.Sprintf("resizebar_%s", td.Ttype) }
 				class="flex flex-row flex-grow-0 flex-shrink flex-none cursor-ew-resize border-dashed border-l-2"
