@@ -37,7 +37,9 @@
       inherit inputs;
     };
 
-    # not tested fully
+    # TODO: not tested fully, or hardened, there may also be permissions
+    # issues creating files in /var/db (unsure)
+    # also it takes forever to build, unsure if docker is the way to go.
     docked = pkgs.dockerTools.buildLayeredImage {
       name = "birdee.io/FOOdBAR";
       tag = "latest";
