@@ -213,107 +213,10 @@ Remember to replace `datetime('now')` with your preferred timestamp format.
 
 These triggers will populate the audit table with the updated, inserted, or deleted data, along with the relevant timestamps and user IDs.
 
-> Is there a generic trigger that will trigger on ANY event for the table, and also insert which action it was into the table?
-> 
-> ```markdown
-> CREATE TRIGGER update_item_audits
-> AFTER UPDATE OF itemID ON items
-> BEGIN
->     INSERT INTO audits (userID, itemID, updated_at)
->     VALUES (NEW.userID, NEW.itemID, datetime('now'));
-> END;
-> ```
-
-Yes, you can create a trigger that fires on INSERT, UPDATE, or DELETE by using `AFTER INSERT OR UPDATE OR DELETE` instead of specifying a specific operation. 
-
-You can also check which operation triggered the trigger using the `TG_OP` variable.
-
-Here is an example:
-
-```sql
-CREATE TRIGGER audit_changes
-AFTER INSERT OR UPDATE OR DELETE ON items
-FOR EACH ROW
-BEGIN
-  INSERT INTO audit_log (table_name, operation, rowid, changed_at) 
-  VALUES ('items', TG_OP, NEW.rowid, CURRENT_TIMESTAMP);
-END;
-```
-
-This will insert a row into the `audit_log` table on any INSERT, UPDATE or DELETE, and populate the `operation` column with 'INSERT', 'UPDATE' or 'DELETE' based on which operation triggered it.
-
 The `NEW` and `OLD` references work the same as individual triggers. For INSERT, only `NEW` is populated. For DELETE, only `OLD` is populated. For UPDATE, both are populated.
 
 So this allows you to create a single trigger that audits all changes to a table, instead of needing separate triggers for each operation.
 
-
-> can I do lists in sql as a value in a table?
-> 
-
-Yes, you can store lists or arrays as a value in a SQL table column. Here are a few ways to do it in SQLite:
-
-**Comma-separated string**
-
-Store the list as a comma-separated string:
-
-```sql
-CREATE TABLE recipes (
-  id INTEGER PRIMARY KEY,
-  name TEXT,
-  ingredients TEXT -- comma separated list
-);
-
--- Example row
-INSERT INTO recipes VALUES (
-  1, 
-  'Omelette',
-  'eggs,cheese,milk,salt,pepper'
-);
-```
-
-Then you can split the string on commas when retrieving the data.
-
-**JSON array** 
-
-Store the list as a JSON array string:
-
-```sql
-CREATE TABLE recipes (
-  id INTEGER PRIMARY KEY, 
-  name TEXT,
-  ingredients TEXT -- json array
-);
-
--- Example row 
-INSERT INTO recipes VALUES (
-  1,
-  'Pasta',
-  '["noodles", "tomato sauce", "parmesan"]' 
-);
-```
-
-SQLite has JSON functions like JSON_EXTRACT to query JSON values.
-
-**Separate table**
-
-Use a separate table to store the list elements, with a foreign key to the parent row:
-
-```sql
-CREATE TABLE recipe_ingredients (
-  recipe_id INTEGER,
-  ingredient TEXT,
-  FOREIGN KEY (recipe_id) REFERENCES recipes(id)
-);
-
-INSERT INTO recipe_ingredients VALUES
-  (1, 'eggs'),
-  (1, 'cheese'),
-  (1, 'milk'); 
-```
-
-Then join the tables to get the ingredients for a recipe.
-
-So in summary, you have several options to store lists in SQLite columns, with trade-offs.
 
 > I want to sort based on values in json lists that are values in the db
 
@@ -363,256 +266,183 @@ WHERE JSON_EXTRACT(ingredients, '$[0]') = 'eggs'
 
 So in summary, use the SQLite JSON functions like JSON_ARRAY_LENGTH, JSON_EXTRACT and JSON_TYPE to query and sort by values within JSON columns.
 
-
-
----
-
-
-> db is a sqlx db and I wish to read the rows directly into a map of rowname, value, where some of them may be json arrays
-> 
-> ```go
-> func GetTabItemData(pd *foodlib.PageData, item *foodlib.TabItem) (map[string]interface{}, error) {
-> 	if item.Ttype == foodlib.Invalid {
-> 		return nil, errors.New("Invalid Tab Type")
-> 	}
-> 	db, tableName, err := CreateTabTableIfNotExists(pd.UserID, item.Ttype)
-> 	if err != nil {
-> 		return nil, err
-> 	}
-> 	defer db.Close()
-> 	return nil, errors.New("not yet implemented"+tableName)
-> }
-> ```
-
-Here is one way to read the rows into a map with sqlx:
-
-```go
-func GetTabItemData(pd *foodlib.PageData, item *foodlib.TabItem) (map[string]interface{}, error) {
-	if item.Ttype == foodlib.Invalid {
-		return nil, errors.New("Invalid Tab Type")
-	}
-	db, tableName, err := CreateTabTableIfNotExists(pd.UserID, item.Ttype)
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-	
-	rows, err := db.Queryx("SELECT * FROM " + tableName)
-	if err != nil {
-		return nil, err
-	}
-
-	columns, err := rows.Columns()
-	if err != nil {
-		return nil, err
-	}
-
-	values := make([]interface{}, len(columns))
-	valuePtrs := make([]interface{}, len(columns))
-	for i := range columns {
-		valuePtrs[i] = &values[i]
-	}
-
-	results := make(map[string]interface{})
-	for rows.Next() {
-		err := rows.Scan(valuePtrs...)
-		if err != nil {
-			return nil, err
-		}
-
-		for i, col := range columns {
-			if b, ok := values[i].([]byte); ok {
-				err = json.Unmarshal(b, &results[col])
-				if err != nil {
-					results[col] = string(b)
-				}
-			} else {
-				results[col] = values[i]
-			}
-		}
-	}
-	
-	return results, nil
-}
-```
-
-This scans each row into a slice of interface{}, then iterates over the columns and inserts into the map, handling JSON parsing for []byte columns.
-
-> how do I make sure that a value in a table gets read as []byte type? do I make the type in the database BYTEARRAY? Is that a thing in sqlite?
-
-In SQLite, you can store binary data in a BLOB column type. This will be returned from sqlite as []byte when reading the data in Go.
-
-So in your table definition, you would specify the column that needs to store binary data as:
+To sort by values within JSON blobs, you can use SQLite's JSON functions. Here's an example of how you can order by a specific key within a JSON blob:
 
 ```sql
-CREATE TABLE mytable (
-  id INTEGER PRIMARY KEY, 
-  name TEXT,
-  data BLOB
+SELECT *
+FROM your_table
+ORDER BY json_extract(your_json_column, '$.key_to_sort_by');
+```
+
+Replace `your_table` with the name of your table, `your_json_column` with the name of the column containing the JSON blob, and `key_to_sort_by` with the key within the JSON blob that you want to sort by.
+
+For example, if you have a table `recipes` with a column `ingredients` containing a JSON blob like `{"ingredient1": "apple", "ingredient2": "banana"}`, and you want to sort by the `ingredient1` key, you can use:
+
+```sql
+SELECT *
+FROM recipes
+ORDER BY json_extract(ingredients, '$.ingredient1');
+```
+
+If you need to sort by multiple keys within the JSON blob, you can use a combination of `json_extract` and `||` (string concatenation) like this:
+
+```sql
+SELECT *
+FROM your_table
+ORDER BY json_extract(your_json_column, '$.key1') || json_extract(your_json_column, '$.key2');
+```
+
+This will sort by the concatenated values of `key1` and `key2` within the JSON blob.
+
+Note that SQLite's JSON functions are available starting from version 3.38.0 (2022-01-10). If you're using an older version of SQLite, you may need to use a different approach, such as extracting the JSON values into separate columns or using a user-defined function.
+
+> They are lists not objects for the most part, how would I sort by the values in the list rather than the index of the list element?
+>
+
+If the JSON data in your column is a list instead of an object, you can use the `json_extract` function with an array index to access the elements of the list. However, since you want to sort by the values in the list, you'll need to use a subquery or a window function to extract the values and then order by them.
+
+Here's an example using a subquery:
+
+```sql
+SELECT *
+FROM your_table
+ORDER BY (
+    SELECT json_extract(your_json_column, '$[0]')
+    FROM your_table
+    WHERE rowid = outer.rowid
+);
+```
+
+This query selects all rows from `your_table` and orders them by the first element of the JSON list in the `your_json_column` column. The subquery `SELECT json_extract(your_json_column, '$[0]')` extracts the first element of the JSON list for each row, and the outer query orders by the result of this subquery.
+
+If you want to order by multiple elements in the list, you can concatenate the `json_extract` calls in the subquery:
+
+```sql
+SELECT *
+FROM your_table
+ORDER BY (
+    SELECT json_extract(your_json_column, '$[0]') || json_extract(your_json_column, '$[1]')
+    FROM your_table
+    WHERE rowid = outer.rowid
+);
+```
+
+This will order by the concatenation of the first and second elements of the JSON list.
+
+Alternatively, you can use the `json_group_array` function with a window function to extract the list elements into separate rows, and then order by the values:
+
+```sql
+SELECT *
+FROM (
+    SELECT rowid, json_extract(your_json_column, '$[' || idx || ']') AS value
+    FROM your_table
+    CROSS JOIN json_each(json_group_array(your_json_column))
+    ORDER BY rowid, idx
 )
+ORDER BY value;
 ```
 
-And then when reading that back in Go with sqlx, the data column would be returned as []byte which you can then json.Unmarshal.
+This query first creates a derived table that extracts each element of the JSON list into a separate row, along with the original row ID (`rowid`). It then orders the derived table by the extracted values (`value`).
 
-Some key points:
+Note that these examples assume that your JSON data is a list of scalar values (e.g., strings or numbers). If your JSON data is a list of objects or nested structures, you may need to adjust the `json_extract` calls accordingly.
 
-- BLOB is the column type for binary data in SQLite
-- sqlx will return BLOB columns as []byte 
-- You can then use json.Unmarshal to parse the []byte if it contains JSON
+> what is a window function?
 
-So using BLOB columns and scanning into []byte is the way to handle JSON encoding/decoding when storing in SQLite from Go.
+A window function in SQL is a function that performs a calculation across a set of rows that are somehow related to the current row. Unlike aggregate functions like `SUM` or `AVG`, which operate on groups of rows, window functions operate on a "window" of data, which is a subset of rows related to the current row.
 
-> I want to get the sql types of the columns and cast the values of the map to the correct type before returning
-> 
-> ```go
-> func GetTabItemData(userID uuid.UUID, item *foodlib.TabItem) (map[string]interface{}, error) {
-> 	if item == nil {
-> 		return nil, errors.New("nil tab target")
-> 	}
-> 	if item.Ttype == foodlib.Invalid {
-> 		return nil, errors.New("invalid Tab Type")
-> 	}
-> 	db, tableName, err := CreateTabTableIfNotExists(userID, item.Ttype)
-> 	if err != nil {
-> 		return nil, err
-> 	}
-> 	defer db.Close()
-> 
-> 	data := make(map[string]interface{})
-> 	err = db.QueryRowx("SELECT * FROM "+tableName+" WHERE id = ?", item.ItemID).MapScan(data)
-> 	if err == sql.ErrNoRows {
-> 		return nil, nil
-> 	} else if err != nil {
-> 		return nil, err
-> 	}
-> 
-> 	return data, nil
-> }
-> ```
+Window functions are useful for performing calculations that require context from other rows, such as ranking, running totals, moving averages, and more. They allow you to perform complex data analysis and calculations within a single SQL query, without the need for self-joins or subqueries.
 
-Here is how you can get the column types and cast the values to the correct types:
+Some common window functions in SQL include:
 
-```go
-func GetTabItemData(userID uuid.UUID, item *foodlib.TabItem) (map[string]interface{}, error) {
-	if item == nil {
-		return nil, errors.New("nil tab target")
-	}
-	if item.Ttype == foodlib.Invalid {
-		return nil, errors.New("invalid Tab Type")
-	}
+1. **`ROW_NUMBER()`**: Assigns a sequential row number to each row within a partition.
+2. **`RANK()`**: Assigns a rank to each row within a partition, with ties receiving the same rank.
+3. **`DENSE_RANK()`**: Assigns a rank to each row within a partition, with ties receiving the same rank, but without gaps in the ranking sequence.
+4. **`NTILE()`**: Divides the rows in a partition into a specified number of groups and assigns a group number to each row.
+5. **`LEAD()`** and **`LAG()`**: Access data from the next or previous row within a partition.
+6. **`SUM()`**, **`AVG()`**, **`MIN()`**, **`MAX()`**: Perform aggregate calculations over a window of rows.
 
-	db, tableName, err := CreateTabTableIfNotExists(userID, item.Ttype)
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
+Window functions are often used in combination with the `OVER` clause, which defines the window or partition over which the function operates. The `OVER` clause can include an `ORDER BY` clause to specify the order in which rows are processed, and a `PARTITION BY` clause to divide the result set into partitions.
 
-	// Get column names and types
-	cols, err := db.Queryx("SELECT column_name, data_type FROM information_schema.columns WHERE table_name = ?", tableName)
-	if err != nil {
-		return nil, err
-	}
+Here's an example that uses the `ROW_NUMBER()` window function to assign a sequential row number to each row within a partition:
 
-	colTypes := make(map[string]string)
-	for cols.Next() {
-		var name, typ string
-		if err := cols.Scan(&name, &typ); err != nil {
-			return nil, err
-		}
-		colTypes[name] = typ
-	}
-
-	// Query data and cast values to correct types
-	data := make(map[string]interface{})
-	row := db.QueryRowx("SELECT * FROM "+tableName+" WHERE id = ?", item.ItemID)
-	err = row.MapScan(data)
-	if err == sql.ErrNoRows {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-
-	for col, typ := range colTypes {
-		switch typ {
-		case "int":
-			val, _ := data[col].(int64)
-			data[col] = int(val)
-		case "float":
-			val, _ := data[col].(float64)
-			data[col] = float32(val)
-		// add cases for other types
-		}
-	}
-
-	return data, nil
-}
+```sql
+SELECT
+    product_name,
+    category,
+    price,
+    ROW_NUMBER() OVER (PARTITION BY category ORDER BY price DESC) AS row_num
+FROM
+    products;
 ```
 
-This queries the column information to get a mapping of column name to data type, uses that when scanning the result row to cast values to the correct types.
+This query assigns a row number to each product within its category, ordered by price in descending order. The `PARTITION BY` clause groups the rows by category, and the `ORDER BY` clause specifies the order in which the row numbers are assigned within each partition.
 
-> why did you convert the float64 into a float32?
-> 
-> 	for col, typ := range colTypes {
-> switch typ {
-> case "int":
->     val, _ := data[col].(int64)
->     data[col] = int(val)
-> case "float":
->     val, _ := data[col].(float64)
->     data[col] = float32(val)
-> // add cases for other types
-> }
-> }
+Window functions are powerful tools for data analysis and can significantly simplify complex queries that would otherwise require self-joins or subqueries.
 
-You're right, converting the float64 to float32 is not necessary in this case. I did that by default assuming the destination type would be float32, but since we are just storing into an interface{} map there is no need to convert the type.
+> If I had a sorted query, how would I get values 20 - 50 from it?
 
-A better way to handle the floats would be:
+To get values 20 - 50 from a sorted query, you can use the `OFFSET` and `FETCH` clauses in SQL. Here's an example:
 
-```go
-for col, typ := range colTypes {
-  switch typ {
-  case "int":
-    val, _ := data[col].(int64) 
-    data[col] = int(val)
-
-  case "float":
-    val := data[col].(float64)
-    data[col] = val
-
-  // add cases for other types
-  }
-}
+```sql
+SELECT *
+FROM (
+    SELECT
+        column1,
+        column2,
+        ...
+        ROW_NUMBER() OVER (ORDER BY sort_column1, sort_column2, ...) AS row_num
+    FROM
+        your_table
+) AS subquery
+WHERE row_num BETWEEN 20 AND 50;
 ```
 
-So just leave floats as float64 rather than converting. Thanks for catching that!
+Here's how it works:
 
-> im using sqlite. It says
-> 
-> no such table: information_schema.columns
+1. The inner query uses the `ROW_NUMBER()` window function to assign a sequential row number to each row based on the specified sort order (`ORDER BY sort_column1, sort_column2, ...`).
+2. The outer query treats the result of the inner query as a subquery and filters the rows based on the `row_num` column.
+3. The `WHERE` clause in the outer query selects only the rows where `row_num` is between 20 and 50, effectively returning rows 20 through 50 from the sorted result set.
 
-You're right, the `information_schema` tables are not present in SQLite by default. 
+Alternatively, you can use the `OFFSET` and `FETCH` clauses directly in the query:
 
-Instead of querying `information_schema`, we can use the `sqlite_master` table to get column info:
-
-```go
-cols, err := db.Queryx("SELECT name, type FROM pragma_table_info(?)", tableName)
-if err != nil {
-  return nil, err 
-}
-
-colTypes := make(map[string]string)
-for cols.Next() {
-  var name, typ string
-  if err := cols.Scan(&name, &typ); err != nil {
-    return nil, err
-  }
-  colTypes[name] = typ
-}
+```sql
+SELECT
+    column1,
+    column2,
+    ...
+FROM
+    your_table
+ORDER BY
+    sort_column1,
+    sort_column2,
+    ...
+OFFSET 19 ROWS
+FETCH NEXT 31 ROWS ONLY;
 ```
 
-The `pragma_table_info` pragma query returns the column name and type for a given table.
+In this approach:
 
-So in SQLite we can use `pragma_table_info` instead of `information_schema` to get the column metadata.
+1. The `ORDER BY` clause sorts the rows based on the specified columns.
+2. The `OFFSET 19 ROWS` skips the first 19 rows (rows 1 through 19).
+3. The `FETCH NEXT 31 ROWS ONLY` clause retrieves the next 31 rows (rows 20 through 50).
+
+Note that the `OFFSET` and `FETCH` clauses are standard SQL syntax, but some database systems may use different syntax or functions to achieve the same result. For example, in MySQL, you would use `LIMIT` and `OFFSET` like this:
+
+```sql
+SELECT
+    column1,
+    column2,
+    ...
+FROM
+    your_table
+ORDER BY
+    sort_column1,
+    sort_column2,
+    ...
+LIMIT 31 OFFSET 19;
+```
+
+This query retrieves 31 rows (rows 20 through 50) after skipping the first 19 rows.
 
 ---
 

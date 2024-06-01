@@ -7,6 +7,10 @@ This program will be a tracker app for a friend's small catering/personal chef b
 
 Mostly though, it is a way for me to learn web development as I have not done any before.
 
+It is a single page application with a monolitic architecture,
+designed equally to be hosted as a web page,
+or as a completely offline local application viewed through a browser.
+
 There will likely be some spaghetti that I will figure out how to handle better as I go.
 
 ### Install and development building instructions
