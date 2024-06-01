@@ -17,8 +17,7 @@ import (
 func getUseGZmiddleware(static fs.FS, prefix string) func(next echo.HandlerFunc) echo.HandlerFunc {
 	return func (next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			requestPath := c.Request().URL.Path
-			requestPath = strings.TrimPrefix(requestPath, prefix)[1:]
+			requestPath := strings.TrimPrefix(c.Request().URL.Path, prefix)[1:]
 			gzippedFilePath := requestPath + ".gz"
 			if _, err := fs.Stat(static, gzippedFilePath); err == nil {
 				filebytes, err := fs.ReadFile(static, gzippedFilePath)
