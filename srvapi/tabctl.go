@@ -69,9 +69,9 @@ func SetupTabCtlroutes(e *echo.Group) error {
 			// TODO: Implement infinite scroll for these.
 			// after the following function actually only returns X number of items
 			err = db.FillXTabItems(pageData.UserID, tabdata, 50, 0)
-		}
-		if err != nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, err)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusUnauthorized, err)
+			}
 		}
 		return RenderTab(TabMaximizeRenderer, c, pageData, pageData.GetTabDataByType(foodlib.String2TabType(c.Param("type"))))
 	})
