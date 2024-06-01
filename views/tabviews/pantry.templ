@@ -12,6 +12,7 @@ templ PantryTabContents(pd *foodlib.PageData, td *foodlib.TabData) {
 	for _, ti := range td.Items {
 		@PantryItemContainer(pd, td, ti)
 	}
+	// TODO: to implement infinite scroll, I need to request more here on htmx visibility trigger
 }
 
 templ PantryItemContainer(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem) {
