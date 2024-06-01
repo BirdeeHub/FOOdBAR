@@ -115,10 +115,10 @@ type PageData struct {
 }
 
 type TabData struct {
-	Ttype   TabType                `json:"tab_type"`
+	Ttype   TabType    `json:"tab_type"`
 	Items   []*TabItem `json:"items"`
-	OrderBy []int                  `json:"order_by"`
-	Flipped uuid.UUID             `json:"flipped"`
+	OrderBy []int      `json:"order_by"`
+	Flipped uuid.UUID  `json:"flipped"`
 }
 
 type TabItem struct {
@@ -267,10 +267,10 @@ func (tbd *TabData) MarshalJSON() ([]byte, error) {
 		func(t *TabItem) bool { return t != nil },
 	)
 	configpre := struct {
-		Ttype   string             `json:"tab_type"`
+		Ttype   string    `json:"tab_type"`
 		Items   []TabItem `json:"items"`
-		OrderBy []int              `json:"order_by"`
-		Flipped string             `json:"flipped"`
+		OrderBy []int     `json:"order_by"`
+		Flipped string    `json:"flipped"`
 	}{
 		Ttype:   tbd.Ttype.String(),
 		Items:   items,
@@ -283,10 +283,10 @@ func (tbd *TabData) MarshalJSON() ([]byte, error) {
 
 func (tbd *TabData) UnmarshalJSON(data []byte) error {
 	var irJson struct {
-		Ttype   string             `json:"tab_type"`
+		Ttype   string     `json:"tab_type"`
 		Items   []*TabItem `json:"items"`
-		OrderBy []int              `json:"order_by"`
-		Flipped string             `json:"flipped"`
+		OrderBy []int      `json:"order_by"`
+		Flipped string     `json:"flipped"`
 	}
 	err := json.Unmarshal(data, &irJson)
 	if err != nil {
