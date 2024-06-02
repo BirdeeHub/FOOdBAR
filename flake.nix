@@ -45,6 +45,13 @@
       # (on zsh remember to escape #) then:
       docker load < ./result
       docker run -p 8080:8080 --mount source=foodvol,target=/var/db/foodb --rm birdee.io/foodbar
+      NOTE:
+      The container runs as root to be able to write to the volume.
+      There is no shell or utilities, therefore getting a shell
+      and running shell commands should be impossible.
+      There was no easy way that I could find to make it writeable as non-root without
+      installing some utilities and maybe a shell to the container, so I think this way is better.
+      I can change permissions of the file on the host imperatively but that isnt very nixish
     */
     docked = pkgs.dockerTools.buildLayeredImage {
       name = "birdee.io/FOOdBAR";
@@ -66,6 +73,13 @@
         ];
         ExposedPorts = { "8080/tcp" = {}; };
         Volumes = { "/var/db/foodb" = {}; };
+        ReadonlyRootfs = true;
+        CapDrop = [
+          "ALL"
+        ];
+        CapAdd = [
+          "NET_BIND_SERVICE"
+        ];
       };
     };
 
