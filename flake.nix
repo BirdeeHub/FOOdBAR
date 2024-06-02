@@ -38,6 +38,8 @@
     };
 
     # NOTE: Unsure if I want to make a docker image for this, it is a single binary
+    # however the containerization may be a useful security feature.
+    # inside the container, there isnt any shell so an attacker couldnt get one either.
     # commands:
     # nix build .#docker.some_arch.default
     # docker load < ./result
