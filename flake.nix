@@ -42,8 +42,7 @@
     /*NOTE:
       commands to build, load, and run with published port and persistent volume:
       nix build .#docker.x86_64-linux.default
-      on zsh remember to \#
-      then:
+      # (on zsh remember to escape #) then:
       docker load < ./result
       docker run -p 8080:8080 --mount source=foodvol,target=/var/db/foodb --rm birdee.io/foodbar
     */
