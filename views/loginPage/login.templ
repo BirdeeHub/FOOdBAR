@@ -120,7 +120,7 @@ templ LoginFormContents(formtype LoginFormType, e error) {
 			if e != nil {
 				{ e.Error() }
 			}
-			<button class="flex flex-row flex-shrink items-center justify-center py-2 px-3 cursor-pointer border-t-2 border-b-2 rounded-xl mt-2" type="submit">log in</button>
+			<button class="flex flex-row flex-shrink items-center justify-center py-2 px-3 cursor-pointer border-t-2 border-b-2 rounded-xl mt-2 border-gray-700 dark:border-white" type="submit">log in</button>
 		} else {
 			Username:
 			<input class="text-black" value="" type="text" name="username"/>
@@ -132,7 +132,7 @@ templ LoginFormContents(formtype LoginFormType, e error) {
 			if e != nil {
 				{ e.Error() }
 			}
-			<button class="flex flex-row flex-shrink items-center justify-center py-2 px-3 cursor-pointer border-t-2 border-b-2 rounded-xl mt-2" type="submit">sign up</button>
+			<button class="flex flex-row flex-shrink items-center justify-center py-2 px-3 cursor-pointer border-t-2 border-b-2 rounded-xl mt-2 border-gray-700 dark:border-white" type="submit">sign up</button>
 		}
 	</div>
 }
