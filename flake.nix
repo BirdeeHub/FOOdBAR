@@ -37,16 +37,31 @@
       inherit inputs;
     };
 
-    # TODO: not tested fully, or hardened, there may also be permissions
-    # issues creating files in /var/db (unsure)
-    # also it takes forever to build, unsure if docker is the way to go.
+    # NOTE: Unsure if I want to make a docker image for this, it is a single binary
+    # this builds and runs it but I cant get it to expose the port to host so far
     docked = pkgs.dockerTools.buildLayeredImage {
       name = "birdee.io/FOOdBAR";
       tag = "latest";
-      # contents = with pkgs; [ cacert ];
+      # contents = with pkgs; [
+      #   dockerTools.binSh
+      #   unixtools.nettools
+      #   coreutils-full
+      #   cacert
+      # ];
       config = {
-        Cmd = "${default}/bin/FOOdBAR -dbpath /var/db";
-        Volumes = { "/var/db" = {}; };
+        Memory = 2048;
+        CPUShares = 2;
+        Cmd = [
+          "${default}/bin/FOOdBAR"
+          "-dbpath"
+          "/var/db/foodb"
+          "-ip"
+          "localhost"
+          "-port"
+          "8080"
+        ];
+        ExposedPorts = { "8080/tcp" = {}; };
+        Volumes = { "/var/db/foodb" = {}; };
       };
     };
 

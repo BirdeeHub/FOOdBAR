@@ -21,18 +21,18 @@ For now it is packaged for nix only so install nix package manager on linux, mac
 
 Then to build or run use
 
-```nix build --show-trace github:BirdeeHub/FOOdBAR```
+```nix build github:BirdeeHub/FOOdBAR```
 
-or ```nix run --show-trace github:BirdeeHub/FOOdBAR```
+or ```nix run github:BirdeeHub/FOOdBAR```
 
-or ```nix shell --show-trace github:BirdeeHub/FOOdBAR```
+or ```nix shell github:BirdeeHub/FOOdBAR```
 
 and to hack around with it with hot reload run the following 4 commands:
 
 ```bash
 git clone https://github.com/BirdeeHub/FOOdBAR
 cd FOOdBAR
-nix develop --show-trace .
+nix develop .
 # then inside the shell:
 air
 ```
