@@ -38,14 +38,14 @@
     };
 
     # NOTE: Unsure if I want to make a docker image for this, it is a single binary
-    # this builds and runs it but I cant get it to expose the port to host so far
+    # commands:
+    # docker load < ./result
+    # docker run -p 8080:8080 --mount source=foodvol,target=/var/db/foodb --rm birdee.io/foodbar
+    # TODO: figure out why it makes the tailwind dark:color thing not work...
     docked = pkgs.dockerTools.buildLayeredImage {
       name = "birdee.io/FOOdBAR";
       tag = "latest";
       # contents = with pkgs; [
-      #   dockerTools.binSh
-      #   unixtools.nettools
-      #   coreutils-full
       #   cacert
       # ];
       config = {
@@ -56,7 +56,7 @@
           "-dbpath"
           "/var/db/foodb"
           "-ip"
-          "localhost"
+          "0.0.0.0"
           "-port"
           "8080"
         ];

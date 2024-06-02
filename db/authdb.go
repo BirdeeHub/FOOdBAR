@@ -81,6 +81,13 @@ func QuerySessionBlacklist(sessionID uuid.UUID) (bool, error) {
 	// prepare statement (for input sanitization)
 	stmt, err := db.Prepare("SELECT expires_at FROM session_blacklist_table WHERE sessionID = ?")
 	if err != nil {
+		_, err = db.Exec(`CREATE TABLE IF NOT EXISTS session_blacklist_table (
+							sessionID TEXT PRIMARY KEY,
+							expires_at DATETIME
+						)`)
+		if err != nil {
+			return false, err
+		}
 		return false, err
 	}
 	defer stmt.Close()
@@ -180,6 +187,13 @@ func CreateUser(username string, password string) (uuid.UUID, error) {
 						username TEXT PRIMARY KEY,
 						password BLOB,
 						userID TEXT UNIQUE
+					)`)
+	if err != nil {
+		return uuid.Nil, err
+	}
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS session_blacklist_table (
+						sessionID TEXT PRIMARY KEY,
+						expires_at DATETIME
 					)`)
 	if err != nil {
 		return uuid.Nil, err
