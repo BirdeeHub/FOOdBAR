@@ -39,6 +39,7 @@
 
     # NOTE: Unsure if I want to make a docker image for this, it is a single binary
     # commands:
+    # nix build .#docker.some_arch.default
     # docker load < ./result
     # docker run -p 8080:8080 --mount source=foodvol,target=/var/db/foodb --rm birdee.io/foodbar
     # TODO: figure out why it makes the tailwind dark:color thing not work...
