@@ -191,6 +191,9 @@ templ CardFlipContainer(front templ.Component, back templ.Component) {
 		} else {
 			<div class="card is-flipped">
 				<div class="card__face card__face--front"></div>
+					if front != nil {
+						@front
+					}
 				<div class="card__face card__face--back">
 					@back
 				</div>
