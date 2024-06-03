@@ -64,11 +64,6 @@ templ OOBExtraField(field string, itemid uuid.UUID) {
 // targeting from the javascript event created by the first block.
 templ ExtraField(val string, field string, itemid uuid.UUID) {
 	<input
-		id={ fmt.Sprintf("%s_%s", templ.URL(field), itemid.String()) }
-		class="text-black"
-		value={ val }
-		type="text"
-		name={ fmt.Sprintf("%s[]", templ.URL(field)) }
 		_="on input trigger reactiveInputEvent(value: (value of me), id: @id) end
 
 			on load put the children of the closest parent <div /> into myList
@@ -76,7 +71,14 @@ templ ExtraField(val string, field string, itemid uuid.UUID) {
 			if the item's index does not exist
 			set the item's index to i
 			then set the item's id to item's id + '_' + i
+
+			/* yes i edited hyperscript JUST for indexed by instead of index */
 		"
+		id={ fmt.Sprintf("%s_%s", templ.URL(field), itemid.String()) }
+		class="text-black"
+		value={ val }
+		type="text"
+		name={ fmt.Sprintf("%s[]", templ.URL(field)) }
 	/>
 }
 
