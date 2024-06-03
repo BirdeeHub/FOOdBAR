@@ -43,7 +43,7 @@ var parseRepeatExpression = function (
     }
   }
 
-  if (tokens.matchToken("index")) {
+  if (tokens.matchToken("index") || tokens.matchToken("by")) {
     var identifierToken = tokens.requireTokenType("IDENTIFIER");
     var indexIdentifier = identifierToken.value;
   } else if (tokens.matchToken("indexed")) {
