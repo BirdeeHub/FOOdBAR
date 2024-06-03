@@ -32,13 +32,13 @@ templ ColorsCSS() {
 	</style>
 }
 
-templ OOBsendBackSubmitStatus(id uuid.UUID, message string, e error){
+templ OOBsendBackSubmitStatus(id uuid.UUID, message string, e error) {
 	<div id={ fmt.Sprintf("itemSubmitMessage_%s", id.String()) } hx-swap-oob="true">
 		@submitStatusMessage(id, message, e)
 	</div>
 }
 
-templ submitStatusMessage(id uuid.UUID, message string, e error){
+templ submitStatusMessage(id uuid.UUID, message string, e error) {
 	<div id={ fmt.Sprintf("itemSubmitMessage_%s", id.String()) }>
 		<div class="text-green-500">
 			{ message }
@@ -57,6 +57,10 @@ templ OOBExtraField(field string, itemid uuid.UUID) {
 	</div>
 }
 
+// This hyperscript is not going to be used for a while,
+// but later it will be used and maybe added to other elements as part of an undo implementation
+// The second block shouldnt be needed anywhere else though, it was needed to create unique ids for 
+// targeting from the javascript event created by the first block.
 templ ExtraField(val string, field string, itemid uuid.UUID) {
 	<input
 		id={ fmt.Sprintf("%s_%s", templ.URL(field), itemid.String()) }
@@ -181,13 +185,11 @@ templ CardFlipContainer(front templ.Component, back templ.Component) {
 				<div class="card__face card__face--front">
 					@front
 				</div>
-				<div class="card__face card__face--back">
-				</div>
+				<div class="card__face card__face--back"></div>
 			</div>
 		} else {
 			<div class="card is-flipped">
-				<div class="card__face card__face--front">
-				</div>
+				<div class="card__face card__face--front"></div>
 				<div class="card__face card__face--back">
 					@back
 				</div>
