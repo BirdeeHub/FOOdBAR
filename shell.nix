@@ -18,7 +18,7 @@ let
   templ = inputs.templ.packages.${pkgs.system}.templ;
   air = pkgs.writeShellScriptBin "air" ''
     export PATH=${pkgs.lib.makeBinPath [ templ gomod2nix goEnv pkgs.tailwindcss ]}:$PATH
-    ${pkgs.air}/bin/air -c ${pkgs.writeText "air-toml" (builtins.readFile ./.air.toml)}
+    exec ${pkgs.air}/bin/air -c ${pkgs.writeText "air-toml" (builtins.readFile ./.air.toml)}
   '';
   embeddedDeps = pkgs.stdenv.mkDerivation {
     name = "embedded_static_deps";
