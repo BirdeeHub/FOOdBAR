@@ -53,16 +53,18 @@ templ submitStatusMessage(id uuid.UUID, message string, e error){
 
 templ OOBExtraField(field string, itemid uuid.UUID) {
 	<div id={ string(templ.URL(fmt.Sprintf("%s_edit_%s", field, itemid.String()))) } hx-swap-oob="beforeend">
-		@ExtraField("", field)
+		@ExtraField("", field, itemid)
 	</div>
 }
 
-templ ExtraField(val string, field string) {
+templ ExtraField(val string, field string, itemid uuid.UUID) {
 	<input
+		id={ fmt.Sprintf("%s_%s", templ.URL(field), itemid.String()) }
 		class="text-black"
 		value={ val }
 		type="text"
 		name={ fmt.Sprintf("%s[]", templ.URL(field)) }
+		_="on input trigger myExtraFieldEvent(value: (value of me), id: @id)"
 	/>
 }
 

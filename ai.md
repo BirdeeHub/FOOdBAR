@@ -450,6 +450,26 @@ This query retrieves 31 rows (rows 20 through 50) after skipping the first 19 ro
 
 Non-AI notes
 
+hyperscript update current value of input and get via javascript event
+```html
+templ ExtraField(val string, field string, itemid uuid.UUID) {
+	<input
+		id={ fmt.Sprintf("%s_%s", templ.URL(field), itemid.String()) }
+		class="text-black"
+		value={ val }
+		type="text"
+		name={ fmt.Sprintf("%s[]", templ.URL(field)) }
+		_="on input trigger myExtraFieldEvent(value: (value of me), id: @id)"
+	/>
+}
+```
+```javascript
+document.addEventListener('myExtraFieldEvent', (event) => {
+    console.log("myExtraFieldEvent");
+    console.log(event.detail.id);
+    console.log(event.detail.value);
+});
+```
 
 ```go
 // render all items in a list with a component

@@ -21,3 +21,8 @@ document.addEventListener('htmx:afterRequest', (event) => {
         sessionStorage.setItem('tab_id', tabIdHeader);
     }
 });
+document.addEventListener('myExtraFieldEvent', (event) => {
+    console.log("myExtraFieldEvent");
+    console.log(event.detail.id);
+    console.log(event.detail.value);
+});

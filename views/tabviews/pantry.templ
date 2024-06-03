@@ -87,10 +87,10 @@ templ SubmitPantryBlock(pd *foodlib.PageData, item *foodlib.TabItem, msg string,
 						<div id={ fmt.Sprintf("dietary_edit_%s", item.ItemID.String()) }>
 							if dietaries := []string{}; db.GetTabItemDataValue(itemData, "dietary", &dietaries) == nil {
 								for _, v := range dietaries {
-									@ExtraField(v, "dietary")
+									@ExtraField(v, "dietary", item.ItemID)
 								}
 							} else {
-								@ExtraField("", "dietary")
+								@ExtraField("", "dietary", item.ItemID)
 							}
 						</div>
 					</div>
