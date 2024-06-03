@@ -90,6 +90,10 @@ func SetupTabCtlroutes(e *echo.Group) error {
 		if len(items) == 0 {
 			return HTML(c, http.StatusOK, tabviews.GetNewMoreGetter(tt, false))
 		}
+		err = db.SavePageData(c, pageData)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, err)
+		}
 		justMore := &foodlib.TabData{
 			Items: items,
 			Ttype: tabdata.Ttype,
