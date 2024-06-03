@@ -8,6 +8,7 @@ import (
 )
 
 // TODO: make this tab first
+// then copy across all and edit
 templ PantryTabContents(pd *foodlib.PageData, td *foodlib.TabData) {
 	<div id={ fmt.Sprintf("itemViewContainer_%s", td.Ttype) }>
 		for _, ti := range td.Items {
@@ -17,6 +18,7 @@ templ PantryTabContents(pd *foodlib.PageData, td *foodlib.TabData) {
 	@GetNewMoreGetter(td.Ttype, true)
 }
 
+// TODO: make expanding item containers
 templ PantryItemContainer(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem, oob bool) {
 	if itemData, _ := db.GetTabItemData(pd.UserID, item); itemData != nil && item != nil {
 		<div
