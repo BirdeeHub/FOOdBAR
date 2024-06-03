@@ -35,18 +35,17 @@ buildGoApplication {
 
     echo "generate tailwind.css"
     tailwindcss -o $targetStaticDir/tailwind.css -c ${./tailwind.config.js} --minify
-    ls -l $targetStaticDir/tailwind.css
 
     echo "gzipping select files"
     gzip -k -c $targetFOOstaticDir/foodbarfavicon.svg > $targetFOOstaticDir/foodbarfavicon.svg.gz
     gzip -k -c $targetStaticDir/foodbarloginfavicon.svg > $targetStaticDir/foodbarloginfavicon.svg.gz
     gzip -k -c $targetStaticDir/tailwind.css > $targetStaticDir/tailwind.css.gz
-    ls -l $targetStaticDir/foodbarloginfavicon.svg.gz $targetFOOstaticDir/foodbarfavicon.svg.gz
+    gzip -k -c $targetStaticDir/patchhyperscript.js > $targetStaticDir/patchhyperscript.js.gz
 
     echo "bundling client side dependencies"
     gzip -k -c ${inputs.htmx}/dist/htmx.min.js > $targetStaticDir/htmx.min.js.gz
     gzip -k -c ${inputs.hyperscript}/dist/_hyperscript.min.js > $targetStaticDir/_hyperscript.min.js.gz
-    ls -l $targetStaticDir/htmx.min.js.gz $targetStaticDir/_hyperscript.min.js.gz
+    ls -l $targetStaticDir/* $targetFOOstaticDir/*
   '';
   preBuild = ''
     templ generate
