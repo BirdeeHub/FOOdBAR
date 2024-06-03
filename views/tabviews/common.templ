@@ -58,10 +58,8 @@ templ OOBExtraField(field string, itemid uuid.UUID) {
 }
 
 // NOTE:
-// This hyperscript is not going to be used for a while,
-// but later it will be used and maybe added to other elements as part of an undo implementation
-// The second block shouldnt be needed anywhere else though, it was needed to create unique ids for 
-// targeting from the javascript event created by the first block.
+// The first line of hyperscript is just an event possibly used later for undo
+// The rest gives each new field a unique ID and was fun
 templ ExtraField(val string, field string, itemid uuid.UUID) {
 	<input
 		_="on input trigger reactiveInputEvent(value: (value of me), id: @id) end
