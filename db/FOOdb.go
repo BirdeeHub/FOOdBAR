@@ -12,30 +12,32 @@ import (
 	"github.com/google/uuid"
 )
 
-func FillXTabItems(userID uuid.UUID, tbd *foodlib.TabData, limit int, offset int) error {
+func FillXTabItems(userID uuid.UUID, tbd *foodlib.TabData, limit int, offset int) ([]*foodlib.TabItem, error) {
 	db, tableName, err := CreateTabTableIfNotExists(userID, tbd.Ttype)
 	defer db.Close()
 	if err != nil {
-		return err
+		return []*foodlib.TabItem{}, err
 	}
 	// TODO: fill tbd.Items with X number of items based on
 	// SortMethod numbers stored in slice in TabData
 	// get the actual SortMethod via GetSortMethodByNumber(k int)
 	rows, err := db.Query(fmt.Sprintf(`SELECT id FROM %s ORDER BY id DESC LIMIT %d OFFSET %d`, tableName, limit, offset))
 	if err != nil {
-		return err
+		return []*foodlib.TabItem{}, err
 	}
 	defer rows.Close()
 
-	for rows.Next() {
+	res := []*foodlib.TabItem{}
+	for i := 0; rows.Next(); i++ {
 		var id uuid.UUID
 		if err := rows.Scan(&id); err != nil {
-			return err
+			return []*foodlib.TabItem{}, err
 		}
-		tbd.AddTabItem(&foodlib.TabItem{ItemID: id})
+		res = append(res, &foodlib.TabItem{ItemID: id})
+		tbd.AddTabItem(res[i])
 	}
 
-	return nil
+	return res, nil
 }
 
 func GetTabItemData(userID uuid.UUID, item *foodlib.TabItem) (map[string]interface{}, error) {

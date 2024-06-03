@@ -138,7 +138,7 @@ func (tbd *TabData) AddTabItem(ti *TabItem) *TabItem {
 	if tbd.Items == nil {
 		tbd.Items = []*TabItem{}
 	}
-	tbd.Items = append([]*TabItem{ti}, tbd.Items...)
+	tbd.Items = append(tbd.Items, ti)
 	return ti
 }
 

@@ -5,6 +5,7 @@ import (
 	foodlib "FOOdBAR/FOOlib"
 	"FOOdBAR/db"
 	"FOOdBAR/views"
+	"FOOdBAR/views/tabviews"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -50,7 +51,7 @@ func SetupTabCtlroutes(e *echo.Group) error {
 		tt := foodlib.String2TabType(c.Param("type"))
 		tabdata := pageData.GetTabDataByType(tt)
 		// TODO: Implement infinite scroll for these.
-		err = db.FillXTabItems(pageData.UserID, tabdata, 50, 0)
+		_, err = db.FillXTabItems(pageData.UserID, tabdata, 30, 0)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
@@ -66,12 +67,38 @@ func SetupTabCtlroutes(e *echo.Group) error {
 		tabdata := pageData.GetTabDataByType(tt)
 		if !pageData.IsActive(tt) {
 			// TODO: Implement infinite scroll for these.
-			err = db.FillXTabItems(pageData.UserID, tabdata, 50, 0)
+			_, err = db.FillXTabItems(pageData.UserID, tabdata, 30, 0)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusUnauthorized, err)
 			}
 		}
 		return RenderTab(TabMaximizeRenderer, c, pageData, pageData.GetTabDataByType(foodlib.String2TabType(c.Param("type"))))
+	})
+
+	e.GET("/api/getMoreItems/:type", func(c echo.Context) error {
+		pageData, err := db.GetPageData(c)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, err)
+		}
+		tt := foodlib.String2TabType(c.Param("type"))
+		tabdata := pageData.GetTabDataByType(tt)
+		// TODO: Implement infinite scroll for these.
+		items, err := db.FillXTabItems(pageData.UserID, tabdata, 30, len(tabdata.Items))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, err)
+		}
+		if len(items) == 0 {
+			return HTML(c, http.StatusOK, tabviews.GetNewMoreGetter(tt, false))
+		}
+		justMore := &foodlib.TabData{
+			Items: items,
+			Ttype: tabdata.Ttype,
+			OrderBy: tabdata.OrderBy,
+			Flipped: tabdata.Flipped,
+		}
+		HTML(c, http.StatusOK, tabviews.OOBmoreTabItems(pageData, justMore))
+		return HTML(c, http.StatusOK, tabviews.GetNewMoreGetter(tt, true))
+		// return RenderTab(TabActivateRenderer, c, pageData, tabdata)
 	})
 	
 	return nil

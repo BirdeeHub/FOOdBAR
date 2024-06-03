@@ -6,9 +6,6 @@ import (
 	foodlib "FOOdBAR/FOOlib"
 )
 
-templ OOBmoreTabItems() {
-}
-
 templ ColorsCSS() {
 	<style type="text/css">
 		@media (prefers-color-scheme: dark) {
@@ -119,6 +116,40 @@ templ RenderFlipSubmitContent(pd *foodlib.PageData, item *foodlib.TabItem, msg s
 			@SubmitCustomerBlock(pd, item, msg, e)
 		case foodlib.Events:
 			@SubmitEventsBlock(pd, item, msg, e)
+	}
+}
+
+// NOTE: pass in a new TabData with only the new items, and to the real one in db, append the items.
+templ OOBmoreTabItems(pd *foodlib.PageData, td *foodlib.TabData) {
+	switch td.Ttype {
+		case foodlib.Recipe:
+			@RenderRecipeTab(pd, td)
+		case foodlib.Pantry:
+			for _, ti := range td.Items {
+				@PantryItemContainer(pd, td, ti, true)
+			}
+		case foodlib.Menu:
+			@RenderMenuTab(pd, td)
+		case foodlib.Shopping:
+			@RenderShoppingTab(pd, td)
+		case foodlib.Preplist:
+			@RenderPreplistTab(pd, td)
+		case foodlib.Earnings:
+			@RenderEarningsTab(pd, td)
+		case foodlib.Customer:
+			@RenderCustomerTab(pd, td)
+		case foodlib.Events:
+			@RenderEventsTab(pd, td)
+	}
+}
+
+templ GetNewMoreGetter(tt foodlib.TabType, more bool) {
+	if more {
+		<div
+			hx-trigger="revealed"
+			hx-swap="outerHTML"
+			hx-get={ fmt.Sprintf("%s/api/getMoreItems/%s", foodlib.PagePrefix, tt) }
+		></div>
 	}
 }
 

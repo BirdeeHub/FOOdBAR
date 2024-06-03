@@ -13,6 +13,12 @@ or as a completely offline local application viewed through a browser.
 
 There will likely be some spaghetti that I will figure out how to handle better as I go.
 
+I chose this stack because I want to mostly focus on back end, and also it is closest to the basics of
+web pages, something I did not know very well yet.
+
+I felt it would be better to explore it at this level first
+before using a framework that obscures the pathing and requests.
+
 ### Install and development building instructions
 
 #### nix
@@ -37,6 +43,14 @@ nix develop .
 air
 ```
 Then go to localhost:42069 in a web browser
+
+It may take some amount of time to build the first time due to having sqlite3 (and its tests) to run.
+
+nix takes longer to build than go on its own in general.
+
+For installing, use a nix command or import it to a config
+
+for messing around with it and rebuilding with any frequency, use the dev shell and air for regular compile speeds.
 
 #### nixless
 

@@ -9,15 +9,24 @@ import (
 
 // TODO: make this tab first
 templ PantryTabContents(pd *foodlib.PageData, td *foodlib.TabData) {
-	for _, ti := range td.Items {
-		@PantryItemContainer(pd, td, ti)
-	}
-	// TODO: to implement infinite scroll, I need to request more here on htmx visibility trigger
+	<div id={ fmt.Sprintf("itemViewContainer_%s", td.Ttype) }>
+		for _, ti := range td.Items {
+			@PantryItemContainer(pd, td, ti, false)
+		}
+	</div>
+	@GetNewMoreGetter(td.Ttype, true)
 }
 
-templ PantryItemContainer(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem) {
+templ PantryItemContainer(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem, oob bool) {
 	if itemData, _ := db.GetTabItemData(pd.UserID, item); itemData != nil && item != nil {
-		<div id={ fmt.Sprintf("%s", item.ItemID.String()) } class={ TabListItemCSS() }>
+		<div
+			id={ fmt.Sprintf("%s", item.ItemID.String()) }
+			class={ TabListItemCSS() }
+			if oob {
+				hx-swap-oob="beforeend"
+				hx-target={ fmt.Sprintf("#itemViewContainer_%s", td.Ttype) }
+			}
+		>
 			<div class={ ListItemElementCSS() }>
 				{ item.ItemID.String() }
 			</div>
