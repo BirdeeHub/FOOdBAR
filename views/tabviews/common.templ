@@ -64,10 +64,13 @@ templ ExtraField(val string, field string, itemid uuid.UUID) {
 		value={ val }
 		type="text"
 		name={ fmt.Sprintf("%s[]", templ.URL(field)) }
-		_="
-			on input trigger myExtraFieldEvent(value: (value of me), id: @id) end
-			on load put the children of the closest parent <div /> into myList then for elem in myList index i
-			if elem's index does not exist then set the elem's index to i then set the elem's id to elem's id + '_' + i
+		_="on input trigger reactiveInputEvent(value: (value of me), id: @id) end
+
+			on load put the children of the closest parent <div /> into myList
+			then for item in myList index i
+			if the item's index does not exist
+			set the item's index to i
+			then set the item's id to item's id + '_' + i
 		"
 	/>
 }

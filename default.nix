@@ -40,6 +40,7 @@ buildGoApplication {
     echo "gzipping select files"
     gzip -k -c $targetFOOstaticDir/foodbarfavicon.svg > $targetFOOstaticDir/foodbarfavicon.svg.gz
     gzip -k -c $targetStaticDir/foodbarloginfavicon.svg > $targetStaticDir/foodbarloginfavicon.svg.gz
+    gzip -k -c $targetStaticDir/tailwind.css > $targetStaticDir/tailwind.css.gz
     ls -l $targetStaticDir/foodbarloginfavicon.svg.gz $targetFOOstaticDir/foodbarfavicon.svg.gz
 
     echo "bundling client side dependencies"
