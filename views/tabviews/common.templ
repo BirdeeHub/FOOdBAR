@@ -72,7 +72,7 @@ templ ExtraField(val string, field string, itemid uuid.UUID) {
 		_="on input trigger reactiveInputEvent(value: (value of me), id: @id) end
 
 			on load put the children of the closest parent <div /> into myList
-			then for item in myList index i
+			then for item in myList indexed by i
 			if the item's index does not exist
 			set the item's index to i
 			then set the item's id to item's id + '_' + i
