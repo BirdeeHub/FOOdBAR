@@ -66,7 +66,8 @@ templ ExtraField(val string, field string, itemid uuid.UUID) {
 		name={ fmt.Sprintf("%s[]", templ.URL(field)) }
 		_="
 			on input trigger myExtraFieldEvent(value: (value of me), id: @id) end
-			on load set x to the children of the closest parent <div /> then for elem in x index i set elem.id to `${elem.id}_${i}` end
+			on load set x to the children of the closest parent <div /> then for elem in x index i
+			if elem's index does not exist then set elem's index to i then set elem's id to elem's id + '_' + i
 		"
 	/>
 }
