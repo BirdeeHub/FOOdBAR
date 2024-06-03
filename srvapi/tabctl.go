@@ -102,7 +102,6 @@ func SetupTabCtlroutes(e *echo.Group) error {
 		}
 		HTML(c, http.StatusOK, tabviews.OOBmoreTabItems(pageData, justMore))
 		return HTML(c, http.StatusOK, tabviews.GetNewMoreGetter(tt, true))
-		// return RenderTab(TabActivateRenderer, c, pageData, tabdata)
 	})
 	
 	return nil
