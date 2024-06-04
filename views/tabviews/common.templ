@@ -120,13 +120,13 @@ templ RenderFlipSubmitContent(pd *foodlib.PageData, item *foodlib.TabItem, msg s
 }
 
 // NOTE: pass in a new TabData with only the new items, and to the real one in db, append the items.
-templ OOBmoreTabItems(pd *foodlib.PageData, td *foodlib.TabData) {
+templ MoreTabItems(pd *foodlib.PageData, td *foodlib.TabData, more bool) {
 	switch td.Ttype {
 		case foodlib.Recipe:
 			@RenderRecipeTab(pd, td)
 		case foodlib.Pantry:
 			for _, ti := range td.Items {
-				@PantryItemContainer(pd, td, ti, true)
+				@PantryItemContainer(pd, td, ti)
 			}
 		case foodlib.Menu:
 			@RenderMenuTab(pd, td)
@@ -141,16 +141,17 @@ templ OOBmoreTabItems(pd *foodlib.PageData, td *foodlib.TabData) {
 		case foodlib.Events:
 			@RenderEventsTab(pd, td)
 	}
+	if more {
+		@GetNewMoreGetter(td.Ttype)
+	}
 }
 
-templ GetNewMoreGetter(tt foodlib.TabType, more bool) {
-	if more {
-		<div
-			hx-trigger="revealed"
-			hx-swap="outerHTML"
-			hx-get={ fmt.Sprintf("%s/api/getMoreItems/%s", foodlib.PagePrefix, tt) }
-		></div>
-	}
+templ GetNewMoreGetter(tt foodlib.TabType) {
+	<div
+		hx-trigger="revealed"
+		hx-swap="outerHTML"
+		hx-get={ fmt.Sprintf("%s/api/getMoreItems/%s", foodlib.PagePrefix, tt) }
+	></div>
 }
 
 templ RenderTabContents(pd *foodlib.PageData, td *foodlib.TabData) {

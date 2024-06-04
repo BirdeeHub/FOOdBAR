@@ -10,24 +10,19 @@ import (
 // TODO: make this tab first
 // then copy across all and edit
 templ PantryTabContents(pd *foodlib.PageData, td *foodlib.TabData) {
-	<div id={ fmt.Sprintf("itemViewContainer_%s", td.Ttype) }>
-		for _, ti := range td.Items {
-			@PantryItemContainer(pd, td, ti, false)
-		}
-	</div>
-	@GetNewMoreGetter(td.Ttype, true)
+	for _, ti := range td.Items {
+		@PantryItemContainer(pd, td, ti)
+	}
+	@GetNewMoreGetter(td.Ttype)
+	<div class="h-5"></div>
 }
 
 // TODO: make expanding item containers
-templ PantryItemContainer(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem, oob bool) {
+templ PantryItemContainer(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem) {
 	if itemData, _ := db.GetTabItemData(pd.UserID, item); itemData != nil && item != nil {
 		<div
-			id={ fmt.Sprintf("%s", item.ItemID.String()) }
+			id={ fmt.Sprintf("i_%s", item.ItemID.String()) }
 			class={ TabListItemCSS() }
-			if oob {
-				hx-swap-oob="beforeend"
-				hx-target={ fmt.Sprintf("#itemViewContainer_%s", td.Ttype) }
-			}
 		>
 			<div class={ ListItemElementCSS() }>
 				{ item.ItemID.String() }

@@ -50,7 +50,7 @@ func SetupTabCtlroutes(e *echo.Group) error {
 		}
 		tt := foodlib.String2TabType(c.Param("type"))
 		tabdata := pageData.GetTabDataByType(tt)
-		_, err = db.FillXTabItems(pageData.UserID, tabdata, 30, 0)
+		_, err = db.FillXTabItems(pageData.UserID, tabdata, 10, 0)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
@@ -65,7 +65,7 @@ func SetupTabCtlroutes(e *echo.Group) error {
 		tt := foodlib.String2TabType(c.Param("type"))
 		tabdata := pageData.GetTabDataByType(tt)
 		if !pageData.IsActive(tt) {
-			_, err = db.FillXTabItems(pageData.UserID, tabdata, 30, 0)
+			_, err = db.FillXTabItems(pageData.UserID, tabdata, 10, 0)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusUnauthorized, err)
 			}
@@ -80,14 +80,7 @@ func SetupTabCtlroutes(e *echo.Group) error {
 		}
 		tt := foodlib.String2TabType(c.Param("type"))
 		tabdata := pageData.GetTabDataByType(tt)
-		items, err := db.FillXTabItems(pageData.UserID, tabdata, 30, len(tabdata.Items))
-		if err != nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, err)
-		}
-		if len(items) == 0 {
-			return HTML(c, http.StatusOK, tabviews.GetNewMoreGetter(tt, false))
-		}
-		err = db.SavePageData(c, pageData)
+		items, err := db.FillXTabItems(pageData.UserID, tabdata, 10, len(tabdata.Items))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err)
 		}
@@ -97,8 +90,14 @@ func SetupTabCtlroutes(e *echo.Group) error {
 			OrderBy: tabdata.OrderBy,
 			Flipped: tabdata.Flipped,
 		}
-		HTML(c, http.StatusOK, tabviews.OOBmoreTabItems(pageData, justMore))
-		return HTML(c, http.StatusOK, tabviews.GetNewMoreGetter(tt, true))
+		if len(items) == 0 {
+			return HTML(c, http.StatusOK, tabviews.MoreTabItems(pageData, justMore, false))
+		}
+		err = db.SavePageData(c, pageData)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, err)
+		}
+		return HTML(c, http.StatusOK, tabviews.MoreTabItems(pageData, justMore, true))
 	})
 	
 	return nil
