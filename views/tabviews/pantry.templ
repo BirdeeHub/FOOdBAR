@@ -7,6 +7,15 @@ import (
 	"github.com/google/uuid"
 )
 
+// TODO: make this tab first
+// then copy across all tabs and edit
+// each one may have different options in the header
+// and the items may have an entirely different internal layout when expanded
+// but the tabs and list of items view structure should remain.
+// Ideally the database helper functions for tab level can be made as
+// generic as these item level ones (currently used in SubmitPantryBlock).
+// which work like unmarshal does.
+
 // TODO: add sorting controls to header
 templ RenderPantryTab(pd *foodlib.PageData, td *foodlib.TabData) {
 	<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>
@@ -39,9 +48,7 @@ templ PantryTabContents(pd *foodlib.PageData, td *foodlib.TabData) {
 	<div class="h-5"></div>
 }
 
-// TODO: make this tab first
-// then copy across all and edit
-// TODO: make expanding item containers
+// TODO: make expanding and resizeable item containers
 templ PantryItemContainer(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem) {
 	if itemData, _ := db.GetTabItemData(pd.UserID, item); itemData != nil && item != nil {
 		<div
