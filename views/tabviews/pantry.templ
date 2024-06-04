@@ -7,8 +7,6 @@ import (
 	"github.com/google/uuid"
 )
 
-// TODO: make this tab first
-// then copy across all and edit
 templ PantryTabContents(pd *foodlib.PageData, td *foodlib.TabData) {
 	for _, ti := range td.Items {
 		@PantryItemContainer(pd, td, ti)
@@ -17,6 +15,8 @@ templ PantryTabContents(pd *foodlib.PageData, td *foodlib.TabData) {
 	<div class="h-5"></div>
 }
 
+// TODO: make this tab first
+// then copy across all and edit
 // TODO: make expanding item containers
 templ PantryItemContainer(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem) {
 	if itemData, _ := db.GetTabItemData(pd.UserID, item); itemData != nil && item != nil {
@@ -39,6 +39,7 @@ templ PantryItemContainer(pd *foodlib.PageData, td *foodlib.TabData, item *foodl
 	}
 }
 
+// TODO: add sorting controls to header
 templ RenderPantryTab(pd *foodlib.PageData, td *foodlib.TabData) {
 	<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>
 		<div class={ TabHeaderTitleCSS() }>
