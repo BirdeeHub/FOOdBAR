@@ -7,6 +7,30 @@ import (
 	"github.com/google/uuid"
 )
 
+// TODO: add sorting controls to header
+templ RenderPantryTab(pd *foodlib.PageData, td *foodlib.TabData) {
+	<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>
+		<div class={ TabHeaderTitleCSS() }>
+			Pantry!
+		</div>
+		if td.Flipped == uuid.Nil {
+			@FlipAddItemButton(td.Ttype)
+		} else {
+			@CloseFlipButton(td.Ttype)
+		}
+		@MaximizeTabButton(td.Ttype)
+	</div>
+	<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
+		if td.Flipped == uuid.Nil {
+			@CardFlipContainer(PantryTabContents(pd, td), nil)
+		} else if item, err := td.GetTabItem(td.Flipped); err == nil {
+			@CardFlipContainer(nil, SubmitPantryBlock(pd, item, "", nil))
+		} else {
+			@CardFlipContainer(PantryTabContents(pd, td), nil)
+		}
+	</div>
+}
+
 templ PantryTabContents(pd *foodlib.PageData, td *foodlib.TabData) {
 	for _, ti := range td.Items {
 		@PantryItemContainer(pd, td, ti)
@@ -37,30 +61,6 @@ templ PantryItemContainer(pd *foodlib.PageData, td *foodlib.TabData, item *foodl
 			</div>
 		</div>
 	}
-}
-
-// TODO: add sorting controls to header
-templ RenderPantryTab(pd *foodlib.PageData, td *foodlib.TabData) {
-	<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>
-		<div class={ TabHeaderTitleCSS() }>
-			Pantry!
-		</div>
-		if td.Flipped == uuid.Nil {
-			@FlipAddItemButton(td.Ttype)
-		} else {
-			@CloseFlipButton(td.Ttype)
-		}
-		@MaximizeTabButton(td.Ttype)
-	</div>
-	<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
-		if td.Flipped == uuid.Nil {
-			@CardFlipContainer(PantryTabContents(pd, td), nil)
-		} else if item, err := td.GetTabItem(td.Flipped); err == nil {
-			@CardFlipContainer(nil, SubmitPantryBlock(pd, item, "", nil))
-		} else {
-			@CardFlipContainer(PantryTabContents(pd, td), nil)
-		}
-	</div>
 }
 
 templ SubmitPantryBlock(pd *foodlib.PageData, item *foodlib.TabItem, msg string, e error) {

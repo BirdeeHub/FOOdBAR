@@ -119,6 +119,7 @@ templ RenderFlipSubmitContent(pd *foodlib.PageData, item *foodlib.TabItem, msg s
 	}
 }
 
+// TODO: Update this when I implement the rest of the tab skeletons
 // NOTE: pass in a new TabData with only the new items, and to the real one in db, append the items.
 templ MoreTabItems(pd *foodlib.PageData, td *foodlib.TabData, more bool) {
 	switch td.Ttype {
