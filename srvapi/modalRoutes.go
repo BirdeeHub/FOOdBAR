@@ -13,8 +13,6 @@ import (
 
 func SetupModalAPIroutes(e *echo.Group) error {
 
-	// TODO: Somehow make this rerender the tab it was added to, but only if they are active and not flipped
-	// Maybe do it on modal close as a separate route?
 	e.POST("/api/submitItemInfo/:type/:itemID", func(c echo.Context) error {
 		pageData, err := db.GetPageData(c)
 		if err != nil {
@@ -28,13 +26,25 @@ func SetupModalAPIroutes(e *echo.Group) error {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnprocessableEntity, errors.New("itemID is not a valid UUID"))
 		}
+		isActive := false
+		if pageData.IsActive(tt) {
+			isActive = true
+		}
 		td := pageData.GetTabDataByType(tt)
+		flipped := false
+		if td.Flipped != uuid.Nil {
+			flipped = true
+		}
 		c.Logger().Print(td)
 		ti, err := td.GetTabItem(itemID)
+		present := true
 		if err != nil {
-			td.AddTabItem(&foodlib.TabItem{ItemID: itemID})
+			present = false
+			ti = &foodlib.TabItem{ItemID: itemID}
+			td.AddTabItem(ti)
 		}
 		c.Logger().Print(ti)
+		// TODO: submit method for other tables
 		switch tt {
 		case foodlib.Recipe:
 			err = db.SubmitPantryItem(c, pageData, td, ti)
@@ -56,6 +66,13 @@ func SetupModalAPIroutes(e *echo.Group) error {
 		if err != nil {
 			c.Logger().Print(err)
 			return HTML(c, http.StatusUnprocessableEntity, tabviews.OOBsendBackSubmitStatus(itemID, "", err))
+		}
+		if isActive && !flipped {
+			if present {
+				// TODO: Re render the tab item oob
+			} else {
+				// TODO: add the tab item oob
+			}
 		}
 		db.SavePageData(c, pageData)
 		return HTML(c, http.StatusOK, tabviews.OOBsendBackSubmitStatus(itemID, "Item Saved Successfully!", nil))
