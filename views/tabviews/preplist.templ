@@ -3,43 +3,137 @@ package tabviews
 import (
 	"fmt"
 	foodlib "FOOdBAR/FOOlib"
+	"FOOdBAR/db"
+	"github.com/google/uuid"
 )
 
-templ PreplistTabContents(td *foodlib.TabData) {
-	for _, ti := range td.Items {
-		@PreplistItemContainer(ti)
-	}
-}
+// TODO: make this tab first
+// then copy across all tabs and edit
+// each one may have different options in the header
+// and the items may have an entirely different internal layout when expanded
+// but the tabs and list of items view structure should remain.
+// Ideally the database helper functions for tab level can be made as
+// generic as these item level ones (currently used in SubmitPantryBlock).
+// which work like unmarshal does.
 
-templ PreplistItemContainer(item *foodlib.TabItem) {
-	<div id={ fmt.Sprintf("%s", item.ItemID.String()) } class={ TabListItemCSS() }>
-		<div class={ ListItemElementCSS() }>
-			{ item.ItemID.String() }
-		</div>
-		<div class={ ListItemElementCSS() }>
-			@Trashcan()
-		</div>
-	</div>
-}
-
-templ RenderPreplistTab(pd *foodlib.PageData, td *foodlib.TabData) {
+// TODO: add sorting controls to header
+templ RenderPreplistTab(pd *foodlib.PageData, td *foodlib.TabData, firstRender bool) {
 	<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>
 		<div class={ TabHeaderTitleCSS() }>
 			Preplist!
 		</div>
-		@ModalAddItemButton(td.Ttype)
+		if td.Flipped == uuid.Nil {
+			@FlipAddItemButton(td.Ttype)
+		} else {
+			@CloseFlipButton(td.Ttype)
+		}
 		@MaximizeTabButton(td.Ttype)
 	</div>
 	<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
-		@PreplistTabContents(td)
+		if td.Flipped == uuid.Nil {
+			if firstRender {
+				@PreplistTabContents(pd, td)
+			} else {
+				@CardFlipContainer(PreplistTabContents(pd, td), nil)
+			}
+		} else if item, err := td.GetTabItem(td.Flipped); err == nil {
+			if firstRender {
+				@SubmitPreplistBlock(pd, item, "", nil)
+			} else {
+				@CardFlipContainer(nil, SubmitPreplistBlock(pd, item, "", nil))
+			}
+		} else {
+			if firstRender {
+				@PreplistTabContents(pd, td)
+			} else {
+				@CardFlipContainer(PreplistTabContents(pd, td), nil)
+			}
+		}
+	</div>
+}
+
+templ PreplistTabContents(pd *foodlib.PageData, td *foodlib.TabData) {
+	for _, ti := range td.Items {
+		@PreplistItemContainer(pd, td, ti)
+	}
+	@GetNewMoreGetter(td.Ttype)
+	<div class="h-5"></div>
+}
+
+templ PreplistItemContainer(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem) {
+	if itemData, _ := db.GetTabItemData(pd.UserID, item); itemData != nil && item != nil {
+		if item.Expanded {
+			@preplistItemExpanded(pd, td, item, itemData)
+		} else {
+			@preplistItemNormal(pd, td, item, itemData)
+		}
+	}
+}
+
+// TODO: fill this in
+templ preplistItemNormal(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem, itemData map[string]interface{}) {
+	<div
+		id={ fmt.Sprintf("i_%s", item.ItemID.String()) }
+		class={ TabListItemCSS() }
+	>
+		<div class={ ListItemElementCSS() }>
+			{ item.ItemID.String() }
+		</div>
+		<div class={ ListItemElementCSS() }>
+			if name := ""; db.GetTabItemDataValue(itemData, "name", &name) == nil {
+				{ name }
+			}
+		</div>
+		<div class={ ListItemElementCSS() }>
+			@FlipEditTabItemButton(item)
+		</div>
+	</div>
+}
+
+// TODO: make this expanded and resizeable, then fill it in
+templ preplistItemExpanded(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem, itemData map[string]interface{}) {
+	<div
+		id={ fmt.Sprintf("i_%s", item.ItemID.String()) }
+		class={ TabListItemCSS() }
+	>
+		<div class={ ListItemElementCSS() }>
+			{ item.ItemID.String() }
+		</div>
+		<div class={ ListItemElementCSS() }>
+			if name := ""; db.GetTabItemDataValue(itemData, "name", &name) == nil {
+				{ name }
+			}
+		</div>
+		<div class={ ListItemElementCSS() }>
+			@FlipEditTabItemButton(item)
+		</div>
 	</div>
 }
 
 templ SubmitPreplistBlock(pd *foodlib.PageData, item *foodlib.TabItem, msg string, e error) {
-	if item != nil {
-		<div style="display: flex; flex-direction: column; flex: 0 1;">
+	if itemData, _ := db.GetTabItemData(pd.UserID, item); item != nil {
+		<div class="flex h-full w-full flex-col flex-1 items-stretch">
 			Hello from { item.Ttype.String() }
+			<form
+				hx-post={ fmt.Sprintf("%s/api/submitItemInfo/%s/%s", foodlib.PagePrefix, item.Ttype.String(), item.ItemID.String()) }
+				hx-swap="none"
+			>
+				<div class="flex flex-col flex-grow">
+					Name:
+					if name := ""; db.GetTabItemDataValue(itemData, "name", &name) == nil {
+						<input class="text-black w-full" value={ name } type="text" name="itemName"/>
+					} else {
+						<input class="text-black w-full" value="" type="text" name="itemName"/>
+					}
+					<button
+						class="flex flex-row flex-shrink items-center justify-center py-2 px-3 cursor-pointer border-t-2 border-b-2 rounded-xl mt-3 border-gray-700 dark:border-white"
+						action="submit"
+					>
+						submit
+					</button>
+					@submitStatusMessage(item.ItemID, msg, e)
+				</div>
+			</form>
 		</div>
-		<button _="on click trigger closeModal">Close</button>
 	}
 }

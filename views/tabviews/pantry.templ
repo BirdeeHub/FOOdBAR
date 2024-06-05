@@ -17,7 +17,7 @@ import (
 // which work like unmarshal does.
 
 // TODO: add sorting controls to header
-templ RenderPantryTab(pd *foodlib.PageData, td *foodlib.TabData) {
+templ RenderPantryTab(pd *foodlib.PageData, td *foodlib.TabData, firstRender bool) {
 	<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>
 		<div class={ TabHeaderTitleCSS() }>
 			Pantry!
@@ -31,11 +31,23 @@ templ RenderPantryTab(pd *foodlib.PageData, td *foodlib.TabData) {
 	</div>
 	<div id={ fmt.Sprintf("tabContents_%s", td.Ttype) }>
 		if td.Flipped == uuid.Nil {
-			@CardFlipContainer(PantryTabContents(pd, td), nil)
+			if firstRender {
+				@PantryTabContents(pd, td)
+			} else {
+				@CardFlipContainer(PantryTabContents(pd, td), nil)
+			}
 		} else if item, err := td.GetTabItem(td.Flipped); err == nil {
-			@CardFlipContainer(nil, SubmitPantryBlock(pd, item, "", nil))
+			if firstRender {
+				@SubmitPantryBlock(pd, item, "", nil)
+			} else {
+				@CardFlipContainer(nil, SubmitPantryBlock(pd, item, "", nil))
+			}
 		} else {
-			@CardFlipContainer(PantryTabContents(pd, td), nil)
+			if firstRender {
+				@PantryTabContents(pd, td)
+			} else {
+				@CardFlipContainer(PantryTabContents(pd, td), nil)
+			}
 		}
 	</div>
 }
@@ -48,26 +60,54 @@ templ PantryTabContents(pd *foodlib.PageData, td *foodlib.TabData) {
 	<div class="h-5"></div>
 }
 
-// TODO: make expanding and resizeable item containers
 templ PantryItemContainer(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem) {
 	if itemData, _ := db.GetTabItemData(pd.UserID, item); itemData != nil && item != nil {
-		<div
-			id={ fmt.Sprintf("i_%s", item.ItemID.String()) }
-			class={ TabListItemCSS() }
-		>
-			<div class={ ListItemElementCSS() }>
-				{ item.ItemID.String() }
-			</div>
-			<div class={ ListItemElementCSS() }>
-				if name := ""; db.GetTabItemDataValue(itemData, "name", &name) == nil {
-					{ name }
-				}
-			</div>
-			<div class={ ListItemElementCSS() }>
-				@FlipEditTabItemButton(item)
-			</div>
-		</div>
+		if item.Expanded {
+			@pantryItemExpanded(pd, td, item, itemData)
+		} else {
+			@pantryItemNormal(pd, td, item, itemData)
+		}
 	}
+}
+
+// TODO: fill this in
+templ pantryItemNormal(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem, itemData map[string]interface{}) {
+	<div
+		id={ fmt.Sprintf("i_%s", item.ItemID.String()) }
+		class={ TabListItemCSS() }
+	>
+		<div class={ ListItemElementCSS() }>
+			{ item.ItemID.String() }
+		</div>
+		<div class={ ListItemElementCSS() }>
+			if name := ""; db.GetTabItemDataValue(itemData, "name", &name) == nil {
+				{ name }
+			}
+		</div>
+		<div class={ ListItemElementCSS() }>
+			@FlipEditTabItemButton(item)
+		</div>
+	</div>
+}
+
+// TODO: make this expanded and resizeable, then fill it in
+templ pantryItemExpanded(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem, itemData map[string]interface{}) {
+	<div
+		id={ fmt.Sprintf("i_%s", item.ItemID.String()) }
+		class={ TabListItemCSS() }
+	>
+		<div class={ ListItemElementCSS() }>
+			{ item.ItemID.String() }
+		</div>
+		<div class={ ListItemElementCSS() }>
+			if name := ""; db.GetTabItemDataValue(itemData, "name", &name) == nil {
+				{ name }
+			}
+		</div>
+		<div class={ ListItemElementCSS() }>
+			@FlipEditTabItemButton(item)
+		</div>
+	</div>
 }
 
 templ SubmitPantryBlock(pd *foodlib.PageData, item *foodlib.TabItem, msg string, e error) {

@@ -69,11 +69,11 @@ templ ExtraField(val string, field string, itemid uuid.UUID) {
 
 			/* yes i edited hyperscript JUST for indexed by instead of index */
 		"
-		id={ fmt.Sprintf("%s_%s", templ.URL(field), itemid.String()) }
 		class="text-black"
-		value={ val }
 		type="text"
+		id={ fmt.Sprintf("%s_%s", templ.URL(field), itemid.String()) }
 		name={ fmt.Sprintf("%s[]", templ.URL(field)) }
+		value={ val }
 	/>
 }
 
@@ -119,28 +119,41 @@ templ RenderFlipSubmitContent(pd *foodlib.PageData, item *foodlib.TabItem, msg s
 	}
 }
 
-// TODO: Update this when I implement the rest of the tab skeletons
 // NOTE: pass in a new TabData with only the new items, and to the real one in db, append the items.
 templ MoreTabItems(pd *foodlib.PageData, td *foodlib.TabData, more bool) {
 	switch td.Ttype {
 		case foodlib.Recipe:
-			@RenderRecipeTab(pd, td)
+			for _, ti := range td.Items {
+				@RecipeItemContainer(pd, td, ti)
+			}
 		case foodlib.Pantry:
 			for _, ti := range td.Items {
 				@PantryItemContainer(pd, td, ti)
 			}
 		case foodlib.Menu:
-			@RenderMenuTab(pd, td)
+			for _, ti := range td.Items {
+				@MenuItemContainer(pd, td, ti)
+			}
 		case foodlib.Shopping:
-			@RenderShoppingTab(pd, td)
+			for _, ti := range td.Items {
+				@ShoppingItemContainer(pd, td, ti)
+			}
 		case foodlib.Preplist:
-			@RenderPreplistTab(pd, td)
+			for _, ti := range td.Items {
+				@PreplistItemContainer(pd, td, ti)
+			}
 		case foodlib.Earnings:
-			@RenderEarningsTab(pd, td)
+			for _, ti := range td.Items {
+				@EarningsItemContainer(pd, td, ti)
+			}
 		case foodlib.Customer:
-			@RenderCustomerTab(pd, td)
+			for _, ti := range td.Items {
+				@CustomerItemContainer(pd, td, ti)
+			}
 		case foodlib.Events:
-			@RenderEventsTab(pd, td)
+			for _, ti := range td.Items {
+				@EventsItemContainer(pd, td, ti)
+			}
 	}
 	if more {
 		@GetNewMoreGetter(td.Ttype)
@@ -155,29 +168,28 @@ templ GetNewMoreGetter(tt foodlib.TabType) {
 	></div>
 }
 
-templ RenderTabContents(pd *foodlib.PageData, td *foodlib.TabData) {
+templ RenderTabContents(pd *foodlib.PageData, td *foodlib.TabData, firstRender bool) {
 	switch td.Ttype {
 		case foodlib.Recipe:
-			@RenderRecipeTab(pd, td)
+			@RenderRecipeTab(pd, td, firstRender)
 		case foodlib.Pantry:
-			@RenderPantryTab(pd, td)
+			@RenderPantryTab(pd, td, firstRender)
 		case foodlib.Menu:
-			@RenderMenuTab(pd, td)
+			@RenderMenuTab(pd, td, firstRender)
 		case foodlib.Shopping:
-			@RenderShoppingTab(pd, td)
+			@RenderShoppingTab(pd, td, firstRender)
 		case foodlib.Preplist:
-			@RenderPreplistTab(pd, td)
+			@RenderPreplistTab(pd, td, firstRender)
 		case foodlib.Earnings:
-			@RenderEarningsTab(pd, td)
+			@RenderEarningsTab(pd, td, firstRender)
 		case foodlib.Customer:
-			@RenderCustomerTab(pd, td)
+			@RenderCustomerTab(pd, td, firstRender)
 		case foodlib.Events:
-			@RenderEventsTab(pd, td)
+			@RenderEventsTab(pd, td, firstRender)
 	}
 }
 
-// TODO: Does not do the flippy.
-// Make it do the flippy.
+// Load this as part of the main page
 templ CardFlipContainerCSS() {
 	<style type="text/css">
 	.card_container {
@@ -189,7 +201,7 @@ templ CardFlipContainerCSS() {
 		width: 100%;
 		height: 100%;
 		position: relative;
-		transition: transform 1s;
+		transition: transform 0.5s;
 		transform-style: preserve-3d;
 	}
 	.card__face {
@@ -198,40 +210,43 @@ templ CardFlipContainerCSS() {
 		width: 100%;
 		backface-visibility: hidden;
 	}
-	.card.is-flipped {
+	.card.flip-in {
 		transform: rotateY(-180deg);
 	}
-	.card__face--front {
+	.card.flip-out {
+		transform: rotateY(180deg);
 	}
-
+	.card__face--front {
+		transform: rotateY(-180deg);
+	}
 	.card__face--back {
-		transform: rotateY( 180deg );
+		transform: rotateY(180deg);
 	}
 	</style>
 }
 
 // requires above css to already be loaded (because otherwise we send it many many times)
-// TODO: do flip with htmx indicator and events instead because this method of animation doesnt work.
 templ CardFlipContainer(front templ.Component, back templ.Component) {
 	<div class="card_container">
-		if back == nil {
-			<div class="card">
-				<div class="card__face card__face--front">
+		<div
+			class="card"
+			if back == nil {
+				_="on load add .flip-out to me"
+			} else {
+				_="on load add .flip-in to me"
+			}
+		>
+			<div class="card__face card__face--front">
+				if front != nil {
 					@front
-				</div>
-				<div class="card__face card__face--back"></div>
+				}
 			</div>
-		} else {
-			<div class="card is-flipped">
-				<div class="card__face card__face--front"></div>
-					if front != nil {
-						@front
-					}
-				<div class="card__face card__face--back">
+			<div class="card__face card__face--back">
+				if back != nil {
 					@back
-				</div>
+				}
 			</div>
-		}
+		</div>
 	</div>
 }
 
@@ -242,7 +257,7 @@ templ MainTabContents(pd *foodlib.PageData, td *foodlib.TabData) {
 		id={ fmt.Sprintf("tabContainerTarget_%s", td.Ttype.String()) }
 		class="flex self-stretch flex-col flex-auto flex-grow"
 	>
-		@RenderTabContents(pd, td)
+		@RenderTabContents(pd, td, true)
 	</div>
 }
 
@@ -251,7 +266,7 @@ templ OOBflipTab(pd *foodlib.PageData, td *foodlib.TabData) {
 		id={ fmt.Sprintf("tabContainerTarget_%s", td.Ttype.String()) }
 		hx-swap-oob="innerHTML"
 	>
-		@RenderTabContents(pd, td)
+		@RenderTabContents(pd, td, false)
 	</div>
 }
 
