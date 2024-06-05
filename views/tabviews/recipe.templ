@@ -7,15 +7,6 @@ import (
 	"github.com/google/uuid"
 )
 
-// TODO: make this tab first
-// then copy across all tabs and edit
-// each one may have different options in the header
-// and the items may have an entirely different internal layout when expanded
-// but the tabs and list of items view structure should remain.
-// Ideally the database helper functions for tab level can be made as
-// generic as these item level ones (currently used in SubmitPantryBlock).
-// which work like unmarshal does.
-
 // TODO: add sorting controls to header
 templ RenderRecipeTab(pd *foodlib.PageData, td *foodlib.TabData, firstRender bool) {
 	<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>
