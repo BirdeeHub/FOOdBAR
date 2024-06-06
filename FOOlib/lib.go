@@ -59,6 +59,47 @@ func CreateEmptyFileIfNotExists(filename string) (string, error) {
 	return absPath, nil
 }
 
+func GetClaimsFromContext(c echo.Context) map[string]interface{} {
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	return claims
+}
+
+func GetIPfromClaims(claims map[string]interface{}) (string, error) {
+	switch ip := claims["ip"].(type) {
+	case string:
+		return ip, nil
+	default:
+		return "", errors.New("invalid userID")
+	}
+}
+
+func GetUserFromClaims(claims map[string]interface{}) (uuid.UUID, error) {
+	switch userID := claims["sub"].(type) {
+	case string:
+		return uuid.Parse(userID)
+	default:
+		return uuid.Nil, errors.New("invalid userID")
+	}
+}
+
+func GetSessionIDFromClaims(claims map[string]interface{}) (uuid.UUID, error) {
+	switch sessionID := claims["jti"].(type) {
+	case string:
+		return uuid.Parse(sessionID)
+	default:
+		return uuid.Nil, errors.New("invalid sessionID")
+	}
+}
+
+func GetExpirationFromToken(token *jwt.Token) (*time.Time, error) {
+	t, err := token.Claims.GetExpirationTime()
+	if err != nil {
+		return nil, err
+	}
+	return &t.Time, nil
+}
+
 func MapSlice[T any, V any](list []T, f func(T) V) []V {
 	ret := []V{}
 	for _, item := range list {
@@ -113,45 +154,4 @@ func FilterMapMap[T comparable, V any, R any](m map[T]V, function func(T, V) R, 
 		}
 	}
 	return ret
-}
-
-func GetClaimsFromContext(c echo.Context) map[string]interface{} {
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
-	return claims
-}
-
-func GetIPfromClaims(claims map[string]interface{}) (string, error) {
-	switch ip := claims["ip"].(type) {
-	case string:
-		return ip, nil
-	default:
-		return "", errors.New("invalid userID")
-	}
-}
-
-func GetUserFromClaims(claims map[string]interface{}) (uuid.UUID, error) {
-	switch userID := claims["sub"].(type) {
-	case string:
-		return uuid.Parse(userID)
-	default:
-		return uuid.Nil, errors.New("invalid userID")
-	}
-}
-
-func GetSessionIDFromClaims(claims map[string]interface{}) (uuid.UUID, error) {
-	switch sessionID := claims["jti"].(type) {
-	case string:
-		return uuid.Parse(sessionID)
-	default:
-		return uuid.Nil, errors.New("invalid sessionID")
-	}
-}
-
-func GetExpirationFromToken(token *jwt.Token) (*time.Time, error) {
-	t, err := token.Claims.GetExpirationTime()
-	if err != nil {
-		return nil, err
-	}
-	return &t.Time, nil
 }
