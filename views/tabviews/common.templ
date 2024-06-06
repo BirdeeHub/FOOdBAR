@@ -78,11 +78,15 @@ templ ExtraField(val string, field string, itemid uuid.UUID) {
 }
 
 templ ExpandTabItemButton(item *foodlib.TabItem) {
-	@Expand()
+	<div class="w-6">
+		@Expand()
+	</div>
 }
 
 templ ContractTabItemButton(item *foodlib.TabItem) {
-	@Expand()
+	<div class="w-6">
+		@Contract()
+	</div>
 }
 
 templ RenderSubmissionContent(pd *foodlib.PageData, item *foodlib.TabItem, msg string, e error) {
