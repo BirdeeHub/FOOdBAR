@@ -55,7 +55,7 @@
       installing some utilities and maybe a shell to the container, so I think this way is better.
       I can change permissions of the file on the host imperatively but that isnt very nixish
     */
-    docked = pkgs.dockerTools.buildLayeredImage {
+    docked = pkgs.dockerTools.buildImage {
       name = "birdee.io/FOOdBAR";
       tag = "latest";
       # contents = with pkgs; [
