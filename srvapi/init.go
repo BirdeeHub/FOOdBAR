@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
-	"mime"
 	"net/http"
 	"path/filepath"
 	"strings"
@@ -87,11 +86,7 @@ func getUseGZmiddleware(static fs.FS, prefix string) func(next echo.HandlerFunc)
 			if _, err := fs.Stat(static, gzippedFilePath); err == nil {
 				filebytes, err := fs.ReadFile(static, gzippedFilePath)
 				if err == nil {
-					ext := filepath.Ext(requestPath)
-					contentType := mime.TypeByExtension(ext)
-					if contentType == "" {
-						contentType, err = foodlib.ContentTypeFromExt(ext)
-					}
+					contentType, err := foodlib.ContentTypeFromExt(filepath.Ext(requestPath))
 					if err != nil {
 						c.Logger().Printf("static GZ middleware substitutor error, returning original\nStack trace:\n%s", err.Error())
 						return next(c)

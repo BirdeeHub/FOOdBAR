@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+	"mime"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
@@ -104,25 +105,13 @@ func GetExpirationFromClaims(claims jwt.Claims) (*time.Time, error) {
 }
 
 func ContentTypeFromExt(ext string) (string, error) {
+	contentType := mime.TypeByExtension(ext)
+	if contentType != "" {
+		return contentType, nil
+	}
 	switch ext {
-	case ".js":
-		return "application/javascript", nil
-	case ".css":
-		return "text/css", nil
-	case ".html":
-		return "text/html", nil
-	case ".svg":
-		return "image/svg+xml", nil
-	case ".json":
-		return "application/json", nil
-	case ".xml":
-		return "application/xml", nil
-	case ".png":
-		return "image/png", nil
-	case ".jpg", ".jpeg":
-		return "image/jpeg", nil
-	case ".gif":
-		return "image/gif", nil
+	case ".txt":
+		return "text/plain", nil
 	case ".woff":
 		return "font/woff", nil
 	case ".woff2":
@@ -143,8 +132,6 @@ func ContentTypeFromExt(ext string) (string, error) {
 		return "audio/ogg", nil
 	case ".mp3":
 		return "audio/mpeg", nil
-	case ".txt":
-		return "text/plain", nil
 	default:
 		return "", errors.New("Unknown extension: " + ext)
 	}
