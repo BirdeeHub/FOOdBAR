@@ -21,7 +21,7 @@ func InitServer(signingKey []byte, listenOn string, staticFilesystem fs.FS, stat
 	// TODO: figure out how to force HTTPS
 	// e.Pre(middleware.HTTPSRedirect())
 	// Custom handler to serve pre-compressed files if they exist
-	e.Use(getUseGZmiddleware(staticFilesystem, ""))
+	e.Use(useStaticGZmw(staticFilesystem, ""))
 
 	e.StaticFS("/static", echo.MustSubFS(staticFilesystem, "static"))
 
@@ -44,7 +44,7 @@ func InitServer(signingKey []byte, listenOn string, staticFilesystem fs.FS, stat
 	r.Use(GetJWTmiddlewareWithConfig(signingKey))
 
 	r.Use(middleware.Logger())
-	r.Use(getUseGZmiddleware(echo.MustSubFS(staticFilesAuthed, "FOOstatic"), "/FOOdBAR/static"))
+	r.Use(useStaticGZmw(echo.MustSubFS(staticFilesAuthed, "FOOstatic"), "/FOOdBAR/static"))
 	// Authed static directory at /FOOdBAR/static
 	r.StaticFS("/static", echo.MustSubFS(staticFilesAuthed, "FOOstatic"))
 	// r.Use(echo.WrapMiddleware(func(hndl http.Handler) http.Handler {
@@ -75,7 +75,7 @@ func InitServer(signingKey []byte, listenOn string, staticFilesystem fs.FS, stat
 	e.Logger.Fatal(e.Start(listenOn))
 }
 
-func getUseGZmiddleware(static fs.FS, prefix string) func(next echo.HandlerFunc) echo.HandlerFunc {
+func useStaticGZmw(static fs.FS, prefix string) func(next echo.HandlerFunc) echo.HandlerFunc {
 	return func (next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			requestPath := strings.TrimPrefix(c.Request().URL.Path, prefix)
