@@ -263,7 +263,7 @@ func (ti *TabItem) UnmarshalJSON(data []byte) error {
 }
 
 func (tbd *TabData) MarshalJSON() ([]byte, error) {
-	items := MapFilterSlice(tbd.Items,
+	items := FilterMapSlice(tbd.Items,
 		func(t *TabItem) TabItem { return *t },
 		func(t *TabItem) bool { return t != nil },
 	)

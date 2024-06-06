@@ -158,21 +158,21 @@ func MapSlice[T any, V any](list []T, f func(T) V) []V {
 	return ret
 }
 
-func MapFilterSlice[T any, V any](list []T, m func(T) V, f func(T) bool) []V {
-	ret := []V{}
-	for _, item := range list {
-		if f(item) {
-			ret = append(ret, m(item))
-		}
-	}
-	return ret
-}
-
 func FilterSlice[T any](list []T, f func(T) bool) []T {
 	ret := []T{}
 	for _, item := range list {
 		if f(item) {
 			ret = append(ret, item)
+		}
+	}
+	return ret
+}
+
+func FilterMapSlice[T any, V any](list []T, m func(T) V, f func(T) bool) []V {
+	ret := []V{}
+	for _, item := range list {
+		if f(item) {
+			ret = append(ret, m(item))
 		}
 	}
 	return ret

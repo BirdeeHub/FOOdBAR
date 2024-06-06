@@ -135,7 +135,7 @@ func TestMapSlice(t *testing.T) {
 	assert.Equal(t, expected2, result2)
 }
 
-func TestMapFilterSlice(t *testing.T) {
+func TestFilterMapSlice(t *testing.T) {
 	// Test case 1: Map and filter a slice of integers
 	slice1 := []int{1, 2, 3, 4, 5}
 	m1 := func(i int) string {
@@ -145,7 +145,7 @@ func TestMapFilterSlice(t *testing.T) {
 		return i%2 == 0
 	}
 	expected1 := []string{"value: 2", "value: 4"}
-	result1 := foodlib.MapFilterSlice(slice1, m1, f1)
+	result1 := foodlib.FilterMapSlice(slice1, m1, f1)
 	assert.Equal(t, expected1, result1)
 
 	// Test case 2: Map and filter an empty slice
@@ -157,7 +157,7 @@ func TestMapFilterSlice(t *testing.T) {
 		return i%2 == 0
 	}
 	expected2 := []string{}
-	result2 := foodlib.MapFilterSlice(slice2, m2, f2)
+	result2 := foodlib.FilterMapSlice(slice2, m2, f2)
 	assert.Equal(t, expected2, result2)
 }
 
