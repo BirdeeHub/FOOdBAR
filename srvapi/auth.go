@@ -141,13 +141,12 @@ func SetupLoginRoutes(e *echo.Echo, signingKey []byte) error {
 //TODO: Currently this is unused. Unsure that I want to add it to WipeAuth
 //But not having it would be a mistake. So, todo, use this when you need it.
 func AddSessionToBlacklist(c echo.Context) error {
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
+	claims := foodlib.GetClaimsFromContext(c)
 	sess, err := foodlib.GetSessionIDFromClaims(claims)
 	if err != nil {
 		return err
 	}
-	expiration, err := foodlib.GetExpirationFromToken(user)
+	expiration, err := foodlib.GetExpirationFromClaims(claims)
 	if err != nil {
 		return err
 	}
@@ -178,24 +177,23 @@ func getKeyFunc(signingKey *[]byte, signingKeys map[string]interface{}, signingM
 
 func GetJWTmiddlewareWithConfig(signingKey []byte) echo.MiddlewareFunc {
 	return echojwt.WithConfig(echojwt.Config{
-		ContextKey:  "user",
-		TokenLookup: "cookie:user",
+		ContextKey:  foodlib.JWTcookiename,
+		TokenLookup: fmt.Sprintf("cookie:%s", foodlib.JWTcookiename),
 		SuccessHandler: func(c echo.Context) {
-			userID, err := foodlib.GetUserFromClaims(foodlib.GetClaimsFromContext(c))
+			claims := foodlib.GetClaimsFromContext(c)
+			userID, err := foodlib.GetUserFromClaims(claims)
 			if err != nil {
 				WipeAuth(c)
 				c.Logger().Print(err)
 				return
 			}
-			user := c.Get("user").(*jwt.Token)
-			claims := user.Claims.(jwt.MapClaims)
-			expirationtime, err := claims.GetExpirationTime()
+			expirationtime, err := foodlib.GetExpirationFromClaims(claims)
 			if err != nil {
 				WipeAuth(c)
 				c.Logger().Print(err)
 				return
 			}
-			if time.Until(expirationtime.Time) < time.Hour {
+			if time.Until(*expirationtime) < time.Hour {
 				cookie, err := GenerateJWTfromIDandKey(userID, signingKey, c.RealIP())
 				if err != nil {
 					WipeAuth(c)
@@ -218,17 +216,17 @@ func GetJWTmiddlewareWithConfig(signingKey []byte) echo.MiddlewareFunc {
 			if !token.Valid {
 				return nil, &echojwt.TokenError{Token: token, Err: errors.New("invalid token")}
 			}
-			ip, err := foodlib.GetIPfromClaims(token.Claims.(jwt.MapClaims))
+			ip, err := foodlib.GetIPfromClaims(token.Claims)
 			if err != nil {
 				return nil, &echojwt.TokenError{Token: token, Err: errors.New("invalid ip field")}
 			}
 			if ip != c.RealIP() {
 				return nil, &echojwt.TokenError{Token: token, Err: errors.New("You changed IP! Please log in again.")}
 			}
-			if _, err := foodlib.GetExpirationFromToken(token); err != nil {
+			if _, err := foodlib.GetExpirationFromClaims(token.Claims); err != nil {
 				return nil, &echojwt.TokenError{Token: token, Err: errors.New("invalid token")}
 			}
-			sessionID, err := foodlib.GetSessionIDFromClaims(token.Claims.(jwt.MapClaims))
+			sessionID, err := foodlib.GetSessionIDFromClaims(token.Claims)
 			if err != nil {
 				return nil, &echojwt.TokenError{Token: token, Err: errors.New("invalid sessionID")}
 			}
@@ -257,7 +255,7 @@ func GenerateJWTfromIDandKey(userID uuid.UUID, key []byte, ip string) (*http.Coo
 		return nil, err
 	}
 	return &http.Cookie{
-		Name:     "user",
+		Name:     foodlib.JWTcookiename,
 		Value:    t,
 		Path:     fmt.Sprintf("%s", foodlib.PagePrefix),
 		SameSite: http.SameSiteStrictMode,
@@ -269,7 +267,7 @@ func WipeAuth(c echo.Context) {
 	// Set the cookie with the same name and an expiration time in the past
 	expiration := time.Now().AddDate(0, 0, -1)
 	cookie := http.Cookie{
-		Name:     "user",
+		Name:     foodlib.JWTcookiename,
 		Value:    "",
 		Path:     fmt.Sprintf("%s", foodlib.PagePrefix),
 		Expires:  expiration,

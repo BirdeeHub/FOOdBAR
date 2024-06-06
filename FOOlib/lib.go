@@ -59,14 +59,15 @@ func CreateEmptyFileIfNotExists(filename string) (string, error) {
 	return absPath, nil
 }
 
-func GetClaimsFromContext(c echo.Context) map[string]interface{} {
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
+func GetClaimsFromContext(c echo.Context) jwt.Claims {
+	user := c.Get(JWTcookiename).(*jwt.Token)
+	claims := user.Claims
 	return claims
 }
 
-func GetIPfromClaims(claims map[string]interface{}) (string, error) {
-	switch ip := claims["ip"].(type) {
+func GetIPfromClaims(claims jwt.Claims) (string, error) {
+	clams := claims.(jwt.MapClaims)
+	switch ip := clams["ip"].(type) {
 	case string:
 		return ip, nil
 	default:
@@ -74,8 +75,9 @@ func GetIPfromClaims(claims map[string]interface{}) (string, error) {
 	}
 }
 
-func GetUserFromClaims(claims map[string]interface{}) (uuid.UUID, error) {
-	switch userID := claims["sub"].(type) {
+func GetUserFromClaims(claims jwt.Claims) (uuid.UUID, error) {
+	clams := claims.(jwt.MapClaims)
+	switch userID := clams["sub"].(type) {
 	case string:
 		return uuid.Parse(userID)
 	default:
@@ -83,8 +85,9 @@ func GetUserFromClaims(claims map[string]interface{}) (uuid.UUID, error) {
 	}
 }
 
-func GetSessionIDFromClaims(claims map[string]interface{}) (uuid.UUID, error) {
-	switch sessionID := claims["jti"].(type) {
+func GetSessionIDFromClaims(claims jwt.Claims) (uuid.UUID, error) {
+	clams := claims.(jwt.MapClaims)
+	switch sessionID := clams["jti"].(type) {
 	case string:
 		return uuid.Parse(sessionID)
 	default:
@@ -92,8 +95,8 @@ func GetSessionIDFromClaims(claims map[string]interface{}) (uuid.UUID, error) {
 	}
 }
 
-func GetExpirationFromToken(token *jwt.Token) (*time.Time, error) {
-	t, err := token.Claims.GetExpirationTime()
+func GetExpirationFromClaims(claims jwt.Claims) (*time.Time, error) {
+	t, err := claims.GetExpirationTime()
 	if err != nil {
 		return nil, err
 	}

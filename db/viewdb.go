@@ -76,12 +76,13 @@ func CleanPageDataDB() error {
 }
 
 func GetPageData(c echo.Context) (*foodlib.PageData, error) {
-	userID, err := foodlib.GetUserFromClaims(foodlib.GetClaimsFromContext(c))
+	claims := foodlib.GetClaimsFromContext(c)
+	userID, err := foodlib.GetUserFromClaims(claims)
 	if err != nil {
 		c.Logger().Print(err)
 		return nil, err
 	}
-	SID, err := foodlib.GetSessionIDFromClaims(foodlib.GetClaimsFromContext(c))
+	SID, err := foodlib.GetSessionIDFromClaims(claims)
 	if err != nil {
 		c.Logger().Print(err)
 		return nil, err
