@@ -93,7 +93,7 @@ func getUseGZmiddleware(static fs.FS, prefix string) func(next echo.HandlerFunc)
 						contentType, err = foodlib.ContentTypeFromExt(ext)
 					}
 					if err != nil {
-						c.Logger().Printf("static GZ middleware substitutor error:\n%s", err.Error())
+						c.Logger().Printf("static GZ middleware substitutor error, returning original\nStack trace:\n%s", err.Error())
 						return next(c)
 					}
 					return GZIP(c, http.StatusOK, contentType, filebytes)
