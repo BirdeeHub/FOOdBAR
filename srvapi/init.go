@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
+	"mime"
 	"net/http"
 	"path/filepath"
 	"strings"
@@ -13,34 +14,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
-
-func getUseGZmiddleware(static fs.FS, prefix string) func(next echo.HandlerFunc) echo.HandlerFunc {
-	return func (next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			requestPath := strings.TrimPrefix(c.Request().URL.Path, prefix)[1:]
-			gzippedFilePath := requestPath + ".gz"
-			if _, err := fs.Stat(static, gzippedFilePath); err == nil {
-				filebytes, err := fs.ReadFile(static, gzippedFilePath)
-				if err == nil {
-					contentType := "application/gzip"
-					if filepath.Ext(requestPath) == ".js" {
-						contentType = "application/javascript"
-					} else if filepath.Ext(requestPath) == ".svg" {
-						contentType = "image/svg+xml"
-					} else if filepath.Ext(requestPath) == ".css" {
-						contentType = "text/css"
-					} else if filepath.Ext(requestPath) == ".html" {
-						contentType = "text/html"
-					} else {
-						return next(c)
-					}
-					return GZIP(c, http.StatusOK, contentType, filebytes)
-				}
-			}
-			return next(c)
-		}
-	}
-}
 
 func InitServer(signingKey []byte, listenOn string, staticFilesystem fs.FS, staticFilesAuthed fs.FS) {
 	e := echo.New()
@@ -98,9 +71,36 @@ func InitServer(signingKey []byte, listenOn string, staticFilesystem fs.FS, stat
 		)
 	}
 
-
-
 	// TODO: figure out how to force HTTPS
 	// e.Logger.Fatal(e.StartTLS(":42069", "cert.pem", "key.pem"))
 	e.Logger.Fatal(e.Start(listenOn))
 }
+
+func getUseGZmiddleware(static fs.FS, prefix string) func(next echo.HandlerFunc) echo.HandlerFunc {
+	return func (next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			requestPath := strings.TrimPrefix(c.Request().URL.Path, prefix)
+			if len(requestPath) > 0 && requestPath[0] == '/' {
+				requestPath = requestPath[1:]
+			}
+			gzippedFilePath := requestPath + ".gz"
+			if _, err := fs.Stat(static, gzippedFilePath); err == nil {
+				filebytes, err := fs.ReadFile(static, gzippedFilePath)
+				if err == nil {
+					ext := filepath.Ext(requestPath)
+					contentType := mime.TypeByExtension(ext)
+					if contentType == "" {
+						contentType, err = foodlib.ContentTypeFromExt(ext)
+					}
+					if err != nil {
+						c.Logger().Printf("static GZ middleware substitutor error:\n%s", err.Error())
+						return next(c)
+					}
+					return GZIP(c, http.StatusOK, contentType, filebytes)
+				}
+			}
+			return next(c)
+		}
+	}
+}
+

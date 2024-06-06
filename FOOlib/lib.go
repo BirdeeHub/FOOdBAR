@@ -100,6 +100,53 @@ func GetExpirationFromToken(token *jwt.Token) (*time.Time, error) {
 	return &t.Time, nil
 }
 
+func ContentTypeFromExt(ext string) (string, error) {
+	switch ext {
+	case ".js":
+		return "application/javascript", nil
+	case ".css":
+		return "text/css", nil
+	case ".html":
+		return "text/html", nil
+	case ".svg":
+		return "image/svg+xml", nil
+	case ".json":
+		return "application/json", nil
+	case ".xml":
+		return "application/xml", nil
+	case ".png":
+		return "image/png", nil
+	case ".jpg", ".jpeg":
+		return "image/jpeg", nil
+	case ".gif":
+		return "image/gif", nil
+	case ".woff":
+		return "font/woff", nil
+	case ".woff2":
+		return "font/woff2", nil
+	case ".ttf":
+		return "font/ttf", nil
+	case ".gz":
+		return "application/gzip", nil
+	case ".eot":
+		return "application/vnd.ms-fontobject", nil
+	case ".otf":
+		return "font/otf", nil
+	case ".mp4":
+		return "video/mp4", nil
+	case ".webm":
+		return "video/webm", nil
+	case ".ogg":
+		return "audio/ogg", nil
+	case ".mp3":
+		return "audio/mpeg", nil
+	case ".txt":
+		return "text/plain", nil
+	default:
+		return "", errors.New("Unknown extension: " + ext)
+	}
+}
+
 func MapSlice[T any, V any](list []T, f func(T) V) []V {
 	ret := []V{}
 	for _, item := range list {

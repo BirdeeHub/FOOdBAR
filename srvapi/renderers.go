@@ -1,8 +1,8 @@
 package srvapi
 
 import (
-	"FOOdBAR/views"
 	foodlib "FOOdBAR/FOOlib"
+	"FOOdBAR/views"
 	"FOOdBAR/db"
 	"net/http"
 
@@ -18,7 +18,6 @@ func HTML(c echo.Context, code int, cmp templ.Component) error {
 
 func GZIP(c echo.Context, code int, contentType string, filebytes []byte) error {
 	c.Response().Header().Set(echo.HeaderContentEncoding, "gzip")
-	c.Response().Status = code
 	return c.Blob(code, contentType, filebytes)
 }
 
