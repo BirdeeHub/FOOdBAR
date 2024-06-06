@@ -90,15 +90,7 @@ func InitServer(signingKey []byte, listenOn string, staticFilesystem fs.FS, stat
 		)
 	}
 
-	err = SetupModalAPIroutes(r)
-	if err != nil {
-		echo.NewHTTPError(
-			http.StatusTeapot,
-			errors.New("server api setup failed: "+err.Error()),
-		)
-	}
-
-	err = SetupFlipAPIroutes(r)
+	err = SetupEditAPIroutes(r)
 	if err != nil {
 		echo.NewHTTPError(
 			http.StatusTeapot,

@@ -33,13 +33,10 @@ func IsFilePresent(filesystem fs.FS, filename string) (bool, error) {
 }
 
 func CreateEmptyFileIfNotExists(filename string) (string, error) {
-	// Create the directory if it doesn't exist
 	err := os.MkdirAll(filepath.Dir(filename), 0700)
 	if err != nil {
 		return "", err
 	}
-
-	// Try to open the file in read-only mode
 	filetry, err := os.Open(filename)
 	filetry.Close()
 	if os.IsNotExist(err) {
@@ -63,7 +60,7 @@ func CreateEmptyFileIfNotExists(filename string) (string, error) {
 }
 
 func MapSlice[T any, V any](list []T, f func(T) V) []V {
-	var ret []V
+	ret := []V{}
 	for _, item := range list {
 		ret = append(ret, f(item))
 	}
@@ -71,7 +68,7 @@ func MapSlice[T any, V any](list []T, f func(T) V) []V {
 }
 
 func MapFilterSlice[T any, V any](list []T, m func(T) V, f func(T) bool) []V {
-	var ret []V
+	ret := []V{}
 	for _, item := range list {
 		if f(item) {
 			ret = append(ret, m(item))
@@ -81,7 +78,7 @@ func MapFilterSlice[T any, V any](list []T, m func(T) V, f func(T) bool) []V {
 }
 
 func FilterSlice[T any](list []T, f func(T) bool) []T {
-	var ret []T
+	ret := []T{}
 	for _, item := range list {
 		if f(item) {
 			ret = append(ret, item)

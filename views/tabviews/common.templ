@@ -226,6 +226,7 @@ templ CardFlipContainerCSS() {
 }
 
 // requires above css to already be loaded (because otherwise we send it many many times)
+// TODO: maybe find out how to do this on remove instead of on load but this is fine for now.
 templ CardFlipContainer(front templ.Component, back templ.Component) {
 	<div class="card_container">
 		<div

@@ -2,7 +2,9 @@ package foodlib_test
 
 import (
 	foodlib "FOOdBAR/FOOlib"
+	"strconv"
 	"testing"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -110,5 +112,71 @@ func TestFilterMap(t *testing.T) {
 	}
 	expected2 := map[string]int{}
 	result2 := foodlib.FilterMap(m2, filter2)
+	assert.Equal(t, expected2, result2)
+}
+
+func TestMapSlice(t *testing.T) {
+	// Test case 1: Map a slice of integers to strings
+	slice1 := []int{1, 2, 3, 4, 5}
+	f1 := func(i int) string {
+		return "value: " + strconv.Itoa(i)
+	}
+	expected1 := []string{"value: 1", "value: 2", "value: 3", "value: 4", "value: 5"}
+	result1 := foodlib.MapSlice(slice1, f1)
+	assert.Equal(t, expected1, result1)
+
+	// Test case 2: Map an empty slice
+	slice2 := []int{}
+	f2 := func(i int) string {
+		return "value: " + strconv.Itoa(i)
+	}
+	expected2 := []string{}
+	result2 := foodlib.MapSlice(slice2, f2)
+	assert.Equal(t, expected2, result2)
+}
+
+func TestMapFilterSlice(t *testing.T) {
+	// Test case 1: Map and filter a slice of integers
+	slice1 := []int{1, 2, 3, 4, 5}
+	m1 := func(i int) string {
+		return "value: " + strconv.Itoa(i)
+	}
+	f1 := func(i int) bool {
+		return i%2 == 0
+	}
+	expected1 := []string{"value: 2", "value: 4"}
+	result1 := foodlib.MapFilterSlice(slice1, m1, f1)
+	assert.Equal(t, expected1, result1)
+
+	// Test case 2: Map and filter an empty slice
+	slice2 := []int{}
+	m2 := func(i int) string {
+		return "value: " + strconv.Itoa(i)
+	}
+	f2 := func(i int) bool {
+		return i%2 == 0
+	}
+	expected2 := []string{}
+	result2 := foodlib.MapFilterSlice(slice2, m2, f2)
+	assert.Equal(t, expected2, result2)
+}
+
+func TestFilterSlice(t *testing.T) {
+	// Test case 1: Filter a slice of integers
+	slice1 := []int{1, 2, 3, 4, 5}
+	f1 := func(i int) bool {
+		return i%2 == 0
+	}
+	expected1 := []int{2, 4}
+	result1 := foodlib.FilterSlice(slice1, f1)
+	assert.Equal(t, expected1, result1)
+
+	// Test case 2: Filter an empty slice
+	slice2 := []int{}
+	f2 := func(i int) bool {
+		return i%2 == 0
+	}
+	expected2 := []int{}
+	result2 := foodlib.FilterSlice(slice2, f2)
 	assert.Equal(t, expected2, result2)
 }
