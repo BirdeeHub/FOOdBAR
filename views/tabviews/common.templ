@@ -77,6 +77,14 @@ templ ExtraField(val string, field string, itemid uuid.UUID) {
 	/>
 }
 
+templ ExpandTabItemButton(item *foodlib.TabItem) {
+	@Expand()
+}
+
+templ ContractTabItemButton(item *foodlib.TabItem) {
+	@Expand()
+}
+
 templ RenderSubmissionContent(pd *foodlib.PageData, item *foodlib.TabItem, msg string, e error) {
 	switch item.Ttype {
 		case foodlib.Recipe:
