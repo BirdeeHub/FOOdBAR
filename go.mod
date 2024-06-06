@@ -1,6 +1,6 @@
 module FOOdBAR
 
-go 1.22.2
+go 1.22.3
 
 require (
 	github.com/a-h/templ v0.2.707
@@ -10,7 +10,7 @@ require (
 	github.com/labstack/echo-jwt/v4 v4.2.0
 	github.com/labstack/echo/v4 v4.12.0
 	github.com/mattn/go-sqlite3 v1.14.22
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 )
 
 require (
