@@ -8,6 +8,8 @@
     gomod2nix.inputs.nixpkgs.follows = "nixpkgs";
     gomod2nix.inputs.flake-utils.follows = "flake-utils";
     templ.url = "github:a-h/templ";
+    templ.inputs.nixpkgs.follows = "nixpkgs";
+    templ.inputs.gomod2nix.follows = "gomod2nix";
     htmx = {
       url = "github:bigskysoftware/htmx";
       flake = false;

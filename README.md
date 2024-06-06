@@ -44,9 +44,9 @@ air
 ```
 Then go to localhost:42069 in a web browser
 
-It may take some amount of time to build the first time due to having sqlite3 (and its tests) to run.
+It may take some amount of time to build the first time due to having sqlite3 and templ to build.
 
-nix takes longer to build than go on its own in general.
+nix takes longer to build than go on its own in general because it doesnt make use of the go caching, but the first time is much slower than the rest.
 
 For installing, use a nix command or import it to a config
 
