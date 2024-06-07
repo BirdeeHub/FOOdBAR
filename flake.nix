@@ -48,7 +48,7 @@
       docker load < ./result
       docker run -p 8080:8080 --mount source=foodvol,target=/var/db/foodb --rm birdee.io/foodbar
     */
-    docked = pkgs.dockerTools.buildLayeredImage {
+    WhaleJail = pkgs.dockerTools.buildLayeredImage {
       name = "birdee.io/FOOdBAR";
       tag = "latest";
       # contents = with pkgs; [
@@ -86,8 +86,14 @@
 
   in
   {
-    docker.default = docked;    
-    packages.default = default;
+    docker.default = WhaleJail;
+    packages = {
+      default = default;
+      rundocker = pkgs.writeShellScript "dockerfoodbar" ''
+        ${pkgs.docker}/bin/docker load < ${WhaleJail}
+        ${pkgs.docker}/bin/docker run -p $1:8080 --mount source=foodvol,target=/var/db/foodb --rm birdee.io/foodbar
+      '';
+    };
     devShells.default = devShellDefault;
   }) ;
 }
