@@ -70,7 +70,7 @@ func SetupEditAPIroutes(e *echo.Group) error {
 		if isActive && !flipped {
 			if present {
 				// TODO: Re render the tab item oob
-				HTML(c, http.StatusOK, tabviews.OOBPantryItemContainer(pageData, td, ti))
+				HTML(c, http.StatusOK, tabviews.OOBRenderItemContainer(pageData, td, ti))
 			} else {
 				// TODO: add the tab item oob beforeend
 			}

@@ -172,6 +172,28 @@ templ MoreTabItems(pd *foodlib.PageData, td *foodlib.TabData, more bool) {
 	}
 }
 
+// TODO: make for other tabs
+templ OOBRenderItemContainer(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem) {
+	switch item.Ttype {
+		case foodlib.Recipe:
+			@OOBPantryItemContainer(pd, td, item)
+		case foodlib.Pantry:
+			@OOBPantryItemContainer(pd, td, item)
+		case foodlib.Menu:
+			@OOBPantryItemContainer(pd, td, item)
+		case foodlib.Shopping:
+			@OOBPantryItemContainer(pd, td, item)
+		case foodlib.Preplist:
+			@OOBPantryItemContainer(pd, td, item)
+		case foodlib.Earnings:
+			@OOBPantryItemContainer(pd, td, item)
+		case foodlib.Customer:
+			@OOBPantryItemContainer(pd, td, item)
+		case foodlib.Events:
+			@OOBPantryItemContainer(pd, td, item)
+	}
+}
+
 templ GetNewMoreGetter(tt foodlib.TabType) {
 	<div
 		hx-trigger="revealed"
