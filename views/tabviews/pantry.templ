@@ -62,18 +62,23 @@ templ PantryTabContents(pd *foodlib.PageData, td *foodlib.TabData) {
 
 templ PantryItemContainer(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem) {
 	if itemData, _ := db.GetTabItemData(pd.UserID, item); itemData != nil && item != nil {
+		<div id={ fmt.Sprintf("i_%s", item.ItemID.String()) }>
+			@PantryItemContents(pd, td, item, itemData)
+		</div>
+	}
+}
+
+templ PantryItemContents(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem, itemData map[string]interface{}) {
 		if item.Expanded {
 			@pantryItemExpanded(pd, td, item, itemData)
 		} else {
 			@pantryItemNormal(pd, td, item, itemData)
 		}
-	}
 }
 
 // TODO: fill this in
 templ pantryItemNormal(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem, itemData map[string]interface{}) {
 	<div
-		id={ fmt.Sprintf("i_%s", item.ItemID.String()) }
 		class={ TabListItemCSS() }
 	>
 		<div class={ ListItemElementCSS() }>
@@ -96,7 +101,6 @@ templ pantryItemNormal(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.
 // TODO: make this expanded and resizeable, then fill it in
 templ pantryItemExpanded(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem, itemData map[string]interface{}) {
 	<div
-		id={ fmt.Sprintf("i_%s", item.ItemID.String()) }
 		class={ TabListItemCSS() }
 	>
 		<div class={ ListItemElementCSS() }>

@@ -71,7 +71,7 @@ func SetupEditAPIroutes(e *echo.Group) error {
 			if present {
 				// TODO: Re render the tab item oob
 			} else {
-				// TODO: add the tab item oob
+				// TODO: add the tab item oob beforeend
 			}
 		}
 		db.SavePageData(c, pageData)
