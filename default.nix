@@ -27,7 +27,7 @@ buildGoApplication {
   buildInputs = [ pkgs.sqlite ];
   nativeBuildInputs = [ templ pkgs.makeWrapper pkgs.tailwindcss ];
   postUnpack = ''
-    newsource=$TEMPDIR/''${sourceRoot}
+    newsource=$TEMPDIR/$sourceRoot
     targetStaticDir=$newsource/static
     targetFOOstaticDir=$newsource/FOOstatic
     mkdir -p $targetStaticDir

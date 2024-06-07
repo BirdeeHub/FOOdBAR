@@ -68,6 +68,17 @@ templ PantryItemContainer(pd *foodlib.PageData, td *foodlib.TabData, item *foodl
 	}
 }
 
+templ OOBPantryItemContainer(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem) {
+	if itemData, _ := db.GetTabItemData(pd.UserID, item); itemData != nil && item != nil {
+		<div
+			id={ fmt.Sprintf("i_%s", item.ItemID.String()) }
+			hx-swap-oob="innerHTML"
+		>
+			@PantryItemContents(pd, td, item, itemData)
+		</div>
+	}
+}
+
 templ PantryItemContents(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem, itemData map[string]interface{}) {
 		if item.Expanded {
 			@pantryItemExpanded(pd, td, item, itemData)
