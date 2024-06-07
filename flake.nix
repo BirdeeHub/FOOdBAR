@@ -58,24 +58,22 @@
 
       runAsRoot = ''
         #!${pkgs.bash}/bin/bash
-        mkdir -p /foodb
-        chown -R 1000:1000 /foodb
+        mkdir -p /data/db
+        chown -R 1000:1000 /data/db
       '';
       config = {
         User = "1000:1000";
-        Memory = 2048;
-        CPUShares = 2;
         Cmd = [
           "${default}/bin/FOOdBAR"
           "-dbpath"
-          "/foodb"
+          "/data/db"
           "-ip"
           "0.0.0.0"
           "-port"
           "8080"
         ];
         ExposedPorts = { "8080/tcp" = {}; };
-        Volumes = { "/foodb" = {}; };
+        Volumes = { "/data" = {}; };
         ReadonlyRootfs = true;
         CapDrop = [
           "ALL"
