@@ -48,15 +48,15 @@
       docker load < ./result
       docker run -p 8080:8080 --mount source=foodvol,target=/var/db/foodb --rm birdee.io/foodbar
     */
-    # TODO: figure out why it seems to get all slow when not ran as root
-    docked = pkgs.dockerTools.buildImage {
+    docked = pkgs.dockerTools.buildLayeredImage {
       name = "birdee.io/FOOdBAR";
       tag = "latest";
       # contents = with pkgs; [
       #   cacert
       # ];
 
-      runAsRoot = ''
+      enableFakechroot = true;
+      fakeRootCommands = ''
         #!${pkgs.bash}/bin/bash
         mkdir -p /data/db
         chown -R 1000:1000 /data/db
