@@ -72,7 +72,8 @@ func SetupEditAPIroutes(e *echo.Group) error {
 				// TODO: Re render the tab item oob
 				HTML(c, http.StatusOK, tabviews.OOBRenderItemContainer(pageData, td, ti))
 			} else {
-				// TODO: add the tab item oob beforeend
+				// TODO: add the tab item at correct place in sort for that tab
+				// basically, call fill tab items, and if the ti's id is in the list rerender the relevant tab
 			}
 		}
 		db.SavePageData(c, pageData)
