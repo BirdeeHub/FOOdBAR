@@ -1,0 +1,110 @@
+package tabviews
+
+import (
+	"fmt"
+	foodlib "FOOdBAR/FOOlib"
+)
+
+templ OOBflipTab(pd *foodlib.PageData, td *foodlib.TabData) {
+	<div
+		id={ fmt.Sprintf("tabContainerTarget_%s", td.Ttype.String()) }
+		hx-swap-oob="innerHTML"
+	>
+		@RenderTabContents(pd, td, false)
+	</div>
+}
+
+// Load this as part of the main page
+templ CardFlipContainerCSS() {
+	<style type="text/css">
+	.card_container {
+		height: 100%;
+		width: 100%;
+		perspective: 600px;
+	}
+	.card {
+		width: 100%;
+		height: 100%;
+		position: relative;
+		transition: transform 0.5s;
+		transform-style: preserve-3d;
+	}
+	.card__face {
+		position: absolute;
+		height: 100%;
+		width: 100%;
+		backface-visibility: hidden;
+	}
+	.card.flip-in {
+		transform: rotateY(-180deg);
+	}
+	.card.flip-out {
+		transform: rotateY(180deg);
+	}
+	.card__face--front {
+		transform: rotateY(-180deg);
+	}
+	.card__face--back {
+		transform: rotateY(180deg);
+	}
+	</style>
+}
+
+// requires above css to already be loaded (because otherwise we send it many many times)
+// TODO: maybe find out how to do this on remove instead of on load but this is fine for now.
+templ CardFlipContainer(front templ.Component, back templ.Component) {
+	<div class="card_container">
+		<div
+			class="card"
+			if back == nil {
+				_="on load add .flip-out to me"
+			} else {
+				_="on load add .flip-in to me"
+			}
+		>
+			<div class="card__face card__face--front">
+				if front != nil {
+					@front
+				}
+			</div>
+			<div class="card__face card__face--back">
+				if back != nil {
+					@back
+				}
+			</div>
+		</div>
+	</div>
+}
+
+templ FlipEditTabItemButton(ti *foodlib.TabItem) {
+	<div
+		id={ fmt.Sprintf("ItemEdit_%s", ti.Ttype.String()) }
+		hx-get={ fmt.Sprintf("%s/api/itemEditFlip/open/%s/%s", foodlib.PagePrefix, ti.Ttype.String(), ti.ItemID.String()) }
+		hx-swap="none"
+		class={ TabHeaderButtonCSS() }
+	>
+		@EditSVG()
+	</div>
+}
+
+templ FlipAddItemButton(tt foodlib.TabType) {
+	<div
+		id={ fmt.Sprintf("tabItemAdd_%s", tt.String()) }
+		hx-get={ fmt.Sprintf("%s/api/itemCreateFlip/open/%s", foodlib.PagePrefix, tt.String()) }
+		hx-swap="none"
+		class={ TabHeaderButtonCSS() }
+	>
+		@AddCircle()
+	</div>
+}
+
+templ CloseFlipButton(tt foodlib.TabType) {
+	<div
+		id={ fmt.Sprintf("tabItemAdd_%s", tt.String()) }
+		hx-get={ fmt.Sprintf("%s/api/itemEditFlip/close/%s", foodlib.PagePrefix, tt.String()) }
+		hx-swap="none"
+		class={ TabHeaderButtonCSS() }
+	>
+		@MinusCircle()
+	</div>
+}

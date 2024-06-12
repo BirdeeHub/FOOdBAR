@@ -7,7 +7,6 @@ import (
 	"github.com/google/uuid"
 )
 
-// TODO: add sorting controls to header
 templ RenderEarningsTab(pd *foodlib.PageData, td *foodlib.TabData, firstRender bool) {
 	<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>
 		<div class={ TabHeaderTitleCSS() }>
@@ -61,7 +60,6 @@ templ EarningsItemContainer(pd *foodlib.PageData, td *foodlib.TabData, item *foo
 	}
 }
 
-// TODO: fill this in
 templ earningsItemNormal(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem, itemData map[string]interface{}) {
 	<div
 		id={ fmt.Sprintf("i_%s", item.ItemID.String()) }
@@ -81,7 +79,6 @@ templ earningsItemNormal(pd *foodlib.PageData, td *foodlib.TabData, item *foodli
 	</div>
 }
 
-// TODO: make this expanded and resizeable, then fill it in
 templ earningsItemExpanded(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem, itemData map[string]interface{}) {
 	<div
 		id={ fmt.Sprintf("i_%s", item.ItemID.String()) }

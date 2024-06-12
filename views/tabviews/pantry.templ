@@ -7,14 +7,10 @@ import (
 	"github.com/google/uuid"
 )
 
-// TODO: make this tab first
-// then copy across all tabs and edit
-// each one may have different options in the header
-// and the items may have an entirely different internal layout when expanded
-// but the tabs and list of items view structure should remain.
-// Ideally the database helper functions for tab level can be made as
-// generic as these item level ones (currently used in SubmitPantryBlock).
-// which work like unmarshal does.
+// TODO: make expanded ones expandable and resizeable
+// TODO: maybe make it so that you can drag the tabs to swap the order
+// TODO: then copy this to all the other tabs (correcting names for each)
+// and fill in the tabs with their respective data and options and submit methods
 
 // TODO: add sorting controls to header
 templ RenderPantryTab(pd *foodlib.PageData, td *foodlib.TabData, firstRender bool) {
@@ -63,29 +59,6 @@ templ PantryTabContents(pd *foodlib.PageData, td *foodlib.TabData) {
 templ PantryItemContainer(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem) {
 	if itemData, _ := db.GetTabItemData(pd.UserID, item); itemData != nil && item != nil {
 		<div id={ fmt.Sprintf("i_%s", item.ItemID.String()) }>
-			@PantryItemContents(pd, td, item, itemData)
-		</div>
-	}
-}
-
-templ OOBPantryItemBeforeThis(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem, target uuid.UUID) {
-	if itemData, _ := db.GetTabItemData(pd.UserID, item); itemData != nil && item != nil {
-		<div
-			id={ fmt.Sprintf("i_%s", item.ItemID.String()) }
-			hx-target={ fmt.Sprintf("#i_%s", target.String()) }
-			hx-swap-oob="beforebegin"
-		>
-			@PantryItemContents(pd, td, item, itemData)
-		</div>
-	}
-}
-
-templ OOBPantryItemContainer(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem) {
-	if itemData, _ := db.GetTabItemData(pd.UserID, item); itemData != nil && item != nil {
-		<div
-			id={ fmt.Sprintf("i_%s", item.ItemID.String()) }
-			hx-swap-oob="innerHTML"
-		>
 			@PantryItemContents(pd, td, item, itemData)
 		</div>
 	}

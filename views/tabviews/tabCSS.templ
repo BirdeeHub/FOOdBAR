@@ -1,5 +1,28 @@
 package tabviews
 
+templ ColorsCSS() {
+	<style type="text/css">
+		@media (prefers-color-scheme: dark) {
+			.bodycolors {
+				border-color: white;
+				background-color: #1e1e1f;
+				color: white;
+				fill: white;
+				stroke: white;
+			}
+		}
+		@media (not (prefers-color-scheme: dark)) {
+			.bodycolors {
+				border-color: black;
+				background-color: lightgray;
+				color: black;
+				fill: black;
+				stroke: black;
+			}
+		}
+	</style>
+}
+
 css TabHeaderContainerCSS() {
 	display: flex;
 	flex-shrink: 1;
@@ -25,6 +48,14 @@ css TabHeaderItemCSS(flex string) {
 	flex-direction: row;
 	padding: 10px;
 	flex: { flex };
+}
+
+css TabHeaderButtonCSS() {
+	display: flex;
+	flex-direction: row;
+	margin: 3px;
+	flex: 0 0 1.5rem;
+	cursor: pointer;
 }
 
 css TabListContainerCSS() {

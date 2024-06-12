@@ -7,7 +7,6 @@ import (
 	"github.com/google/uuid"
 )
 
-// TODO: add sorting controls to header
 templ RenderRecipeTab(pd *foodlib.PageData, td *foodlib.TabData, firstRender bool) {
 	<div id={ fmt.Sprintf("tabTitle_%s", td.Ttype) } class={ TabHeaderContainerCSS() }>
 		<div class={ TabHeaderTitleCSS() }>
@@ -61,7 +60,6 @@ templ RecipeItemContainer(pd *foodlib.PageData, td *foodlib.TabData, item *foodl
 	}
 }
 
-// TODO: fill this in
 templ recipeItemNormal(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem, itemData map[string]interface{}) {
 	<div
 		id={ fmt.Sprintf("i_%s", item.ItemID.String()) }
@@ -81,7 +79,6 @@ templ recipeItemNormal(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.
 	</div>
 }
 
-// TODO: make this expanded and resizeable, then fill it in
 templ recipeItemExpanded(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem, itemData map[string]interface{}) {
 	<div
 		id={ fmt.Sprintf("i_%s", item.ItemID.String()) }

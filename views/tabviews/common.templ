@@ -4,31 +4,9 @@ package tabviews
 import (
 	"fmt"
 	"github.com/google/uuid"
+	"FOOdBAR/db"
 	foodlib "FOOdBAR/FOOlib"
 )
-
-templ ColorsCSS() {
-	<style type="text/css">
-		@media (prefers-color-scheme: dark) {
-			.bodycolors {
-				border-color: white;
-				background-color: #1e1e1f;
-				color: white;
-				fill: white;
-				stroke: white;
-			}
-		}
-		@media (not (prefers-color-scheme: dark)) {
-			.bodycolors {
-				border-color: black;
-				background-color: lightgray;
-				color: black;
-				fill: black;
-				stroke: black;
-			}
-		}
-	</style>
-}
 
 templ OOBsendBackSubmitStatus(id uuid.UUID, message string, e error) {
 	<div id={ fmt.Sprintf("itemSubmitMessage_%s", id.String()) } hx-swap-oob="true">
@@ -78,12 +56,14 @@ templ ExtraField(val string, field string, itemid uuid.UUID) {
 	/>
 }
 
+// TODO: make this button do something
 templ ExpandTabItemButton(item *foodlib.TabItem) {
 	<div class="w-6">
 		@Expand()
 	</div>
 }
 
+// TODO: make this button do something
 templ ContractTabItemButton(item *foodlib.TabItem) {
 	<div class="w-6">
 		@Contract()
@@ -91,27 +71,6 @@ templ ContractTabItemButton(item *foodlib.TabItem) {
 }
 
 templ RenderSubmissionContent(pd *foodlib.PageData, item *foodlib.TabItem, msg string, e error) {
-	switch item.Ttype {
-		case foodlib.Recipe:
-			@SubmitRecipeBlock(pd, item, msg, e)
-		case foodlib.Pantry:
-			@SubmitPantryBlock(pd, item, msg, e)
-		case foodlib.Menu:
-			@SubmitMenuBlock(pd, item, msg, e)
-		case foodlib.Shopping:
-			@SubmitShoppingBlock(pd, item, msg, e)
-		case foodlib.Preplist:
-			@SubmitPreplistBlock(pd, item, msg, e)
-		case foodlib.Earnings:
-			@SubmitEarningsBlock(pd, item, msg, e)
-		case foodlib.Customer:
-			@SubmitCustomerBlock(pd, item, msg, e)
-		case foodlib.Events:
-			@SubmitEventsBlock(pd, item, msg, e)
-	}
-}
-
-templ RenderFlipSubmitContent(pd *foodlib.PageData, item *foodlib.TabItem, msg string, e error) {
 	switch item.Ttype {
 		case foodlib.Recipe:
 			@SubmitRecipeBlock(pd, item, msg, e)
@@ -179,47 +138,63 @@ templ MoreTabItems(pd *foodlib.PageData, td *foodlib.TabData, more bool) {
 	}
 }
 
-// TODO: make for other tabs
 templ OOBRenderItemContainer(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem) {
-	switch item.Ttype {
-		case foodlib.Recipe:
-			@OOBPantryItemContainer(pd, td, item)
-		case foodlib.Pantry:
-			@OOBPantryItemContainer(pd, td, item)
-		case foodlib.Menu:
-			@OOBPantryItemContainer(pd, td, item)
-		case foodlib.Shopping:
-			@OOBPantryItemContainer(pd, td, item)
-		case foodlib.Preplist:
-			@OOBPantryItemContainer(pd, td, item)
-		case foodlib.Earnings:
-			@OOBPantryItemContainer(pd, td, item)
-		case foodlib.Customer:
-			@OOBPantryItemContainer(pd, td, item)
-		case foodlib.Events:
-			@OOBPantryItemContainer(pd, td, item)
+	if itemData, _ := db.GetTabItemData(pd.UserID, item); itemData != nil && item != nil {
+		<div
+			id={ fmt.Sprintf("i_%s", item.ItemID.String()) }
+			hx-swap-oob="outerHTML"
+		>
+			// TODO: make for other tabs
+			switch item.Ttype {
+				case foodlib.Recipe:
+					@PantryItemContents(pd, td, item, itemData)
+				case foodlib.Pantry:
+					@PantryItemContents(pd, td, item, itemData)
+				case foodlib.Menu:
+					@PantryItemContents(pd, td, item, itemData)
+				case foodlib.Shopping:
+					@PantryItemContents(pd, td, item, itemData)
+				case foodlib.Preplist:
+					@PantryItemContents(pd, td, item, itemData)
+				case foodlib.Earnings:
+					@PantryItemContents(pd, td, item, itemData)
+				case foodlib.Customer:
+					@PantryItemContents(pd, td, item, itemData)
+				case foodlib.Events:
+					@PantryItemContents(pd, td, item, itemData)
+			}
+		</div>
 	}
 }
 
 // TODO: make for other tabs
 templ OOBRenderItemBeforeThis(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem, target uuid.UUID) {
-	switch item.Ttype {
-		case foodlib.Recipe:
-			@OOBPantryItemBeforeThis(pd, td, item, target)
-		case foodlib.Pantry:
-			@OOBPantryItemBeforeThis(pd, td, item, target)
-		case foodlib.Menu:
-			@OOBPantryItemBeforeThis(pd, td, item, target)
-		case foodlib.Shopping:
-			@OOBPantryItemBeforeThis(pd, td, item, target)
-		case foodlib.Preplist:
-			@OOBPantryItemBeforeThis(pd, td, item, target)
-		case foodlib.Earnings:
-			@OOBPantryItemBeforeThis(pd, td, item, target)
-		case foodlib.Customer:
-			@OOBPantryItemBeforeThis(pd, td, item, target)
-		case foodlib.Events:
-			@OOBPantryItemBeforeThis(pd, td, item, target)
+	if itemData, _ := db.GetTabItemData(pd.UserID, item); itemData != nil && item != nil {
+		<div
+			id={ fmt.Sprintf("i_%s", item.ItemID.String()) }
+			hx-target={ fmt.Sprintf("#i_%s", target.String()) }
+			hx-swap-oob="beforebegin"
+		>
+			// TODO: make for other tabs
+			switch item.Ttype {
+				case foodlib.Recipe:
+					@PantryItemContents(pd, td, item, itemData)
+				case foodlib.Pantry:
+					@PantryItemContents(pd, td, item, itemData)
+				case foodlib.Menu:
+					@PantryItemContents(pd, td, item, itemData)
+				case foodlib.Shopping:
+					@PantryItemContents(pd, td, item, itemData)
+				case foodlib.Preplist:
+					@PantryItemContents(pd, td, item, itemData)
+				case foodlib.Earnings:
+					@PantryItemContents(pd, td, item, itemData)
+				case foodlib.Customer:
+					@PantryItemContents(pd, td, item, itemData)
+				case foodlib.Events:
+					@PantryItemContents(pd, td, item, itemData)
+			}
+		</div>
 	}
 }
 
@@ -253,67 +228,6 @@ templ RenderTabContents(pd *foodlib.PageData, td *foodlib.TabData, firstRender b
 	}
 }
 
-// Load this as part of the main page
-templ CardFlipContainerCSS() {
-	<style type="text/css">
-	.card_container {
-		height: 100%;
-		width: 100%;
-		perspective: 600px;
-	}
-	.card {
-		width: 100%;
-		height: 100%;
-		position: relative;
-		transition: transform 0.5s;
-		transform-style: preserve-3d;
-	}
-	.card__face {
-		position: absolute;
-		height: 100%;
-		width: 100%;
-		backface-visibility: hidden;
-	}
-	.card.flip-in {
-		transform: rotateY(-180deg);
-	}
-	.card.flip-out {
-		transform: rotateY(180deg);
-	}
-	.card__face--front {
-		transform: rotateY(-180deg);
-	}
-	.card__face--back {
-		transform: rotateY(180deg);
-	}
-	</style>
-}
-
-// requires above css to already be loaded (because otherwise we send it many many times)
-// TODO: maybe find out how to do this on remove instead of on load but this is fine for now.
-templ CardFlipContainer(front templ.Component, back templ.Component) {
-	<div class="card_container">
-		<div
-			class="card"
-			if back == nil {
-				_="on load add .flip-out to me"
-			} else {
-				_="on load add .flip-in to me"
-			}
-		>
-			<div class="card__face card__face--front">
-				if front != nil {
-					@front
-				}
-			</div>
-			<div class="card__face card__face--back">
-				if back != nil {
-					@back
-				}
-			</div>
-		</div>
-	</div>
-}
 
 // called by views/homepage.go during rendering or removing old tabs
 // this div moved here because its counterpart OOB templates are here.
@@ -326,56 +240,6 @@ templ MainTabContents(pd *foodlib.PageData, td *foodlib.TabData) {
 	</div>
 }
 
-templ OOBflipTab(pd *foodlib.PageData, td *foodlib.TabData) {
-	<div
-		id={ fmt.Sprintf("tabContainerTarget_%s", td.Ttype.String()) }
-		hx-swap-oob="innerHTML"
-	>
-		@RenderTabContents(pd, td, false)
-	</div>
-}
-
-templ FlipEditTabItemButton(ti *foodlib.TabItem) {
-	<div
-		id={ fmt.Sprintf("ItemEdit_%s", ti.Ttype.String()) }
-		hx-get={ fmt.Sprintf("%s/api/itemEditFlip/open/%s/%s", foodlib.PagePrefix, ti.Ttype.String(), ti.ItemID.String()) }
-		hx-swap="none"
-		class={ TabHeaderButtonCSS() }
-	>
-		@EditSVG()
-	</div>
-}
-
-templ FlipAddItemButton(tt foodlib.TabType) {
-	<div
-		id={ fmt.Sprintf("tabItemAdd_%s", tt.String()) }
-		hx-get={ fmt.Sprintf("%s/api/itemCreateFlip/open/%s", foodlib.PagePrefix, tt.String()) }
-		hx-swap="none"
-		class={ TabHeaderButtonCSS() }
-	>
-		@AddCircle()
-	</div>
-}
-
-templ CloseFlipButton(tt foodlib.TabType) {
-	<div
-		id={ fmt.Sprintf("tabItemAdd_%s", tt.String()) }
-		hx-get={ fmt.Sprintf("%s/api/itemEditFlip/close/%s", foodlib.PagePrefix, tt.String()) }
-		hx-swap="none"
-		class={ TabHeaderButtonCSS() }
-	>
-		@MinusCircle()
-	</div>
-}
-
-css TabHeaderButtonCSS() {
-	display: flex;
-	flex-direction: row;
-	margin: 3px;
-	flex: 0 0 1.5rem;
-	cursor: pointer;
-}
-
 templ MaximizeTabButton(tt foodlib.TabType) {
 	<div
 		id={ fmt.Sprintf("tabButton_%s", tt) }
@@ -384,130 +248,5 @@ templ MaximizeTabButton(tt foodlib.TabType) {
 		class={ TabHeaderButtonCSS() }
 	>
 		@Maximize()
-	</div>
-}
-
-templ ModalAddItemButton(tt foodlib.TabType) {
-	<div
-		id={ fmt.Sprintf("tabItemAdd_%s", tt.String()) }
-		hx-get={ fmt.Sprintf("%s/api/itemCreateModal/open/%s", foodlib.PagePrefix, tt.String()) }
-		hx-swap="beforeend"
-		hx-target="body"
-		class={ TabHeaderButtonCSS() }
-	>
-		@AddCircle()
-	</div>
-}
-
-templ ModalEditTabItemButton(ti *foodlib.TabItem) {
-	<div
-		id={ fmt.Sprintf("ItemEdit_%s", ti.Ttype.String()) }
-		hx-get={ fmt.Sprintf("%s/api/itemEditModal/open/%s/%s", foodlib.PagePrefix, ti.Ttype.String(), ti.ItemID.String()) }
-		hx-swap="beforeend"
-		hx-target="body"
-		class={ TabHeaderButtonCSS() }
-	>
-		@EditSVG()
-	</div>
-}
-
-templ ModalCSS() {
-	<style type="text/css">
-		/***** MODAL DIALOG ****/
-		#modal {
-			/* Underlay covers entire screen. */
-			position: fixed;
-			top:0px;
-			bottom: 0px;
-			left:0px;
-			right:0px;
-			z-index:1000;
-
-			/* Flexbox centers the .modal-content vertically and horizontally */
-			display:flex;
-			flex-direction:column;
-			align-items:center;
-
-			/* Animate when opening */
-			animation-name: fadeIn;
-			animation-duration:150ms;
-			animation-timing-function: ease;
-		}
-
-		#modal > .modal-underlay {
-			/* underlay takes up the entire viewport. This is only
-			required if you want to click to dismiss the popup */
-			background-color:rgba(0,0,0,0.5);
-			position: absolute;
-			z-index: -1;
-			top:0px;
-			bottom:0px;
-			left: 0px;
-			right: 0px;
-		}
-
-		#modal > .modal-content {
-			/* Position visible dialog near the top of the window */
-			margin-top:10vh;
-
-			/* Sizing for visible dialog */
-			width:80%;
-			max-width:600px;
-
-			/* Display properties for visible dialog*/
-			border:solid 1px;
-			border-radius:8px;
-			box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.3);
-			padding:20px;
-
-			/* Animate when opening */
-			animation-name:zoomIn;
-			animation-duration:150ms;
-			animation-timing-function: ease;
-		}
-
-		#modal.closing {
-			/* Animate when closing */
-			animation-name: fadeOut;
-			animation-duration:150ms;
-			animation-timing-function: ease;
-		}
-
-		#modal.closing > .modal-content {
-			/* Animate when closing */
-			animation-name: zoomOut;
-			animation-duration:150ms;
-			animation-timing-function: ease;
-		}
-
-		@keyframes fadeIn {
-			0% {opacity: 0;}
-			100% {opacity: 1;}
-		} 
-
-		@keyframes fadeOut {
-			0% {opacity: 1;}
-			100% {opacity: 0;}
-		} 
-
-		@keyframes zoomIn {
-			0% {transform: scale(0.9);}
-			100% {transform: scale(1);}
-		} 
-
-		@keyframes zoomOut {
-			0% {transform: scale(1);}
-			100% {transform: scale(0.9);}
-		} 
-	</style>
-}
-
-// requires above css to already be loaded (because otherwise we send it many many times)
-templ ItemEditModal(component templ.Component) {
-	<div id="modal" _="on closeModal add .closing then wait for animationend then remove me">
-		<div class="modal-underlay" _="on click trigger closeModal"></div>
-		<div class="modal-content bodycolors">
-			@component
-		</div>
 	</div>
 }
