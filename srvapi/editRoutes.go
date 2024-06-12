@@ -68,12 +68,39 @@ func SetupEditAPIroutes(e *echo.Group) error {
 			return HTML(c, http.StatusUnprocessableEntity, tabviews.OOBsendBackSubmitStatus(itemID, "", err))
 		}
 		if isActive && !flipped {
+			// TODO: Test this better
 			if present {
-				// TODO: Re render the tab item oob
+				// Re render the item oob if it was present
 				HTML(c, http.StatusOK, tabviews.OOBRenderItemContainer(pageData, td, ti))
 			} else {
-				// TODO: add the tab item at correct place in sort for that tab
-				// basically, call fill tab items, and if the ti's id is in the list rerender the relevant tab
+				// check if it should be present now
+				tis, err := db.FillXTabItems(pageData.UserID, td, 0, len(td.Items))
+				if err != nil {
+					c.Logger().Print(err)
+					return HTML(c, http.StatusInternalServerError, tabviews.OOBsendBackSubmitStatus(itemID, "", err))
+				}
+				found := false;
+				for i, val := range tis {
+					// 3: if found is true, it needs to be before this one. So put it there.
+					if found {
+						HTML(c, http.StatusOK, tabviews.OOBRenderItemBeforeThis(pageData, td, ti, val.ItemID))
+						break
+					}
+					// 1: check if we found it
+					if val.ItemID == ti.ItemID {
+						found = true
+					}
+					// 2: if its the last one, deal with it now just adding to end
+					if found && i >= len(tis) - 1 {
+						justMore := &foodlib.TabData{
+							Items: []*foodlib.TabItem{val},
+							Ttype: td.Ttype,
+							OrderBy: td.OrderBy,
+							Flipped: td.Flipped,
+						}
+						tabviews.OOBmoreTabItems(pageData, justMore, true)
+					}
+				}
 			}
 		}
 		db.SavePageData(c, pageData)

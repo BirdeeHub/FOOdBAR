@@ -68,6 +68,18 @@ templ PantryItemContainer(pd *foodlib.PageData, td *foodlib.TabData, item *foodl
 	}
 }
 
+templ OOBPantryItemBeforeThis(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem, target uuid.UUID) {
+	if itemData, _ := db.GetTabItemData(pd.UserID, item); itemData != nil && item != nil {
+		<div
+			id={ fmt.Sprintf("i_%s", item.ItemID.String()) }
+			hx-target={ fmt.Sprintf("#i_%s", target.String()) }
+			hx-swap-oob="beforebegin"
+		>
+			@PantryItemContents(pd, td, item, itemData)
+		</div>
+	}
+}
+
 templ OOBPantryItemContainer(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem) {
 	if itemData, _ := db.GetTabItemData(pd.UserID, item); itemData != nil && item != nil {
 		<div

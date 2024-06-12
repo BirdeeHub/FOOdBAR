@@ -1,5 +1,6 @@
 package tabviews
 
+
 import (
 	"fmt"
 	"github.com/google/uuid"
@@ -131,6 +132,12 @@ templ RenderFlipSubmitContent(pd *foodlib.PageData, item *foodlib.TabItem, msg s
 	}
 }
 
+templ OOBmoreTabItems(pd *foodlib.PageData, td *foodlib.TabData, more bool) {
+	<div id={ fmt.Sprintf("moreGetter_%s", td.Ttype.String()) } hx-swap-oob="outerHTML">
+		@MoreTabItems(pd, td, more)
+	</div>
+}
+
 // NOTE: pass in a new TabData with only the new items, and to the real one in db, append the items.
 templ MoreTabItems(pd *foodlib.PageData, td *foodlib.TabData, more bool) {
 	switch td.Ttype {
@@ -194,8 +201,31 @@ templ OOBRenderItemContainer(pd *foodlib.PageData, td *foodlib.TabData, item *fo
 	}
 }
 
+// TODO: make for other tabs
+templ OOBRenderItemBeforeThis(pd *foodlib.PageData, td *foodlib.TabData, item *foodlib.TabItem, target uuid.UUID) {
+	switch item.Ttype {
+		case foodlib.Recipe:
+			@OOBPantryItemBeforeThis(pd, td, item, target)
+		case foodlib.Pantry:
+			@OOBPantryItemBeforeThis(pd, td, item, target)
+		case foodlib.Menu:
+			@OOBPantryItemBeforeThis(pd, td, item, target)
+		case foodlib.Shopping:
+			@OOBPantryItemBeforeThis(pd, td, item, target)
+		case foodlib.Preplist:
+			@OOBPantryItemBeforeThis(pd, td, item, target)
+		case foodlib.Earnings:
+			@OOBPantryItemBeforeThis(pd, td, item, target)
+		case foodlib.Customer:
+			@OOBPantryItemBeforeThis(pd, td, item, target)
+		case foodlib.Events:
+			@OOBPantryItemBeforeThis(pd, td, item, target)
+	}
+}
+
 templ GetNewMoreGetter(tt foodlib.TabType) {
 	<div
+		id={ fmt.Sprintf("moreGetter_%s", tt.String()) }
 		hx-trigger="revealed"
 		hx-swap="outerHTML"
 		hx-get={ fmt.Sprintf("%s/api/getMoreItems/%s", foodlib.PagePrefix, tt) }
