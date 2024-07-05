@@ -1,0 +1,17 @@
+name: Main Workflow
+
+on:
+  workflow_dispatch: # Allows manually triggering the workflow
+
+jobs:
+  trigger-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Trigger Release Workflow
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: Build and Release
+          token: ${{ secrets.GITHUB_TOKEN }}
