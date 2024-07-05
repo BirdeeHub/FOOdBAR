@@ -20,22 +20,26 @@ jobs:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build docker packages
-        run: nix build .#docker.x86_64-linux.default
+        run: |
+          nix build .#docker.x86_64-linux.default
+          mv result docker-x86_64-linux
 
       - name: Build other packages
-        run: nix build .#packages.x86_64-linux.default
+        run: |
+          nix build .#packages.x86_64-linux.default
+          mv result/bin/FOOdBAR package-x86_64-linux
 
       - name: Upload docker x86_64-linux artifact
         uses: actions/upload-artifact@v2
         with:
           name: docker-x86_64-linux
-          path: ./result-docker-x86_64-linux
+          path: ./docker-x86_64-linux
 
       - name: Upload package x86_64-linux artifact
         uses: actions/upload-artifact@v2
         with:
           name: package-x86_64-linux
-          path: ./result-package-x86_64-linux
+          path: ./package-x86_64-linux
 
 
   release:
@@ -75,7 +79,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./docker-x86_64-linux/result-docker-x86_64-linux
+          asset_path: ./docker-x86_64-linux/docker-x86_64-linux
           asset_name: docker-x86_64-linux
           asset_content_type: application/octet-stream
 
@@ -85,6 +89,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./package-x86_64-linux/result-package-x86_64-linux
+          asset_path: ./package-x86_64-linux/package-x86_64-linux
           asset_name: package-x86_64-linux
           asset_content_type: application/octet-stream
