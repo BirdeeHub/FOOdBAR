@@ -2,8 +2,8 @@ schema = 3
 
 [mod]
   [mod."github.com/a-h/templ"]
-    version = "v0.2.707"
-    hash = "sha256-UoM2qj8E7C4NBAMhS/2jrOw0Dj/gnsyZRL4NpRCWaMo="
+    version = "v0.2.747"
+    hash = "sha256-F0tNpUY2OD6MaDLk9yVQJ8kphlHPXzACPSYlZMmkKo0="
   [mod."github.com/davecgh/go-spew"]
     version = "v1.1.1"
     hash = "sha256-nhzSUrE1fCkN0+RL04N4h8jWmRFPPPWbCuDc7Ss0akI="
@@ -56,8 +56,8 @@ schema = 3
     version = "v0.24.0"
     hash = "sha256-w1c21ljta5wNIyel9CSIn/crPzwOCRofNKhqmfs4aEQ="
   [mod."golang.org/x/sys"]
-    version = "v0.19.0"
-    hash = "sha256-cmuL31TYLJmDm/fDnI2Sn0wB88cpdOHV1+urorsJWx4="
+    version = "v0.21.0"
+    hash = "sha256-gapzPWuEqY36V6W2YhIDYR49sEvjJRd7bSuf9K1f4JY="
   [mod."golang.org/x/text"]
     version = "v0.14.0"
     hash = "sha256-yh3B0tom1RfzQBf1RNmfdNWF1PtiqxV41jW1GVS6JAg="
