@@ -22,12 +22,12 @@ jobs:
       - name: Build docker packages
         run: |
           nix build .#docker.x86_64-linux.default
-          mv result docker-x86_64-linux
+          cp result docker-x86_64-linux
 
       - name: Build other packages
         run: |
           nix build .#packages.x86_64-linux.default
-          mv result/bin/FOOdBAR package-x86_64-linux
+          cp result/bin/FOOdBAR package-x86_64-linux
 
       - name: Upload docker x86_64-linux artifact
         uses: actions/upload-artifact@v2
