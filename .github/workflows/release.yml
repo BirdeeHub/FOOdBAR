@@ -49,6 +49,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: List contents of docker-x86_64-linux
+        run: ls -l ./docker-x86_64-linux
+
+      - name: List contents of package-x86_64-linux
+        run: ls -l ./package-x86_64-linux
+
       - name: Download docker x86_64-linux artifact
         uses: actions/download-artifact@v2
         with:
