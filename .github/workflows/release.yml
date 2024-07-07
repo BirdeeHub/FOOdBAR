@@ -21,27 +21,21 @@ jobs:
 
       - name: Build docker packages
         run: |
-          mkdir -p ./docker/x86_64-linux/
+          mkdir -p ./outputs/docker/x86_64-linux/
           nix build .#docker.x86_64-linux.default
-          cp result docker/x86_64-linux/64-linux-FOOdBAR_IMAGE
+          cp result ./outputs/docker/x86_64-linux/64-linux-FOOdBAR_IMAGE
 
       - name: Build other packages
         run: |
-          mkdir -p ./packages/x86_64-linux/
+          mkdir -p ./outputs/packages/x86_64-linux/
           nix build .#packages.x86_64-linux.default
-          cp result/bin/FOOdBAR packages/x86_64-linux/64-linux-FOOdBAR
+          cp result/bin/FOOdBAR ./outputs/packages/x86_64-linux/64-linux-FOOdBAR
 
-      - name: Upload docker artifacts
+      - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: docker
-          path: ./docker
-
-      - name: Upload package artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: packages
-          path: ./packages
+          name: outputs
+          path: ./outputs
 
   release:
     needs: build
