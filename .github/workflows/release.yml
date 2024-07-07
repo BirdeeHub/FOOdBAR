@@ -21,32 +21,27 @@ jobs:
 
       - name: Build docker packages
         run: |
+          mkdir -p docker/x86_64-linux/
           nix build .#docker.x86_64-linux.default
-          cp result docker-x86_64-linux
+          cp result docker/x86_64-linux/64-linux-FOOdBAR_IMAGE
 
       - name: Build other packages
         run: |
+          mkdir -p packages/x86_64-linux/
           nix build .#packages.x86_64-linux.default
-          cp result/bin/FOOdBAR package-x86_64-linux
+          cp result/bin/FOOdBAR packages/x86_64-linux/64-linux-FOOdBAR
 
       - name: Upload docker x86_64-linux artifact
         uses: actions/upload-artifact@v2
         with:
           name: docker-x86_64-linux
-          path: ./docker-x86_64-linux
+          path: ./docker
 
       - name: Upload package x86_64-linux artifact
         uses: actions/upload-artifact@v2
         with:
-          name: package-x86_64-linux
-          path: ./package-x86_64-linux
-
-      - name: List contents of cwd
-        run: |
-          pwd
-          ls -la ./
-          ls -l ./docker-x86_64-linux
-          ls -l ./package-x86_64-linux
+          name: packages
+          path: ./packages
 
   release:
     needs: build
@@ -59,21 +54,23 @@ jobs:
       - name: Download docker x86_64-linux artifact
         uses: actions/download-artifact@v2
         with:
-          name: docker-x86_64-linux
-          path: ./docker-x86_64-linux
+          name: docker
+          path: ./docker
 
       - name: Download package x86_64-linux artifact
         uses: actions/download-artifact@v2
         with:
-          name: package-x86_64-linux
-          path: ./package-x86_64-linux
+          name: packages
+          path: ./packages
 
       - name: List contents of cwd
         run: |
           pwd
           ls -la ./
-          ls -l ./docker-x86_64-linux/*
-          ls -l ./package-x86_64-linux/*
+          ls -la ./docker
+          ls -la ./packages
+          ls -la ./docker/x86_64-linux
+          ls -la ./packages/x86_64-linux
 
       - name: Create Release
         id: create_release
@@ -92,8 +89,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.RELEASEPAT }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./docker-x86_64-linux/docker-x86_64-linux
-          asset_name: docker-x86_64-linux
+          asset_path: ./docker/x86_64-linux/64-linux-FOOdBAR_IMAGE
+          asset_name: 64-linux-FOOdBAR_IMAGE
           asset_content_type: application/octet-stream
 
       - name: Upload package x86_64-linux to release
@@ -102,6 +99,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.RELEASEPAT }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./package-x86_64-linux/package-x86_64-linux
-          asset_name: package-x86_64-linux
+          asset_path: ./packages/x86_64-linux/64-linux-FOOdBAR
+          asset_name: 64-linux-FOOdBAR
           asset_content_type: application/octet-stream
