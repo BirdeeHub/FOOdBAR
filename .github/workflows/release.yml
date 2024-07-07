@@ -45,8 +45,8 @@ jobs:
         run: |
           pwd
           ls -la ./
-          ls -l ./docker-x86_64-linux/*
-          ls -l ./package-x86_64-linux/*
+          ls -l ./docker-x86_64-linux
+          ls -l ./package-x86_64-linux
 
   release:
     needs: build
