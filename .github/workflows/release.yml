@@ -19,17 +19,53 @@ jobs:
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build docker packages
+      - name: Build docker packages x86_64-linux
         run: |
           mkdir -p ./outputs/docker/x86_64-linux/
           nix build .#docker.x86_64-linux.default
           cp result ./outputs/docker/x86_64-linux/64-linux-FOOdBAR_IMAGE
 
-      - name: Build other packages
+      - name: Build docker packages aarch64-linux
+        run: |
+          mkdir -p ./outputs/docker/aarch64-linux/
+          nix build .#docker.aarch64-linux.default
+          cp result ./outputs/docker/aarch64-linux/aarch-linux-FOOdBAR_IMAGE
+
+      - name: Build docker packages x86_64-darwin
+        run: |
+          mkdir -p ./outputs/docker/x86_64-darwin/
+          nix build .#docker.x86_64-darwin.default
+          cp result ./outputs/docker/x86_64-darwin/64-darwin-FOOdBAR_IMAGE
+
+      - name: Build docker packages aarch64-darwin
+        run: |
+          mkdir -p ./outputs/docker/aarch64-darwin/
+          nix build .#docker.aarch64-darwin.default
+          cp result ./outputs/docker/aarch64-darwin/aarch-darwin-FOOdBAR_IMAGE
+
+      - name: Build x86_64-linux package
         run: |
           mkdir -p ./outputs/packages/x86_64-linux/
           nix build .#packages.x86_64-linux.default
           cp result/bin/FOOdBAR ./outputs/packages/x86_64-linux/64-linux-FOOdBAR
+
+      - name: Build aarch64-linux package
+        run: |
+          mkdir -p ./outputs/packages/aarch64-linux/
+          nix build .#packages.aarch64-linux.default
+          cp result/bin/FOOdBAR ./outputs/packages/aarch64-linux/aarch-linux-FOOdBAR
+
+      - name: Build x86_64-darwin package
+        run: |
+          mkdir -p ./outputs/packages/x86_64-darwin/
+          nix build .#packages.x86_64-darwin.default
+          cp result/bin/FOOdBAR ./outputs/packages/x86_64-darwin/64-darwin-FOOdBAR
+
+      - name: Build aarch64-darwin package
+        run: |
+          mkdir -p ./outputs/packages/aarch64-darwin/
+          nix build .#packages.aarch64-darwin.default
+          cp result/bin/FOOdBAR ./outputs/packages/aarch64-darwin/aarch-darwin-FOOdBAR
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
@@ -72,6 +108,36 @@ jobs:
           asset_name: 64-linux-FOOdBAR_IMAGE
           asset_content_type: application/octet-stream
 
+      - name: Upload docker aarch64-linux to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASEPAT }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./outputs/docker/aarch64-linux/aarch-linux-FOOdBAR_IMAGE
+          asset_name: 64-linux-FOOdBAR_IMAGE
+          asset_content_type: application/octet-stream
+
+      - name: Upload docker x86_64-darwin to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASEPAT }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./outputs/docker/x86_64-darwin/64-darwin-FOOdBAR_IMAGE
+          asset_name: 64-linux-FOOdBAR_IMAGE
+          asset_content_type: application/octet-stream
+
+      - name: Upload docker aarch64-darwin to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASEPAT }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./outputs/docker/aarch64-darwin/aarch-darwin-FOOdBAR_IMAGE
+          asset_name: 64-linux-FOOdBAR_IMAGE
+          asset_content_type: application/octet-stream
+
       - name: Upload package x86_64-linux to release
         uses: actions/upload-release-asset@v1
         env:
@@ -79,5 +145,35 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./outputs/packages/x86_64-linux/64-linux-FOOdBAR
+          asset_name: 64-linux-FOOdBAR
+          asset_content_type: application/octet-stream
+
+      - name: Upload package aarch64-linux to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASEPAT }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./outputs/packages/aarch64-linux/aarch-linux-FOOdBAR
+          asset_name: 64-linux-FOOdBAR
+          asset_content_type: application/octet-stream
+
+      - name: Upload package x86_64-darwin to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASEPAT }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./outputs/packages/x86_64-darwin/64-darwin-FOOdBAR
+          asset_name: 64-linux-FOOdBAR
+          asset_content_type: application/octet-stream
+
+      - name: Upload package aarch64-darwin to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASEPAT }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./outputs/packages/aarch64-darwin/aarch-darwin-FOOdBAR
           asset_name: 64-linux-FOOdBAR
           asset_content_type: application/octet-stream
