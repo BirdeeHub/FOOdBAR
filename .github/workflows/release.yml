@@ -51,16 +51,6 @@ jobs:
           name: outputs
           path: ./outputs
 
-      - name: List contents of cwd
-        run: |
-          pwd
-          ls -la ./
-          ls -la ./outputs/
-          ls -la ./outputs/docker
-          ls -la ./outputs/packages
-          ls -la ./outputs/docker/x86_64-linux
-          ls -la ./outputs/packages/x86_64-linux
-
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
