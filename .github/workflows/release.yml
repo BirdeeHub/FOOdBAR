@@ -45,16 +45,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download docker x86_64-linux artifact
+      - name: Download artifacts
         uses: actions/download-artifact@v2
         with:
-          name: docker
-          path: ./outputs
-
-      - name: Download package x86_64-linux artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: packages
+          name: outputs
           path: ./outputs
 
       - name: List contents of cwd
