@@ -31,13 +31,13 @@ jobs:
           nix build .#packages.x86_64-linux.default
           cp result/bin/FOOdBAR packages/x86_64-linux/64-linux-FOOdBAR
 
-      - name: Upload docker x86_64-linux artifact
+      - name: Upload docker artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: docker-x86_64-linux
+          name: docker
           path: ./docker
 
-      - name: Upload package x86_64-linux artifact
+      - name: Upload package artifacts
         uses: actions/upload-artifact@v2
         with:
           name: packages
@@ -55,22 +55,22 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: docker
-          path: ./docker
+          path: ./outputs
 
       - name: Download package x86_64-linux artifact
         uses: actions/download-artifact@v2
         with:
           name: packages
-          path: ./packages
+          path: ./outputs
 
       - name: List contents of cwd
         run: |
           pwd
           ls -la ./
-          ls -la ./docker
-          ls -la ./packages
-          ls -la ./docker/x86_64-linux
-          ls -la ./packages/x86_64-linux
+          ls -la ./outputs/docker
+          ls -la ./outputs/packages
+          ls -la ./outputs/docker/x86_64-linux
+          ls -la ./outputs/packages/x86_64-linux
 
       - name: Create Release
         id: create_release
@@ -89,7 +89,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.RELEASEPAT }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./docker/x86_64-linux/64-linux-FOOdBAR_IMAGE
+          asset_path: ./outputs/docker/x86_64-linux/64-linux-FOOdBAR_IMAGE
           asset_name: 64-linux-FOOdBAR_IMAGE
           asset_content_type: application/octet-stream
 
@@ -99,6 +99,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.RELEASEPAT }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./packages/x86_64-linux/64-linux-FOOdBAR
+          asset_path: ./outputs/packages/x86_64-linux/64-linux-FOOdBAR
           asset_name: 64-linux-FOOdBAR
           asset_content_type: application/octet-stream
