@@ -21,13 +21,13 @@ jobs:
 
       - name: Build docker packages
         run: |
-          mkdir -p docker/x86_64-linux/
+          mkdir -p ./docker/x86_64-linux/
           nix build .#docker.x86_64-linux.default
           cp result docker/x86_64-linux/64-linux-FOOdBAR_IMAGE
 
       - name: Build other packages
         run: |
-          mkdir -p packages/x86_64-linux/
+          mkdir -p ./packages/x86_64-linux/
           nix build .#packages.x86_64-linux.default
           cp result/bin/FOOdBAR packages/x86_64-linux/64-linux-FOOdBAR
 
@@ -67,6 +67,7 @@ jobs:
         run: |
           pwd
           ls -la ./
+          ls -la ./outputs/
           ls -la ./outputs/docker
           ls -la ./outputs/packages
           ls -la ./outputs/docker/x86_64-linux
