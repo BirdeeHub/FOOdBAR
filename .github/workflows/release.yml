@@ -68,7 +68,7 @@ jobs:
       #     cp result/bin/FOOdBAR ./outputs/packages/aarch64-darwin/aarch-darwin-FOOdBAR
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4.1.8
         with:
           name: outputs
           path: ./outputs
